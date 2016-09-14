@@ -35,7 +35,7 @@ void loop() {
   float temp;
   temp=Thermistor(analogRead(ThermistorPIN0));       // read ADC and  convert it to Celsius
   String mytemp = String(temp);
-  String msg = String("T, " + mytemp);
+  String msg = String("A, " + mytemp);  
   XBee.print(msg);
   XBee.write("\n");
   Serial.print("Celsius: "); 
