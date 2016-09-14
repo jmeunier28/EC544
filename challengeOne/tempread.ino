@@ -1,5 +1,5 @@
 
-/*#include <SoftwareSerial.h>
+#include <SoftwareSerial.h>
 #include <math.h>
 
 //#define ThermistorPIN 0                 // Analog Pin 0
@@ -32,37 +32,18 @@ void setup() {
 }
 
 void loop() {
-  
-  if (Serial.available()){
-    XBee.write(Serial.read());
-  }
-  if(XBee.available()){
-    Serial.write(XBee.read());
-  }
-  delay(1000);
   float temp;
   temp=Thermistor(analogRead(ThermistorPIN0));       // read ADC and  convert it to Celsius
+  String mytemp = String(temp);
+  String msg = String("T, " + mytemp);
+  XBee.print(msg);
+  XBee.write("\n");
   Serial.print("Celsius: "); 
   Serial.println(temp, 1);                             // display Celsius
   //temp = (temp * 9.0)/ 5.0 + 32.0;                  // converts to  Fahrenheit
   //Serial.print(", Fahrenheit: "); 
   //Serial.print(temp,1);                             // display  Fahrenheit
   Serial.println("");                                   
-  delay(5000);                                      // Delay a bit... 
-}*/
-
-#include <SoftwareSerial.h>
-SoftwareSerial XBee(2, 3); // RX, TX
-
-void setup() {
-  // put your setup code here, to run once:
-  XBee.begin(9600);
-  Serial.begin(9600);
+  delay(10000);                                      // Delay a bit... 
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  XBee.write("Hello, World!\n");
-  Serial.write("Sent a message...\n");
-  delay(1000);
-}
