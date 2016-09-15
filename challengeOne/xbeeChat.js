@@ -42,8 +42,6 @@ sp.on("open", function () {
   var names = []; //names will be assigned to each arduino 
   var countArray = [0,0,0,0];
   var times = [];
-  var count = 0;
-  var name;
 
   sp.on('data', function(data) {
     var time = new Date();
@@ -104,7 +102,21 @@ sp.on("open", function () {
   var avg = (sum/counter).toFixed(2);
   console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
   var avgString = "Data reveived from " + names + ", and the average temperature is "+ average +"*C";
-    io.emit(avgString);
+  io.emit(avgString);
+
+  for (var i =0; i < tempArray. length; i++){
+    console.log("Individual Sensor " + names[i] + "Value: " + tempArray[i]);
+    var individualTemp = "Individual Sensor " + names[i] + "Value: " + tempArray[i];
+    io.emit(individualTemp)
+  }
+
+  for (var i = 0; i < countArray.length;i++){
+    if (countArray[i]== 0 ){
+      console.log("Error Sending Data From Sensor Number " + i);
+      var errmsg = "Error Sending Data From Sensor Number " + i;
+      io.emit(errmsg);
+    }
+  }
   });
 });
 
