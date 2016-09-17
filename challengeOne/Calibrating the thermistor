@@ -1,0 +1,22 @@
+Vo = R / (R + 10K) * Vcc // R is the variable resistance provided by the thermistor
+
+We are using a resistance of 9.1k ohms
+
+Vo = R / (R + 9.1K) * Vcc
+
+Vcc = 5V
+
+Vo = R / (R + (9.1*10^3)) * 5
+
+ADC value = R / (R + 9.1K) * 1023
+
+R = 10K / (1023/ADC - 1) 
+
+Use the opbtained value to calculate the temperature
+
+Implement the reading in the Steinhart-Hart equation :
+
+https://en.wikipedia.org/wiki/Steinhart%E2%80%93Hart_equation
+
+Also use Vcc = 3.3v, the above equations are indepedent of this term. So both 5v and 3.3v work. But 3.3v is less noisy.
+
