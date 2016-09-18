@@ -98,7 +98,7 @@ sp.on("open", function () {
    // of times has 4 entries 
 
   //var timeDiff = times[times.length - 1] - times[0]; 
-  if (times.length == 4){
+  if (tempArray.length == 4){
 
     var counter = 0;
     var sum = 0;
@@ -121,7 +121,7 @@ sp.on("open", function () {
   }
 
   for (var i = 0; i < countArray.length;i++){
-    if (countArray[i]== 0 ){
+    if (countArray[i] == 0 ){
       console.log("Error Sending Data From Sensor Number " + i);
       var errmsg = "Error Sending Data From Sensor Number " + i;
       io.emit(errmsg);
