@@ -50,8 +50,18 @@ sp.on("open", function () {
     console.log(data); // log incoming data from XBee
     message = data.split(','); //separate data
     console.log(message);
+    message = Set(message);
 
-   if(message[0]=='A'){
+    var length = message.length; //array length == num of sensors
+
+    for (var i = 0; i < length -1; i++){
+
+      names.push(message[i]);
+      tempArray[i] = parseInt(message[i]);
+      countArray[i]++;
+    }
+
+   /*if(message[0]=='A'){
 
       names.push(message[0]);
       tempArray[0]= parseInt(message[1]);
@@ -82,7 +92,7 @@ sp.on("open", function () {
       tempArray[3] = parseInt(message[1]);
       countArray[3]++;
 
-   }
+   }*/
 
    // get all 4 entries and sum them together after the array 
    // of times has 4 entries 
