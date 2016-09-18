@@ -99,7 +99,7 @@ sp.on("open", function () {
     }
   }
 
-  var avg = (sum/counter).toFixed(2);
+  var average = (sum/counter).toFixed(2);
   console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
   var avgString = "Data reveived from " + names + ", and the average temperature is "+ average +"*C";
   io.emit(avgString);
