@@ -1,0 +1,15 @@
+A button is added to the node ( Arduino + thermistor ).
+
+This is done so we can toggle between transmitting and non - trasmitting modes.
+
+Setup :
+
+One leg of the button is connected to the 5V pin on the shield.
+
+One leg of the button is connected to the ground through a 10K ohms resistor.
+
+Third leg is connected to one digital pin - Digital pin 2 used in this implementation.
+
+When the button is pressed it closes the circuit, the digital input pin reads a HIGH.
+
+When the button is not pressed the circuit is open and the digital input pin reads a LOW
