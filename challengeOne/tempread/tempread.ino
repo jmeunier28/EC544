@@ -23,18 +23,67 @@ int randIntGen(){
   return num;
 }
 
+// Variables and pins used for controlling the led and the tranmission mode
+// Initially its in transmit mode
+
+int ButtonPin = 2; // Get the value from the button
+int TransPin = 1; // Control term for the transmission
+int state = HIGH;
+int reading;
+int previous = LOW;
+long time = 0;
+long debounce = 200; // Debounce time 
+int outPin = 13; // connect an Led to show the state its in
+
+
 void setup() {
   Serial.begin(9600);
   pinMode(ThermistorPIN0, INPUT);
   XBee.begin(9600);
   int id = randIntGen();
+  
+  pinMode(ButtonPin, INPUT); 
+  pinMode(outPin, OUTPUT);
+  
 }
 
 void loop() {
+
+//switch reading logic with debouncing
+  
+  reading = digitalRead(ButtonPin);
+  if (reading == HIGH && previous == LOW && millis() - time > debounce) {
+    if (state == HIGH)
+      state = LOW;
+    else
+      state = HIGH;
+
+    time = millis();    
+  }
+
+  digitalWrite(outPin, state);
+
+  previous = reading;
+
+// Using the outPin state to toggle between tranmit and non transmit mode
+
+  if ( outPin == HIGH ) {
+    if ( TransPin == 1){
+      TransPin = 0;
+    }
+    else
+      TransPin = 1;
+  }
+  
+
+
+  
   float temp;
+  
+  /*
   float tempArray[5];
   float sum;
-  /*for (int i = 0; i <5; i++){
+  for (int i = 0; i <5; i++){
     temp=Thermistor(analogRead(ThermistorPIN0));       // read ADC and  convert it to Celsius
     temp = tempArray[i];
     delay(10);
@@ -44,6 +93,8 @@ void loop() {
   }
 
   float average = (sum/5);*/
+  
+  if (TransPin == 1) {                                //  Transmit only if the transPin is high
   temp=Thermistor(analogRead(ThermistorPIN0));       // read ADC and  convert it to Celsius
   String mytemp = String(temp);
   String msg = String("A, " + mytemp);
@@ -52,5 +103,7 @@ void loop() {
   Serial.print("Celsius: "); 
   Serial.println(temp, 1);                             // display Celsius
   Serial.println("");                                   
-  delay(2000);                                      // Delay a bit... 
+  delay(2000);// Delay a bit... 
+  }
+  
 }
