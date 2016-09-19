@@ -13,3 +13,8 @@ Third leg is connected to one digital pin - Digital pin 2 used in this implement
 When the button is pressed it closes the circuit, the digital input pin reads a HIGH.
 
 When the button is not pressed the circuit is open and the digital input pin reads a LOW
+
+Adding an LED :
+
+The output pin 13 is connect to a resistor and the long end of the LED is connected to the other end of the resistor.
+The short end of the LED is connected to the GND pin on the board.
