@@ -113,6 +113,7 @@ var calc_average = function(){
       var avgString = "Data reveived, the average temperature is "+ average +"*C";
       console.log(avgString);
       io.emit('chat message',avgString);
+}
 
   setInterval(function(){ calc_average() },2000);
 
