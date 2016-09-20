@@ -23,12 +23,14 @@
     <h2 style="text-align: center;">Temperature: <b id="temp"> - </b>&deg; C </h2>
     
         <br /><br />
-        <div class="center" style="text-align: center;">
+        <!--<div class="center" style="text-align: center;">
               <h3 style="text-align: center;">Sensor 1: <b id="newTemp"> - </b>&deg; C </h3>
               <h3 style="text-align: center;">Sensor 2: <b id="newTemp"> - </b>&deg; C </h3>
               <h3 style="text-align: center;">Sensor 3: <b id="newTemp"> - </b>&deg; C </h3>
               <h3 style="text-align: center;">Sensor 4: <b id="newTemp"> - </b>&deg; C </h3>
-        </div>
+        </div>-->
+        <div class = "center" style="text-align: center;">
+          <h3 style="text-align: center;">Have a Beautiful Day Humans!!! </h3>
       
   </div>
     <ul id="messages"></ul>
@@ -40,17 +42,14 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-
   var socket = io();
-
   $('form').submit(function(){
     socket.emit('chat message', $('#m').val());
     $('#m').val('');
     return false;
   });
-
   socket.on('chat message', function(msg){
-    $('#messages').append($('<li>').text(msg));
+    $('#temp').append($('#temp').text(msg));
   });
 </script>
   </body>
