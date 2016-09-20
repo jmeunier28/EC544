@@ -47,7 +47,7 @@ sp.on("open", function () {
     var time = new Date();
 
     times.push(time.getTime()); //add to time array
-    console.log(data); // log incoming data from XBee
+    //console.log(data); // log incoming data from XBee
     message = data.split(','); //separate data
     //console.log(message);
 
@@ -88,29 +88,35 @@ sp.on("open", function () {
    // of times has 4 entries 
 
   //var timeDiff = times[times.length - 1] - times[0];
-  setInterval(function(){ 
+
+  
+var calc_average = function(){
+
+   
   if (tempArray.length == 4){
 
     var counter = 0;
     var sum = 0;
     //console.log("counting average...");
 
-    for (var i = 0; i < tempArray.length;i++){
-      sum += tempArray[i]; //add each temperature together 
-      counter++;
+
+      for (var i = 0; i < tempArray.length;i++){
+        sum += tempArray[i]; //add each temperature together 
+        counter++;
+      }
     }
-  }
-  
+
+
     var average = (sum/counter).toFixed(2);
-    setInterval(function(){
+    
   //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
       var avgString = "Data reveived, the average temperature is "+ average +"*C";
-  
-  
       console.log(avgString);
       io.emit('chat message',avgString);
-    },10000);
-  }, 10000);
+
+  setInterval(function(){ calc_average() },2000);
+
+
 
   /*for (var i =0; i < tempArray. length; i++){
     console.log("Individual Sensor " + names[i] + "Value: " + tempArray[i]);
