@@ -7,8 +7,8 @@ var io = require('socket.io')(http);
 
 var portName = process.argv[2],
 portConfig = {
-	baudRate: 9600,
-	parser: SerialPort.parsers.readline("\n")
+  baudRate: 9600,
+  parser: SerialPort.parsers.readline("\n")
 };
 
 
@@ -49,7 +49,7 @@ sp.on("open", function () {
     times.push(time.getTime()); //add to time array
     console.log(data); // log incoming data from XBee
     message = data.split(','); //separate data
-    console.log(message);
+    //console.log(message);
 
    if(message[0]=='A'){
 
@@ -87,36 +87,44 @@ sp.on("open", function () {
    // get all 4 entries and sum them together after the array 
    // of times has 4 entries 
 
-  //var timeDiff = times[times.length - 1] - times[0]; 
-  if (times.length == 4){
+  //var timeDiff = times[times.length - 1] - times[0];
+  setInterval(function(){ 
+  if (tempArray.length == 4){
 
     var counter = 0;
     var sum = 0;
+    //console.log("counting average...");
 
     for (var i = 0; i < tempArray.length;i++){
       sum += tempArray[i]; //add each temperature together 
       counter++;
     }
   }
+  
+    var average = (sum/counter).toFixed(2);
+    setInterval(function(){
+  //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
+      var avgString = "Data reveived, the average temperature is "+ average +"*C";
+  
+  
+      console.log(avgString);
+      io.emit('chat message',avgString);
+    },10000);
+  }, 10000);
 
-  var average = (sum/counter).toFixed(2);
-  console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
-  var avgString = "Data reveived from " + names + ", and the average temperature is "+ average +"*C";
-  io.emit(avgString);
-
-  for (var i =0; i < tempArray. length; i++){
+  /*for (var i =0; i < tempArray. length; i++){
     console.log("Individual Sensor " + names[i] + "Value: " + tempArray[i]);
     var individualTemp = "Individual Sensor " + names[i] + "Value: " + tempArray[i];
-    io.emit(individualTemp)
+    io.emit('chat message',individualTemp)
   }
 
   for (var i = 0; i < countArray.length;i++){
     if (countArray[i]== 0 ){
       console.log("Error Sending Data From Sensor Number " + i);
       var errmsg = "Error Sending Data From Sensor Number " + i;
-      io.emit(errmsg);
+      io.emit('chat message',errmsg);
     }
-  }
+  }*/
   });
 });
 
