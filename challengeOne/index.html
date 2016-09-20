@@ -13,11 +13,26 @@
       #messages li:nth-child(odd) { background: #eee; }
     </style>
   </head>
-  <body>
+  <body style="background-color: #7f8c8f; color: #f2f2f2;">
+  <br /><br />
+    <h1 style="text-align: center;">Challeneg One: Nest</h1>
+    <br />
+    <h2 style="text-align: center;">Team 4</h2>
+    <br /><br />
+    <div style="border-radius: 150px; background: #151B54; padding: 50px; width: 500px; margin-left: auto; margin-right: auto;">
+    <h2 style="text-align: center;">Temperature: <b id="temp"> - </b>&deg; C </h2>
+    
+        <br /><br />
+        <div class="center" style="text-align: center;">
+              <h3 style="text-align: center;">Sensor 1: <b id="temp"> - </b>&deg; C </h3>
+              <h3 style="text-align: center;">Sensor 2: <b id="temp"> - </b>&deg; C </h3>
+              <h3 style="text-align: center;">Sensor 3: <b id="temp"> - </b>&deg; C </h3>
+              <h3 style="text-align: center;">Sensor 4: <b id="temp"> - </b>&deg; C </h3>
+        </div>
+      
+  </div>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    
     <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
