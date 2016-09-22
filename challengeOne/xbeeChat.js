@@ -116,12 +116,9 @@ var calc_average = function(){
 
     
   //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
-      if (average > 25){
-        var avgString = "";
-      }
-      else{
-        var avgString = "Data reveived, the average temperature is "+ average +"*C";
-      }
+
+      var avgString = "Data reveived, the average temperature is "+ average +"*C";
+      
       console.log(avgString);
       io.emit('chat message',avgString);
     }
