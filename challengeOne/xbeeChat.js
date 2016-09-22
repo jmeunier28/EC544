@@ -117,7 +117,7 @@ var calc_average = function(){
     
   //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
 
-      var avgString = "Data reveived, the average temperature is "+ average +"*C";
+      var avgString = average;
       
       console.log(avgString);
       io.emit('chat message',avgString);
@@ -138,7 +138,7 @@ var calc_average = function(){
       console.log("Error Sending Data From Sensor Number " + i);
       var errmsg = "Error Sending Data From Sensor Number " + i + "...Correcting Average";
       count++
-      io.emit('chat message',errmsg);
+      //io.emit('chat message',errmsg);
     }
   }
   if (count > 0){
