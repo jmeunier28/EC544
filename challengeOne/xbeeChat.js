@@ -88,13 +88,18 @@ sp.on("open", function () {
    // of times has 4 entries 
 
   //var timeDiff = times[times.length - 1] - times[0];
+    var error = false;
+    var count = 0;
   
 var calc_average = function(){
-    if (tempArray.length == 4){
 
-      var counter = 0;
-      var sum = 0;
-      //console.log("counting average...");
+   
+  if (tempArray.length == 4){
+
+    var counter = 0;
+    var sum = 0;
+    //console.log("counting average...");
+
 
       for (var i = 0; i < tempArray.length;i++){
         sum += tempArray[i]; //add each temperature together 
@@ -102,29 +107,45 @@ var calc_average = function(){
       }
     }
 
-    var average = (sum/counter).toFixed(2);
+    /*if (error){
+      var average = (sum/(counter - count)).toFixed(2);
+    }
+    else{
+      var average = (sum/counter).toFixed(2);
+    }*/
+
+    var average = ((sum/counter) + 2.5).toFixed(2);
+
     
   //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
-      var avgString = "Data reveived, the average temperature is "+ average +"*C";
+
+      var avgString = average;
+
       console.log(avgString);
       io.emit('chat message',avgString);
+    }
 
-  }
-  setInterval(function(){ calc_average() },1000);
-  
+  setInterval(function(){ calc_average() }, 1 * 20);
+
+
 
   /*for (var i =0; i < tempArray. length; i++){
     console.log("Individual Sensor " + names[i] + "Value: " + tempArray[i]);
     var individualTemp = "Individual Sensor " + names[i] + "Value: " + tempArray[i];
     io.emit('chat message',individualTemp)
-  }
+  }*/
 
   for (var i = 0; i < countArray.length;i++){
     if (countArray[i]== 0 ){
       console.log("Error Sending Data From Sensor Number " + i);
-      var errmsg = "Error Sending Data From Sensor Number " + i;
-      io.emit('chat message',errmsg);
+      var errmsg = "Error Sending Data From Sensor Number " + i + "...Correcting Average";
+      count++
+      //io.emit('chat message',errmsg);
     }
-  }*/
+  }
+  if (count > 0){
+    error = true;
+    console.log("Adjusting Average...");
+  }
   });
 });
