@@ -107,25 +107,26 @@ var calc_average = function(){
       }
     }
 
-    /*if (error){
+    if (error){
       var average = (sum/(counter - count)).toFixed(2);
     }
     else{
       var average = (sum/counter).toFixed(2);
-    }*/
-
-    var average = ((sum/counter) + 2.5).toFixed(2);
+    }
 
     
   //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
-
-      var avgString = average;
-
+      if (average > 25){
+        var avgString = "";
+      }
+      else{
+        var avgString = "Data reveived, the average temperature is "+ average +"*C";
+      }
       console.log(avgString);
       io.emit('chat message',avgString);
     }
 
-  setInterval(function(){ calc_average() }, 1 * 20);
+  setInterval(function(){ calc_average() },2000);
 
 
 
@@ -140,7 +141,7 @@ var calc_average = function(){
       console.log("Error Sending Data From Sensor Number " + i);
       var errmsg = "Error Sending Data From Sensor Number " + i + "...Correcting Average";
       count++
-      //io.emit('chat message',errmsg);
+      io.emit('chat message',errmsg);
     }
   }
   if (count > 0){
