@@ -52,7 +52,7 @@ sp.on("open", function () {
 
   sp.on('data', function(data) {
     var time = new Date();
-    flag = false;
+    var flag = false;
 
     times.push(time.getTime()); //add to time array
     console.log(data); // log incoming data from XBee
@@ -150,7 +150,7 @@ sp.on("open", function () {
       var avgString = "Data reveived from " + names + ", and the average temperature is "+ average +"*C";
       io.emit(avgString); 
     }
-    setInterval(function(){calc_avg()}, 2000);
+    setInterval(function(){calc_avg()}, 1 * 2000);
 
       //tempArray = [0,0,0,0];
 
