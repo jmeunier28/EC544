@@ -95,9 +95,16 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3000, function(){
+/*http.listen(3000, function(){
   console.log('listening on *:3000');
-});
+});*/
+var server = app.listen(3000, function () {
+
+   var host = server.address().address
+   var port = server.address().port
+
+   console.log("Example app listening at http://%s:%s", host, port)
+})
 
 //code purposely commented out will add back later
 /*var info_object = function(){
