@@ -1,0 +1,15 @@
+h1{
+  font: 40px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: green;
+}
+body {
+  padding: 50px;
+  /*background-color: lightgreen;*/
+  color: red;
+  background-image: url("giphy.gif");
+  font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
