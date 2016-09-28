@@ -2,7 +2,7 @@ var SerialPort = require("serialport");
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var ON_DEATH = require('death');
 
 
 var portName = process.argv[2],
@@ -33,117 +33,134 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-
-
-sp.on("open", function () {
-  console.log('open');
-
-  var tempArray = [0,0,0,0];
-  var names = []; //names will be assigned to each arduino 
-  var countArray = [0,0,0,0];
-  var times = [];
-
-  sp.on('data', function(data) {
-    var time = new Date();
-
-    times.push(time.getTime()); //add to time array
-    //console.log(data); // log incoming data from XBee
-    message = data.split(','); //separate data
-    //console.log(message);
-
-   if(message[0]=='A'){
-
-      names.push(message[0]);
-      tempArray[0]= parseInt(message[1]);
-      countArray[0]++;
-
-     //console.log(TempArray[0]);
-   }
-
-   if(message[0]=='B'){
-
-      names.push(message[0]);
-      tempArray[1] = parseInt(message[1]);
-      countArray[1]++;
-
-   }
-
-   if(message[0]=='C'){
-
-      names.push(message[0]);
-      tempArray[2] = parseInt(message[1]);
-      countArray[2]++;
-
-   }
-
-   if(message[0]=='D'){
-
-      names.push(message[0]);
-      tempArray[3] = parseInt(message[1]);
-      countArray[3]++;
-
-   }
-
-   // get all 4 entries and sum them together after the array 
-   // of times has 4 entries 
-
-  //var timeDiff = times[times.length - 1] - times[0];
-    var error = false;
-    var count = 0;
-  
-var calc_average = function(){
-
-   
-  if (tempArray.length == 4){
-
-    var counter = 0;
-    var sum = 0;
-    //console.log("counting average...");
-
-
-      for (var i = 0; i < tempArray.length;i++){
-        sum += tempArray[i]; //add each temperature together 
-        counter++;
-      }
-    }
-
-    if (error){
-      var average = (sum/(counter - count)).toFixed(2);
-    }
-    else{
-      var average = (sum/counter).toFixed(2);
-    }
-
+  sp.on("open", function (err) {
+    if (err) 
+      return console.log('Error opening port: ', err.message);
+    console.log('open');
     
-  //console.log("Data reveived from " + names + ", and the average temperature is "+ average +"*C. ");
+    // INFO VARIABLES
+    var connectedNodes = [];
+    var buffer0;
+    var nodeInfo; 
+    var nodesArray = [[0,0,0]]; // remember that length is +1
+    var numNodes = 0;
+    
+    // Cleanup when termination signals are sent to process
+    ON_DEATH(function(signal, err) {
+      var death_msg = "Q";
+      sp.write(death_msg);
+      sp.close();   
+      console.log("\n\nSending reset signal to nodes.\n\n")
+      process.exit();
+    })
+    
+    
+    // Check for and remove old nodes
+    var CheckNodes = function() {
+      var time = new Date();  
+      var nodeCount = nodesArray.length - 1;
+      for (var i = 1; i <= numNodes; i++) {
+        var t = time.getTime();
+        var timeDiff = t - nodesArray[i][2]; 
+        if (timeDiff > 2200) {
+            // remove node's subarray
+            console.log("Removing stale node " + nodesArray[i][0])
+            nodesArray.splice(i, 1);
+            numNodes--;
+            //console.log("numNodes: " + numNodes);
+        }
+      } }
+    setInterval(function(){ CheckNodes() }, 600); 
+    // 2100+300 (check) < 2500 (avg) > 2000 (xmit)
+    // looks like these times work  
 
-      var avgString = average;
+      var CalcAverage = function() {
+      var tempSum = 0;
+      var nodeCount = nodesArray.length - 1;
+      for (var i = 1; i <= nodeCount; i++) {
+        // Make sure value in temp index is a number
+        if (!isNaN(parseFloat(nodesArray[i][1]))) {
+          tempSum += parseFloat(nodesArray[i][1]);
+        }
+      }
+      var tempAverage = tempSum / numNodes;
+      //console.log("nodeCount: " + nodeCount);
+      //console.log("tempSum: " + tempSum); 
+      if (!isNaN(tempAverage)) {
+        console.log("\nNode count: " + nodeCount + "   Average temperature: " + tempAverage.toFixed(2) + "F");
+        io.emit('chat message',tempAverage);       
+        for (var j = 1; j <= numNodes; j++) {
+          console.log("  " + ("     " + nodesArray[j][0]).slice(-7) + " : " + nodesArray[j][1] + "F")   
+        }
+      }
+      if (numNodes == 0) {
+        console.log("No nodes currently connected. Waiting for connection . . .")
+      } 
+     
+    }
+    
+    setInterval(function(){ CalcAverage() },2500); 
+    
+    
+    // listen for data, grab temp & time, populate array
+    sp.on('data', function(data) {
+      sp.flush();
+      var time = new Date();  
+      buffer0 = data.split('\n'); // array of data till newline
+      // Split again into either [#ID] or [#ID, Data] 
+      nodeInfo = buffer0[0].split('   ');
+      // Receiving good data ( ID or [ID, Data] )
+      if (nodeInfo[0][0] == "#") { // could check up here for && no temp data too 
+        
+        // New node
+        if (connectedNodes.indexOf(nodeInfo[0]) == -1) {
+          CheckNodes();
+          var dumNum = numNodes + 1;
+          console.log("\n (" + dumNum + ") NEW CONNECTION: Sending handshake confirmation to: " + nodeInfo[0])
+          connectedNodes.push(nodeInfo[0]);     
+          sp.write(nodeInfo[0]);
+        }
+        
+        // Preconnected node
+        else if (connectedNodes.indexOf(nodeInfo[0]) != -1) {
+          currentTime = time.getTime();
+          //console.log("  Connected node: " + nodeInfo[0] + "   " + nodeInfo[1]);
       
-      console.log(avgString);
-      io.emit('chat message',avgString);
-    }
+          // If node has temp data: [ID, Temp]
+          if (typeof nodeInfo[1] != 'undefined') {
+        
+            // Go through Nx3 array, see if this node ID is in nodesArray
+            var foundAtIndex;
+            for (var i = 0; i < nodesArray.length; i++)  {
+              // If found ID
+              if (nodesArray[i].indexOf(nodeInfo[0]) != -1) {
+                foundAtIndex = i;
+                break;
+              } 
+            }
+            // Push [ID, Temp, Time] to nodesArray if ID doesn't exist within it
+            if (typeof foundAtIndex === 'undefined') {
+              numNodes++;
+              //console.log("added to nodesArray") // debug print statement
+              var idTempTime = [nodeInfo[0], nodeInfo[1], currentTime]; 
+              nodesArray.push(idTempTime);
+            } 
+            // Update Temp, Time if ID already exists in nodesArray
+            else {
+              nodesArray[foundAtIndex][1] = nodeInfo[1];
+              nodesArray[foundAtIndex][2] = currentTime;
+              //console.log("  updated time/temp") // debug print statement
+            }
+          }
+        } 
+      }
+      // Bad data coming in
+      else if (nodeInfo[0][0] != "#") {
+        // FOR DEBUGGING PURPOSES, DELETE LATER
+        console.log("Corrupted node data. Push reconnect button if not already connected.")
+      }
+    // return the calulated average 
+ 
+    }); // end data
 
-  setInterval(function(){ calc_average() },2000);
-
-
-
-  /*for (var i =0; i < tempArray. length; i++){
-    console.log("Individual Sensor " + names[i] + "Value: " + tempArray[i]);
-    var individualTemp = "Individual Sensor " + names[i] + "Value: " + tempArray[i];
-    io.emit('chat message',individualTemp)
-  }*/
-
-  for (var i = 0; i < countArray.length;i++){
-    if (countArray[i]== 0 ){
-      console.log("Error Sending Data From Sensor Number " + i);
-      var errmsg = "Error Sending Data From Sensor Number " + i + "...Correcting Average";
-      count++
-      //io.emit('chat message',errmsg);
-    }
-  }
-  if (count > 0){
-    error = true;
-    console.log("Adjusting Average...");
-  }
-  });
-});
+  }); // end open
