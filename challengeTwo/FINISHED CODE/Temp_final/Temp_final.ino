@@ -2,44 +2,30 @@
 #include <math.h>
 
 /*
-
 VERY ACCURATE TEMPERATURE READINGS
 ----------------------------------
- 
 Better voltage reading:
   Used A2 pin (less jumpy)
   Got two measurements each pull, discarded the first
-
 Better R_therm reading:
   Measured V_source accurately
   measured R1 accurately
-
 Better temperature reading:
   Used accurate temperature sensor to get 3 data points
   Solved resulting system of equations for Steinhart-Hart coefficients
   Base conversion (needed base-2 instead of base-10)
   (temp slightly rising at start due to current self-heating unavoidable with thermistor)
-  
 */
-
 
 // Global variables
 int AnalogPin = A2; // has much less jumpy readings than A0 (maybe A0 slightly damage from overuse)
 float V_source = 4.90; // measured
 SoftwareSerial XBee(2,3); // RX, TX
-
 // used in main loop but need to initialize here
 String randID = "";
-int startBroadcast = 0;
 int handshake = 0;
-int pauseBroadcast = 0;
 
-
-
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Calculate thermistor voltage
 float Voltage(float RawADC) {
@@ -48,7 +34,6 @@ float Voltage(float RawADC) {
   V_therm += meter_calibration;
   return V_therm;
 }
-
 // Calculate thermistor resistance
 // sometimes a bit off what voltage divider eq says it should be (probably due to input impedance of ADC)
 float Thermistor(float V_therm) {
@@ -57,12 +42,10 @@ float Thermistor(float V_therm) {
   float R_therm =  ((R_known * V_therm) / (V_source - V_therm));
   return R_therm;
 }
-
 // Base conversion
 float log2(float num) {
   return (log(num) / log(2));
 }
-
 // Calculate temperature
 float Temperature(float R_therm) {
   float A = 0.0164872;
@@ -71,7 +54,6 @@ float Temperature(float R_therm) {
   float temp_K = 1 / (A + B*log2(R_therm) + C*pow(log2(R_therm),3));
   return temp_K;
 }
-
 // Convert to Celsius or Fahrenheit
 float ConvertTemp(float temp_K, char T) {
   if (T == 'C')  
@@ -80,10 +62,7 @@ float ConvertTemp(float temp_K, char T) {
     return (temp_K * 1.8 - 459.67);
 }
 
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Setup
 void setup() {
@@ -92,137 +71,84 @@ void setup() {
   XBee.begin(9600);
   for (int i=0; i<100; i++) 
     Serial.print("\n"); 
-}
-
-
-
-
-// MAIN LOOP
-// MAIN LOOP
-// MAIN LOOP
-void loop() {
-
-
-    
-  
-  // Generate ID, start message
-  if (startBroadcast == 0) {
-    // if analog input pin 0 is unconnected, random analog
-    // noise will cause the call to randomSeed() to generate
-    // different seed numbers each time the sketch runs.
-    // randomSeed() will then shuffle the random function.
-    randomSeed(analogRead(0));
-    long randNumber = random(1000000);
-    randID = String(randNumber);
-    randID = "#" + randID;
-    Serial.println();
-    Serial.print("Starting broadcast with identifier ");
-    Serial.println(randID);
-    startBroadcast = 1; 
-  
-  }
-  
+  // Random ID
+  handshake = 0;
+  randomSeed(analogRead(0));
+  long randNumber = random(1000000);
+  randID = String(randNumber);
+  randID = "#" + randID;
   // Broadcast ID
-  if ((!handshake) && (pauseBroadcast == 0)) {
-  // stagger delay, doesn't look like this is needed, but just incase
-  randomSeed(analogRead(1));
-  int randDelay = random(500);
-  delay(500 + randDelay); 
   Serial.print("Sending ");
-  Serial.print(randID);
-  Serial.println(" . . .");
+  Serial.println(randID);
   XBee.print(randID); // ascii text
   XBee.write("\n");  // binary data
-  delay(2000 + randDelay); 
-  }
-  
-  
+}
+
+// MAIN LOOP
+void loop() {
+  char r;
+  String incomingData;
   // Allow data reception while waiting for handshake confirmation
-  if (XBee.available() && (!handshake)) { 
-    pauseBroadcast = 1;
-    Serial.println("Data received. Checking for handshake confirmation...");
-  
-    char r;
-    String incomingData;
-    do {
-      r = XBee.read();
-      incomingData += r;   
-    } 
-    while (r != -1);
-    incomingData = incomingData.substring(0,incomingData.length() - 1);
-    // Print received data when it's finished streaming in
-    //Serial.print("incomingData: "); // DELETE LATER
-    //Serial.println(incomingData);   // DELETE LATER
-  
-    // Check data for server shutdown signal while awaiting handshake
-    for (int i=0;i<incomingData.length();i++) {
-      // Quit command received
-      if (incomingData[i] == 'Q') {
-        Serial.println();
-        Serial.println("Quit command received. Restarting broadcast momentarily . . .");
-        Serial.println();
-        startBroadcast = 0;
-        handshake = 0;
-        pauseBroadcast = 0;
-        delay(2000);
-      }
-    }
-  
-    // Proper handshake confirmation received
-    if ((incomingData == randID) && (incomingData != 'Q')){
-      Serial.println("Handshake established! Preparing to send data.");
-      Serial.println();
-      handshake = 1;
-    }
-    // Wrong handshake confirmation received (wrong node)
-    else if ((incomingData != randID) && (incomingData != 'Q')) {
-      Serial.println("Received a different nodes handshake confirmation. Continuing broadcast.");
-      pauseBroadcast = 0;
-      
-    }
-    // error checking
-    else {
-      Serial.println("Error: Bad data received -- neither Q nor ID");
-    }
-  }
-
-  // Handshake established, node is member of server's connectedNodes array
-  while (handshake) {
-
-    // Check for quit signal while connection is established
-    if (XBee.available()) { 
-      char r;
-      String incomingData;
-      do {
-        r = XBee.read();
-        incomingData += r;   
-      } 
-      while (r != -1);
+  while (!handshake) { 
+      if (XBee.available()) {
+        do {
+          r = XBee.read();
+          incomingData += r;   
+        } 
+        while (r != -1);
+    
       incomingData = incomingData.substring(0,incomingData.length() - 1);
-      // Print received data when it's finished streaming in
-      //Serial.print("incomingData: "); // DELETE LATER
-      //Serial.println(incomingData);   // DELETE LATER
+      }
     
       // Check data for server shutdown signal while awaiting handshake
       for (int i=0;i<incomingData.length();i++) {
         // Quit command received
         if (incomingData[i] == 'Q') {
           Serial.println();
-          Serial.println("Quit command received. Restarting broadcast momentarily . . .");
+          Serial.println("Quit command received: Stopping broadcast. Push reset on node to reconnect.");
           Serial.println();
-          startBroadcast = 0;
+          delay(1000);
           handshake = 0;
-          pauseBroadcast = 0;
-          delay(2000);
+          exit(0);
         }
-      } // else: Nothing -- no other incoming data matters now.  
-    }
-
-    // No incoming data
+      }    
+      // Proper handshake confirmation received
+      if (incomingData == randID) {
+        Serial.println("Handshake established! Preparing to send data.");
+        Serial.println();
+        handshake = 1;
+      }
+  }
+  // Handshake established, node is member of server's connectedNodes array
+  while (handshake) {
+  
+      // Check for quit signal while connection is established
+      if (XBee.available()) { 
+        char r;
+        String incomingData;
+        do {
+          r = XBee.read();
+          incomingData += r;   
+        } 
+        while (r != -1);
+        incomingData = incomingData.substring(0,incomingData.length() - 1);
+        // Print received data when it's finished streaming in
+        //Serial.print("incomingData: "); // DELETE LATER
+        //Serial.println(incomingData);   // DELETE LATER 
+        // Check data for server shutdown signal while awaiting handshake
+        for (int i=0;i<incomingData.length();i++) {
+          // Quit command received
+          if (incomingData[i] == 'Q') {
+            Serial.println();
+            Serial.println("Quit command received: Stopping broadcast. Push reset on node to reconnect.");
+            Serial.println();
+            handshake = 0;
+          }
+        }  
+      }       
     else {
       // ~~~~~~~~~ DATA CALCULATION AND BROADCASTING ~~~~~~~~~ 
-
-      // Only send data if server is not broadcasting (Recheck to prevent broadcast+delay while server 'Q' being sent)
+      // Only send data if server is not broadcasting
       if (!XBee.available()) {    
         // ADC and V_therm values
         // give multiplexed analog pins time to settle by discarding first reading and averaging 2nd,3rd
