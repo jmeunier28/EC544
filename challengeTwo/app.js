@@ -78,6 +78,12 @@ sp = new SerialPort.SerialPort(portName, portConfig);
 app.get('/', function(req, res){
   res.sendfile('./public/index.html');
 });
+app.get('/current', function(req,res){
+  res.sendfile('.public/Current-Reading.html');
+});
+app.get('/history',function(req,res){
+  res.sendfile('./public/Historic-View.html');
+});
 
 //can also create other html page to render
 

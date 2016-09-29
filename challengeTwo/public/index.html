@@ -1,56 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
-  </head>
-  <body style="background-color: #7f8c8f; color: #f2f2f2;">
-  <br /><br />
-    <h1 style="text-align: center;">Challeneg One: Nest</h1>
-    <br />
-    <h2 style="text-align: center;">Team 4</h2>
-    <br /><br />
-    <div style="border-radius: 150px; background: #151B54; padding: 50px; width: 500px; margin-left: auto; margin-right: auto;">
-    <h2 style="text-align: center;">Temperature: <b id="temp"> - </b>&deg; C </h2>
-    
-        <br /><br />
-        <!--<div class="center" style="text-align: center;">
-              <h3 style="text-align: center;">Sensor 1: <b id="newTemp"> - </b>&deg; C </h3>
-              <h3 style="text-align: center;">Sensor 2: <b id="newTemp"> - </b>&deg; C </h3>
-              <h3 style="text-align: center;">Sensor 3: <b id="newTemp"> - </b>&deg; C </h3>
-              <h3 style="text-align: center;">Sensor 4: <b id="newTemp"> - </b>&deg; C </h3>
-        </div>-->
-        <div class = "center" style="text-align: center;">
-          <h3 style="text-align: center;">Have a Beautiful Day Humans!!! </h3>
-      
-  </div>
-    <ul id="messages"></ul>
-    
-    <script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
-</script>
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-<script>
-  var socket = io();
-  $('form').submit(function(){
-    socket.emit('chat message', $('#m').val());
-    $('#m').val('');
-    return false;
-  });
-  socket.on('chat message', function(msg){
-    $('#temp').append($('#temp').text(msg));
-  });
-</script>
-  </body>
+	
+<head>
+
+	<title>EC544 - Challenge Two</title>
+	<link rel="stylesheet" type="text/css" href="mystyle.css">
+
+
+</head>
+
+
+<body>
+
+	<h1><b>EC544 Challenge Two</b></h1>	
+	<h2>Group 04</h2>
+	<p>Displaying current and historic views of average temperature measured using four sesnsors mounted on arduiono nodes.</p>
+	<a href="https://github.com/jmeunier28/EC544/tree/master/challengeTwo"> ***Challenge two github page***</a>
+	<br>
+	<br>
+	<br>
+	<nav>
+		<ul>
+			<li><a href="index.html">Home Page</a></li>
+			<li><a href="Current-Reading.html">Live Feed</a> </li>
+			<li><a href="Historic-View.html">Historic Graph</a> </li>
+		</ul>
+	</nav>
+
+</body>
+
+<footer>
+	KIRANVISHAL JOJO DAMI AUSTIN 
+</footer>
+
 </html>
