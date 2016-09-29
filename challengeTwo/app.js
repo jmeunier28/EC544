@@ -147,7 +147,7 @@ io.on('connection', function(socket){
       //console.log("tempSum: " + tempSum); 
       if (!isNaN(tempAverage)) {
         console.log("\nNode count: " + nodeCount + "   Average temperature: " + tempAverage.toFixed(2) + "F");
-        io.emit('chat message',tempAverage);       
+        io.emit('chat message',tempAverage.toFixed(2));       
         for (var j = 1; j <= numNodes; j++) {
           console.log("  " + ("     " + nodesArray[j][0]).slice(-7) + " : " + nodesArray[j][1] + "F")   
         }
