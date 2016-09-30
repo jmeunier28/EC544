@@ -84,13 +84,16 @@ MongoClient.connect(url, function (err, db) {
     
     console.log('Connection established to', url);
 
-    var document = {Time:"", Average_Temp:"About MongoDB"};
+    var document = {Time: datetime, Average_Temp: tempAverage};
 
-
+    //insert record
+    db.collection('challengeTwo').insert(document, function(err, records) {
+      if (err) throw err;
+      console.log("Record added as "+records[0]._id);
+   });
 
     //Close connection
-    db.close();
-  }
+    //db.close();
 });
 
 
@@ -244,5 +247,6 @@ io.on('connection', function(socket){
     // return the calulated average 
  
     }); // end data
+     db.close();
 
   }); // end open
