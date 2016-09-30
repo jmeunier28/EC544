@@ -18,9 +18,31 @@ var io = require('socket.io')(http);
 var ON_DEATH = require('death');
 
 var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/challengeTwo');
+//var monk = require('monk');
+var MongoClient = mongo.MongoClient;
+var url = 'mongodb://localhost:27017/challengeTwo';
 
+
+var datetime = new Date();
+
+/*----------- Connecting to Mongo --------------- */
+
+MongoClient.connect(url, function (err, db) {
+  if (err) {
+    console.log('Unable to connect to the mongoDB server. Error:', err);
+  } else {
+    
+    console.log('Connection established to', url);
+
+    var document = {Time: "time", Average_Temp: "tempAverage"};
+
+
+    //Close connection
+    //db.close();
+  }
+});
+
+/* ------------- Connecting to Serial Port ---------------- */
 
 var portName = '/dev/cu.usbserial-AD01SSII',
 portConfig = {
@@ -65,7 +87,7 @@ app.use(function(err, req, res, next) {
 
 /* -----Run App on LocalHost Port 3000----- */
 
-http.listen(3000, function(){
+app.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
@@ -161,6 +183,26 @@ io.on('connection', function(socket){
       if (numNodes == 0) {
         console.log("No nodes currently connected. Waiting for connection . . .")
       } 
+        MongoClient.connect(url, function (err, db) {
+          if (err) {
+            console.log('Unable to connect to the mongoDB server. Error:', err);
+          } else {
+            
+            console.log('Connection established to', url);
+
+            var document = {Time: datetime.getTime(), Average_Temp: tempAverage};
+
+            //insert record
+            db.collection('challengeTwo').insert(document, function(err, records) {
+              if (err) throw err;
+              console.log("Record added as "+records[0]._id);
+           });
+
+            //Close connection
+            //db.close();
+          }
+        });
+
      
     }
     
