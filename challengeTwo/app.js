@@ -18,9 +18,12 @@ var io = require('socket.io')(http);
 var ON_DEATH = require('death');
 
 var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/challengeTwo');
+//var monk = require('monk');
+var MongoClient = mongodb.MongoClient;
+var url = 'mongodb://localhost:27017/challengeTwo';
+//var db = monk('localhost:27017/challengeTwo');
 
+var datetime = new Date();
 
 var portName = '/dev/cu.usbserial-AD01SSII',
 portConfig = {
@@ -70,6 +73,26 @@ http.listen(3000, function(){
 });
 
 /* ------------- App Logic ------------ */
+
+
+/*-------- Connecting to Mongo ---*/
+
+MongoClient.connect(url, function (err, db) {
+  if (err) {
+    console.log('Unable to connect to the mongoDB server. Error:', err);
+  } else {
+    
+    console.log('Connection established to', url);
+
+    var document = {Time:"", Average_Temp:"About MongoDB"};
+
+
+
+    //Close connection
+    db.close();
+  }
+});
+
 
 
 var sp;
