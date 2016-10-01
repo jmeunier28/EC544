@@ -183,30 +183,31 @@ io.on('connection', function(socket){
       if (numNodes == 0) {
         console.log("No nodes currently connected. Waiting for connection . . .")
       } 
-        MongoClient.connect(url, function (err, db) {
-          if (err) {
-            console.log('Unable to connect to the mongoDB server. Error:', err);
-          } else {
-            
-            console.log('Connection established to', url);
 
-            var document = {Time: datetime.getTime(), Average_Temp: tempAverage};
+      MongoClient.connect(url, function (err, db) {
+        if (err) {
+          console.log('Unable to connect to the mongoDB server. Error:', err);
+        } else {
+          
+          console.log('Connection established to', url);
 
-            //insert record
-            db.collection('challengeTwo').insert(document, function(err, records) {
-              if (err) throw err;
-              console.log("Record added as "+records[0]._id);
-           });
+          var document = {Time: datetime.getTime(), Average_Temp: tempAverage};
 
-            //Close connection
-            //db.close();
-          }
-        });
+          //insert record
+          db.collection('challengeTwo').insert(document, function(err, records) {
+            if (err) throw err;
+            console.log("Record added as "+records[0]._id);
+         });
 
-     
+          //Close connection
+          //db.close();
+        }
+      });
+
     }
     
     setInterval(function(){ CalcAverage() },2500); 
+
     
     
     // listen for data, grab temp & time, populate array
