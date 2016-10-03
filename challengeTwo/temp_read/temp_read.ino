@@ -48,9 +48,9 @@ float log2(float num) {
 }
 // Calculate temperature
 float Temperature(float R_therm) {
-  float A = 0.0164872;
-  float B = -0.00158538;
-  float C = 0.0000033813;
+  float A = -0.000857348;
+  float B = 0.000275445;
+  float C = 0.000000234994;
   float temp_K = 1 / (A + B*log2(R_therm) + C*pow(log2(R_therm),3));
   return temp_K;
 }
