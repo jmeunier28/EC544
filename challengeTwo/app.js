@@ -17,15 +17,27 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var ON_DEATH = require('death');
 
-var mongo = require('mongodb');
-//var monk = require('monk');
-var MongoClient = mongo.MongoClient;
-var url = 'mongodb://localhost:27017/challengeTwo';
-
 
 var datetime = new Date();
 
+app.get('/', function(req, res){
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeTwo/public/index.html');
+});
+app.get('/current', function(req,res){
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeTwo/public/Current-Reading.html');
+});
+app.get('/historic',function(req,res){
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeTwo/public/Historic-View.html');
+});
+
+app.use(express.static(__dirname + '/public'));
+
 /*----------- Connecting to Mongo --------------- */
+
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var ObjectId = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/challengeTwo';
 
 MongoClient.connect(url, function (err, db) {
   if (err) {
@@ -33,8 +45,6 @@ MongoClient.connect(url, function (err, db) {
   } else {
     
     console.log('Connection established to', url);
-
-    var document = {Time: "time", Average_Temp: "tempAverage"};
 
 
     //Close connection
@@ -50,11 +60,10 @@ portConfig = {
   parser: SerialPort.parsers.readline("\n")
 };
 
-app.use(express.static(__dirname + '/public'));
 
 /* ------------ Error Handling ---------------*/
 
-// catch 404 and forward to error handler
+//catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
@@ -87,7 +96,7 @@ app.use(function(err, req, res, next) {
 
 /* -----Run App on LocalHost Port 3000----- */
 
-app.listen(3000, function(){
+http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
@@ -97,19 +106,10 @@ app.listen(3000, function(){
 var sp;
 sp = new SerialPort.SerialPort(portName, portConfig);
 
-app.get('/', function(req, res){
-  res.sendfile('./public/index.html');
-});
-app.get('/current', function(req,res){
-  res.sendfile('.public/Current-Reading.html');
-});
-app.get('/history',function(req,res){
-  res.sendfile('./public/Historic-View.html');
-});
 
 //can also create other html page to render
 
-io.on('connection', function(socket){
+/*io.on('connection', function(socket){
   console.log('a user connected');
   socket.on('disconnect', function(){
   });
@@ -117,7 +117,7 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
     sp.write(msg + "\n");
   });
-});
+});*/
 
 
   sp.on("open", function (err) {
@@ -183,7 +183,6 @@ io.on('connection', function(socket){
       if (numNodes == 0) {
         console.log("No nodes currently connected. Waiting for connection . . .")
       } 
-
       MongoClient.connect(url, function (err, db) {
         if (err) {
           console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -191,12 +190,13 @@ io.on('connection', function(socket){
           
           console.log('Connection established to', url);
 
-          var document = {Time: datetime.getTime(), Average_Temp: tempAverage};
+          var document = {"Time": (new Date().getTime() - datetime.getTime()) / 1000, "Temp": tempAverage};
 
           //insert record
           db.collection('challengeTwo').insert(document, function(err, records) {
             if (err) throw err;
-            console.log("Record added as "+records[0]._id);
+            //console.log("Record added as "+records[0]._id);
+            console.log("Insert Avg Temp into challengeTwo collection");
          });
 
           //Close connection
@@ -206,9 +206,107 @@ io.on('connection', function(socket){
 
     }
     
-    setInterval(function(){ CalcAverage() },2500); 
+    setInterval(function(){ CalcAverage() },2500);
+ 
 
+    //var data = {"Temp": tempAvg, "Time": datetime.getTime()};
+
+io.on("connection",function(socket){
+  
+  console.log('a user connected');
+  
+  socket.on('buttonPress',function(string){
     
+    console.log("button pressed drawing graph..");
+  MongoClient.connect(url,function(err,db){
+      //console.log("made mongo conn");
+      var str = null;
+      var cursor =db.collection('challengeTwo').find({});
+      cursor.each(function(err, doc) { //get each data point in DB
+          assert.equal(err, null);
+          if (doc != null) {
+            
+             str= [doc.Time, doc.Temp];
+             console.log("not null" + str);
+            socket.broadcast.emit('msg',str);
+              socket.emit('msg',str);
+
+          } else {
+            console.log(str);
+            str = null;
+            //socket.emit('msg',str);
+            console.log("null" + str);
+               
+             //callback();
+          }
+
+        }); 
+
+      }); //end mongo client
+
+  }); //end socket.on
+});// end io.on
+
+
+    /*var insertDocument = function(db, callback) {
+       db.collection('challengeTwo').insert(data, function(err, result) {
+        assert.equal(err, null);
+        console.log("Inserted a document.");
+        callback(result);
+      });
+    };
+
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      console.log("Connected correctly to server.");
+      insertDocument(db, function() {
+        db.close();
+      });
+    });
+
+
+    io.on("connection",function(socket){
+
+    socket.on("Select_sensor", function(select_sensor){
+      var a = select_sensor;//console.log(select_sensor);
+    });
+
+    socket.on("Start",function(starttime){
+       console.log(starttime);
+    });
+
+    socket.on("End",function(endtime){
+      console.log(endtime);
+    });
+
+    socket.on("buttonPress", function(string){ 
+
+      var findDocuments = function(db, callback) {
+ 
+      var cursor =db.collection('sensor').find();
+
+       cursor.each(function(err, doc) {
+          assert.equal(err, null);
+          if (doc != null) {
+             //console.log(doc.temperature);
+             str=str+doc.Time+ "," + doc.Temp+"\n";
+
+          } else {
+             socket.emit("msg",str);
+             callback();
+          }
+       });
+
+
+    };
+  });
+});
+    MongoClient.connect(url, function(err, db) {
+      assert.equal(null, err);
+      findDocuments(db, function() {
+          db.close();
+      });
+    });*/
     
     // listen for data, grab temp & time, populate array
     sp.on('data', function(data) {
@@ -272,3 +370,5 @@ io.on('connection', function(socket){
     }); // end data
 
   }); // end open
+
+//db.close(); //close connection 
