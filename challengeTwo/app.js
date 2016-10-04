@@ -109,17 +109,6 @@ sp = new SerialPort.SerialPort(portName, portConfig);
 
 //can also create other html page to render
 
-/*io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-  });
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-    sp.write(msg + "\n");
-  });
-});*/
-
-
   sp.on("open", function (err) {
     if (err) 
       return console.log('Error opening port: ', err.message);
@@ -247,66 +236,6 @@ io.on("connection",function(socket){
   }); //end socket.on
 });// end io.on
 
-
-    /*var insertDocument = function(db, callback) {
-       db.collection('challengeTwo').insert(data, function(err, result) {
-        assert.equal(err, null);
-        console.log("Inserted a document.");
-        callback(result);
-      });
-    };
-
-    MongoClient.connect(url, function(err, db) {
-      assert.equal(null, err);
-      console.log("Connected correctly to server.");
-      insertDocument(db, function() {
-        db.close();
-      });
-    });
-
-
-    io.on("connection",function(socket){
-
-    socket.on("Select_sensor", function(select_sensor){
-      var a = select_sensor;//console.log(select_sensor);
-    });
-
-    socket.on("Start",function(starttime){
-       console.log(starttime);
-    });
-
-    socket.on("End",function(endtime){
-      console.log(endtime);
-    });
-
-    socket.on("buttonPress", function(string){ 
-
-      var findDocuments = function(db, callback) {
- 
-      var cursor =db.collection('sensor').find();
-
-       cursor.each(function(err, doc) {
-          assert.equal(err, null);
-          if (doc != null) {
-             //console.log(doc.temperature);
-             str=str+doc.Time+ "," + doc.Temp+"\n";
-
-          } else {
-             socket.emit("msg",str);
-             callback();
-          }
-       });
-
-
-    };
-  });
-});
-    MongoClient.connect(url, function(err, db) {
-      assert.equal(null, err);
-      findDocuments(db, function() {
-          db.close();
-      });
-    });*/
     
     // listen for data, grab temp & time, populate array
     sp.on('data', function(data) {
