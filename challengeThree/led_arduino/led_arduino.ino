@@ -1,14 +1,12 @@
 #include <SoftwareSerial.h>
 
-// Global variables
-int AnalogPin = A2; // has much less jumpy readings than A0 (maybe A0 slightly damage from overuse)
 int ledPin = 13;
 SoftwareSerial XBee(2,3); // RX, TX
 
 // Setup
 void setup() {
   Serial.begin(9600);
-  pinMode(AnalogPin, INPUT);
+  pinMode(ledPin, OUTPUT);
   XBee.begin(9600);
   for (int i=0; i<100; i++) 
     Serial.print("\n"); 
