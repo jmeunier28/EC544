@@ -1,0 +1,56 @@
+Update pi
+enable remote access to router
+generate public encryption key and add to router
+added diffie-hellman-group1-sha1 crytography protocol to /etc/ssh/ssh_config (on laptop- off by default)
+(tried to do without security, but both above steps seem to be required- just times out otherwise)
+can now http or ssh to router (hop #1)
+	web: http://<outgoing_ip>:8080
+	ssh: ssh root@<outgoing_ip> -p 2222
+create noip hostname
+configure noip service on website
+configure noip settings in router ddns config
+install & configure noip client on pi
+add noip2 to /etc/rc.local
+add dhcp reservation for pi on router
+add port forwarding to pi on router (port 3000)
+Trying to do 2nd ssh hop from router -> Pi:
+	"Error: no matching algo kex"
+	This means that I'd have to add diffie-hellman to the router's ssh because
+	openssh on the pi-side uses it, but the problem is the routers file-
+	system is read-only. So rather than edit the firmware and reflash it to the
+	router I decided to just use telnet to make the 2nd hop.
+install telnet on pi
+test telnet from Pi to router:
+$ telnet 192.168.1.1 user: root pw: admin  (working)
+telnet from router to pi:
+	telnet 192.168.1.134 (SUCCESS)
+export TERM=xterm
+
+
+full commands to turn LED on from a mac connected to 802.1x WiFi:
+0- First time setup for each laptop: have to generate and pair public key + add missing crypt settings
+	ssh-keygen -t rsa
+	enter (no passphrase)
+	enter
+	copy /etc/ssh/id_rsa.pub
+	add to router remote admin ssh daemon public keys
+	reboot router
+	concat:
+	 KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nist$
+	to /etc/ssh/ssh_config on mac (as sudo)
+1- ssh root@grp4router.ddns.net -p 2222
+2- telnet 192.168.1.134
+3- cd ~/Desktop/code_challenge3
+4- node led.js : send on signal to arduino
+5- ctrl+C (or quit): send off signal to arduino
+
+
+
+
+~ Can turn led on Arduino on/off with my laptop or my phone connected to any network.
+
+
+
+Didn't really read the challenge requirements yet so hopefully I did what I was supposed to
+
+
