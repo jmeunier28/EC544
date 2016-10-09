@@ -1,3 +1,4 @@
+
 Update pi
 enable remote access to router
 generate public encryption key and add to router
@@ -12,7 +13,26 @@ configure noip settings in router ddns config
 install & configure noip client on pi
 add noip2 to /etc/rc.local
 add dhcp reservation for pi on router
-add port forwarding to pi on router (port 3000)
+
+
+
+____________________________________________________________________________________
+
+EDIT:
+ 
+Got direct ssh from remote computer to pi without having to do two hops (to router first) using open-ssh server. 
+(sudo apt-get install openssh-server openssh-client)
+Set up port forwarding from port 5555 to port 22
+
+Tested by disconnecting my laptop from the BU network and connecting it to my phone's WiFi hotspot.
+
+
+ssh pi@grp4router.ddns.net -p 5555
+password: pw
+node led.js
+
+
+____________________________________________________________________________________
 Trying to do 2nd ssh hop from router -> Pi:
 	"Error: no matching algo kex"
 	This means that I'd have to add diffie-hellman to the router's ssh because
@@ -25,7 +45,6 @@ $ telnet 192.168.1.1 user: root pw: admin  (working)
 telnet from router to pi:
 	telnet 192.168.1.134 (SUCCESS)
 export TERM=xterm
-
 
 full commands to turn LED on from a mac connected to 802.1x WiFi:
 0- First time setup for each laptop: have to generate and pair public key + add missing crypt settings
@@ -44,13 +63,7 @@ full commands to turn LED on from a mac connected to 802.1x WiFi:
 4- node led.js : send on signal to arduino
 5- ctrl+C (or quit): send off signal to arduino
 
+Can turn led on Arduino on/off with my laptop or my phone connected to any network.
 
-
-
-~ Can turn led on Arduino on/off with my laptop or my phone connected to any network.
-
-
-
-Didn't really read the challenge requirements yet so hopefully I did what I was supposed to
 
 
