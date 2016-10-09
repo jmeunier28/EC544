@@ -16,8 +16,16 @@ sp.on("open", function (err) {
 	// Turn on
 	console.log("Sending LED on signal.");
 	console.log("Ctrl+C to quit and send LED off signal.");
-	sp.write('1');
 	
+	if (process.argv[2] == "r") 
+		sp.write('1');	
+	else if (process.argv[2] == "g") 
+		sp.write('2');
+	else if (process.argv[2] == "b") 
+		sp.write('3');
+	else // default red
+		sp.write('1');
+		
 	// Turn off on program exit
 	ON_DEATH(function(signal, err) {
 		var death_msg = 'Q';
