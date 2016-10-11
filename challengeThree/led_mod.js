@@ -88,22 +88,30 @@ sp.on("open", function (err) {
 	  
 	  socket.on('redbuttonPress',function(string){
 	  		console.log("Red Button Press");
+	  		var str = "You Turned ON The Red LED";
+	  		socket.emit('msg', str);
 			sp.write('1'); //red button pressed write 1 
 			}); //end red
 
 	  socket.on('greenbuttonPress',function(string){
 	  		console.log("Green Button Press");
+	  		var str = "You Turned ON The Green LED";
+	  		socket.emit('msg', str);
 			sp.write('2'); //green button pressed write 1 
 			}); // end green
 
 	  socket.on('bluebuttonPress',function(string){
 	  		console.log("Blue Button Press");
+	  		var str = "You Turned ON The Blue LED";
+	  		socket.emit('msg', str);
 			sp.write('3'); //blue button pressed write 1 
 			}); // end blue
 
 
 	  socket.on('killbuttonPress',function(string){
 	  		console.log("Kill Button Press");
+	  		var str = "You Turned Off The LED";
+	  		socket.emit('msg', str);
 			// Turn off on program exit
 			ON_DEATH(function(signal, err) {
 				var death_msg = 'Q';

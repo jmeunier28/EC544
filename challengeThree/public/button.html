@@ -15,6 +15,9 @@
 		<button id = "greenButton" type="button" >Green LED ON</button>
 		<button id = "blueButton" type="button">Blue LED ON</button>
 		<button id = "killButton" type="button">Turn OFF LEDs</button>
+		<br>
+		<br>
+		<label id="label"></label>
 		<style type="text/css"></style>
 		
 	</body>
@@ -45,6 +48,10 @@
 			  socket.emit('killbuttonPress',string);
 			  
 			});
+		socket.on('msg', function(msg){
+			$('#label').append($('#label').text(msg));
+		});
+
 
 	</script>
 
