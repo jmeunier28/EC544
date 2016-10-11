@@ -29,7 +29,8 @@ Tested by disconnecting my laptop from the BU network and connecting it to my ph
 
 ssh pi@grp4router.ddns.net -p 5555
 password: pw
-node led.js
+cd ~/EC544/challengeThree
+node led_mod.js
 
 
 ____________________________________________________________________________________
