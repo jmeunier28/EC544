@@ -1,9 +1,9 @@
 {
-  "name": "challengeTwo",
+  "name": "challengeThree",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node led_mod.js"
   },
   "dependencies": {
     "express": "~4.13.4",
