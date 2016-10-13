@@ -29,8 +29,8 @@ void loop() {
   char r;
       if (XBee.available()) {
          r = XBee.read();
-        XBee.print("Listening...");
-        XBee.write("\n"); 
+        //XBee.print("Listening...");
+        //XBee.write("\n"); 
       }
         if (r == 'Q') {
           Serial.println(r);
@@ -40,7 +40,7 @@ void loop() {
           digitalWrite(greenLED, LOW);
           digitalWrite(blueLED, LOW);
           Serial.println();
-          XBee.print("LEDs are OFF");
+          XBee.print("F");
           XBee.write("\n");
         }
        if (r == '1') {
@@ -52,7 +52,7 @@ void loop() {
           digitalWrite(greenLED, LOW);
           digitalWrite(blueLED, LOW);
           Serial.println();
-          XBee.print("Red is ON");
+          XBee.print("R");
           XBee.write("\n");
         }   
         else if (r == '2') {
@@ -63,7 +63,7 @@ void loop() {
           digitalWrite(redLED, LOW);
           digitalWrite(blueLED, LOW);
           Serial.println(); 
-          XBee.print("Green is ON");
+          XBee.print("G");
           XBee.write("\n"); 
         }
         else if (r == '3') {
@@ -74,7 +74,7 @@ void loop() {
           digitalWrite(greenLED, LOW);
           digitalWrite(redLED, LOW);
           Serial.println(); 
-          XBee.print("Blue is ON");
+          XBee.print("B");
           XBee.write("\n"); 
         }       
-} 
+}
