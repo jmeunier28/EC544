@@ -77,18 +77,18 @@ var sp;
 sp = new SerialPort.SerialPort(portName, portConfig);
 sp.on("open", function (err) {	
 	var buffer;
-	str = "Connection Error Cant Read LED Status";
-	var red = false;
-	var blue = false;
-	var green = false;
-	var kill = false;
+	str = "";
+	red = false;
+	blue = false;
+	green = false;
+	kill = false;
 
 	// Turn on
 	console.log("Sending LED on signal.");
 	console.log("Ctrl+C to quit and send LED off signal.");
 
 
-		sp.on('data',function(data){ //grab data from XBee 
+		/*sp.on('data',function(data){ //grab data from XBee 
 			buffer = String(data).split('\n');
 			//console.log(buffer[0]);
 			if (buffer[0] === "Red is ON"){
@@ -120,39 +120,40 @@ sp.on("open", function (err) {
 				str = buffer[0];
 			}
 
-		}); //end data conn
+		}); //end data conn*/
 
 		io.on("connection",function(socket){
 		
 	  
 		console.log('a user connected');
 
+
 		  socket.on('redbuttonPress',function(string){
 		  		console.log("Red Button Press");
-		  		var str = "Red is ON";
-		  		socket.emit('msg', str);
+		  		//var str = "Red is ON";
+		  		//socket.emit('msg', str);
 				sp.write('1'); //red button pressed write 1 
 				}); //end red
 
 		  socket.on('greenbuttonPress',function(string){
 		  		console.log("Green Button Press");
-		  		var str = "Green is ON";
-		  		socket.emit('msg', str);
+		  		//var str = "Green is ON";
+		  		//socket.emit('msg', str);
 				sp.write('2'); //green button pressed write 1 
 				}); // end green
 
 		  socket.on('bluebuttonPress',function(string){
 		  		console.log("Blue Button Press");
-		  		var str = "Blue is ON";
-		  		socket.emit('msg', str);
+		  		//var str = "Blue is ON";
+		  		//socket.emit('msg', str);
 				sp.write('3'); //blue button pressed write 1 
 				}); // end blue
 
 
 		  socket.on('killbuttonPress',function(string){
 		  		console.log("Kill Button Press");
-		  		var str = "LED is OFF";
-		  		socket.emit('msg', str);
+		  		//var str = "LED is OFF";
+		  		//socket.emit('msg', str);
 		  		sp.write('Q');
 				// Turn off on program exit
 				/*ON_DEATH(function(signal, err) {
@@ -163,6 +164,64 @@ sp.on("open", function (err) {
 					process.exit();
 				}); //end ondeath */
 			}); // end kill button
+
+		sp.on('data',function(data){ //grab data from XBee 
+			buffer = String(data).split('\n');
+			console.log(buffer[0]);
+			if (buffer[0] === "R"){
+				red = true;
+				blue = false;
+				green = false;
+				kill = false;
+				str = "Red is ON";
+			}
+			if (buffer[0] === "G"){
+				green = true;
+				blue = false;
+				red = false;
+				kill = false;
+				str = "Green is ON";
+			}
+			if (buffer[0] === "B"){
+				blue = true;
+				red = false;
+				green = false;
+				kill = false;
+				str = "Blue is ON";
+			}
+			if (buffer[0] === "F"){
+				kill = true;
+				red = false;
+				green = false;
+				blue = false;
+				str = "LEDs are OFF";
+			}
+			
+		if(red){
+  			str = "Red is ON";
+  		}
+  		else if(green){
+  			str = "Green is ON";
+  		}
+  		else if(blue){
+  			str = "Blue is ON";
+  		}
+  		else if(kill){
+  			str = "LEDs are OFF"
+  		}
+  		else{
+  			str = "Connection Error Cant Read LED Status";
+  		}
+
+  		socket.emit('msg', str);
+
+		}); //end data conn
+
+
+
+
+
+		
 			
 	}); //end io conn
 }); // end open serial port
