@@ -77,6 +77,8 @@ var sp;
 sp = new SerialPort.SerialPort(portName, portConfig);
 sp.on("open", function (err) {	
 	var buffer;
+	var num = 0;
+	var count = 0;
 	str = "";
 	red = false;
 	blue = false;
@@ -130,31 +132,59 @@ sp.on("open", function (err) {
 
 		  socket.on('redbuttonPress',function(string){
 		  		console.log("Red Button Press");
+		  		count +=1;
 		  		//var str = "Red is ON";
 		  		//socket.emit('msg', str);
 				sp.write('1'); //red button pressed write 1 
+				console.log(num);
+				console.log(count);
+				if (num != count){
+					str = "Connection Error Cant Read LED Status";
+					socket.emit('msg', str);
+				}
 				}); //end red
 
 		  socket.on('greenbuttonPress',function(string){
 		  		console.log("Green Button Press");
+		  		count +=1;
 		  		//var str = "Green is ON";
 		  		//socket.emit('msg', str);
 				sp.write('2'); //green button pressed write 1 
+				console.log(num);
+				console.log(count);
+				if (num != count){
+					str = "Connection Error Cant Read LED Status";
+					socket.emit('msg', str);
+				}
 				}); // end green
 
 		  socket.on('bluebuttonPress',function(string){
 		  		console.log("Blue Button Press");
+		  		count +=1;
 		  		//var str = "Blue is ON";
 		  		//socket.emit('msg', str);
 				sp.write('3'); //blue button pressed write 1 
+				console.log(num);
+				console.log(count);
+				if (num != count){
+					str = "Connection Error Cant Read LED Status";
+					socket.emit('msg', str);
+				}
 				}); // end blue
 
 
 		  socket.on('killbuttonPress',function(string){
 		  		console.log("Kill Button Press");
+		  		count +=1;
 		  		//var str = "LED is OFF";
 		  		//socket.emit('msg', str);
 		  		sp.write('Q');
+				console.log(num);
+				console.log(count);
+				if (num != count){
+					str = "Connection Error Cant Read LED Status";
+					socket.emit('msg', str);
+				}
 				// Turn off on program exit
 				/*ON_DEATH(function(signal, err) {
 					var death_msg = 'Q';
@@ -167,6 +197,7 @@ sp.on("open", function (err) {
 
 		sp.on('data',function(data){ //grab data from XBee 
 			buffer = String(data).split('\n');
+			var num = 0;
 			console.log(buffer[0]);
 			if (buffer[0] === "R"){
 				red = true;
@@ -196,7 +227,7 @@ sp.on("open", function (err) {
 				blue = false;
 				str = "LEDs are OFF";
 			}
-			
+
 		if(red){
   			str = "Red is ON";
   		}
@@ -212,13 +243,11 @@ sp.on("open", function (err) {
   		else{
   			str = "Connection Error Cant Read LED Status";
   		}
+  		num +=1;
 
   		socket.emit('msg', str);
 
 		}); //end data conn
-
-
-
 
 
 		
