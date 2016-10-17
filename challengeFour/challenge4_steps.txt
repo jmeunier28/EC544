@@ -1,0 +1,29 @@
+ssh pi@grp4router.ddns.net -p 5555
+password: pw
+cd ~/EC544/challengeFour
+
+
+
+No users exist, you should create some users!
+-------
+connect.multipart() will be removed in connect 3.0
+visit https://github.com/senchalabs/connect/wiki/Connect-3.0 for alternatives
+connect.limit() will be removed in connect 3.0
+Starting server, listening on 8080
+static class init!
+core keys directory didn't exist, creating... /home/pi/EC544/challengeFour/spark-server/core_keys
+Creating NEW server key
+Loading server key from default_key.pem
+set server key
+server public key is:  -----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsZ122TvRytYgtW79PcVj
+2qlXhJ3W3sZNICqg9P+t0fr9TB0oUji72n56pN6RFy0JdCjBWpmz8IqK+fVUtw/k
+1qw0/cYOWz+QY0jK+iFpHCY+noAEVZmuK+7Cu+ZTmxLZ5Yj+O1DjmBRwG60tj8xq
+mKGw5plrNJ56c7utUYzPyCn3DRG1l2yeTjMIRAAvEP5LbSyZyJgkfcFoM6Or9EVy
+3ZLUbjQOhbcu7L4QWourRjITWBEw49KLFDK9Q0uGznoQm11xv/6bQCJPPqhSeiZx
+dPRgLctfqMOljI/r3/GRkEI97IAPSvj4A4crps/bbHsJab1MAD7HK5V0D1/gFkLP
+3QIDAQAB
+-----END PUBLIC KEY-----
+
+Your server IP address is: 192.168.1.134
+server started { host: 'localhost', port: 5683 }
