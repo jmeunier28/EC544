@@ -5,7 +5,7 @@
 VERY ACCURATE TEMPERATURE READINGS
 ----------------------------------
 Better voltage reading:
-  Used A2 pin (less jumpy)
+  Used A4 pin (less jumpy)
   Got two measurements each pull, discarded the first
 Better R_therm reading:
   Measured V_source accurately
@@ -20,17 +20,15 @@ Better temperature reading:
 // Global variables
 int AnalogPin = A4; // has much less jumpy readings than A0 (maybe A0 slightly damage from overuse)
 float V_source = 4.90; // measured
-//SoftwareSerial XBee(2,3); // RX, TX
-// used in main loop but need to initialize here
-String randID = "";
-int handshake = 0;
+//String randID = "";
+//int handshake = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Calculate thermistor voltage
 float Voltage(float RawADC) {
   float meter_calibration = 0; // don't seem to need, matches my multimeter exactly
-  float V_therm = (V_source * RawADC) / 4096.0;
+  float V_therm = (V_source * RawADC) / 4100.0;
   V_therm += meter_calibration;
   return V_therm;
 }
@@ -66,23 +64,27 @@ float ConvertTemp(float temp_K, char T) {
 
 // Setup
 void setup() {
-  //Serial.begin(9600);
- // pinMode(AnalogPin, INPUT);
-  //XBee.begin(9600);
-  //for (int i=0; i<100; i++) 
-//    Serial.print("\n"); 
-  // Random ID
- // handshake = 0;
- // randomSeed(analogRead(0));
-  //long randNumber = random(1000000);
-  //randID = String(randNumber);
-  //randID = "#" + randID;
-  // Broadcast ID
-  //Serial.print("Sending ");
-  //Serial.println(randID);
-  //XBee.print(randID); // ascii text
-  //XBee.write("\n");  // binary data
+
+ Particle.function("temps",toggleTemp);
 }
+
+
+int toggleTemp(String command) {
+
+    if (command=="on") {
+        digitalWrite(AnalogPin,HIGH);
+        return 1;
+    }
+    else if (command=="off") {
+        digitalWrite(AnalogPin,LOW);
+        return 0;
+    }
+    else {
+        return -1;
+    }
+
+}
+
 
 // MAIN LOOP
 void loop()
@@ -94,9 +96,9 @@ void loop()
     float temp_C = ConvertTemp(temp_K, 'C');
     float temp_F = ConvertTemp(temp_K, 'F');
     //Spark.publish("VOLTAGE", String(V_therm));
-    Spark.publish("Raw_ADC", String(RawADC));
-    Spark.publish("R_Therm", String(R_therm));
-    //Spark.publish("Kelvin", String(temp_K) );
+    //Spark.publish("Raw_ADC", String(RawADC));
+    //Spark.publish("R_Therm", String(R_therm));
+    Spark.publish("Kelvin", String(temp_K) );
     //Spark.publish("Temperature (°C)", String(temp_C) + " °C");  // return degrees C
     Spark.publish("Temperature (°F)", String(temp_F) + " °F");   // return degrees F
  //thermister_temp(analogRead(4));
