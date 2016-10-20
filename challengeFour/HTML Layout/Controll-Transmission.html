@@ -4,33 +4,23 @@
     <title> Toggler Page</title>
     <center>
     <h3>The toggle options for different nodes </h3>
+    <link rel="stylesheet" type="text/css" href="mystylex.css">
     </center>
   </head>
   <body>
   
+  <nav>
+      <a href="index.html">Home Page</a> |
+      <a href="Controll-Transmission.html">Control-Transmission</a> | 
+      <a href="Current-Reading.html">Live Feed</a> | 
+      <a href="Historic-View.html">Historic Graph</a> |
+      <a href="Annoyingcat.html">Click It - I dare you!!!</a>
+  </nav>
+
   <center>
-  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/172815/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line"></iframe>
 
-  <!---
-  <script type="text/javascript" src = "http://www.google.com/uds/modules/gviz/gviz-api.js"></script>
-  <div id="textDiv"></div>
-  <script type="text/javascript">
-    var token = "88b141e21247beccd05c9688f98f11101a898eec" ; // from result of particle.login
-  var devicesPr = particle.listDevices({ auth: token });
 
-  devicesPr.then(
-  function(devices){
-     var div = document.getElementById("textDiv");
-     div.textContent = "my text";
-    var text = div.textContent;
-    console.log('Devices: ', devices);
-  },
-  function(err) {
-    console.log('List devices call failed: ', err);
-  }
-);
-  </script>
-  -->
+
   <br>
   <br>
   <form action="https://api.particle.io/v1/devices/Grp4_Green/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
