@@ -1,2 +1,1 @@
-# EC544
-Repository for EC544 Group 4 Assignments
+Repo for EC544 group 4 challenges
