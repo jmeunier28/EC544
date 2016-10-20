@@ -47,7 +47,7 @@ var devCount = 0;
 
 function getFormattedDate() {
     var date = new Date();
-    var str = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var str = date.getFullYear() + ":" + (date.getMonth() + 1) + ":" + date.getDate() + ":" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     return str;
 }
 
@@ -98,7 +98,7 @@ ON_DEATH(function(signal, err) {
         //sp.write(death_msg);
         //sp.close();   
         console.log("\n\nSending reset signal to nodes.\n\n")
-        //process.exit();
+        process.exit();
     })
     /*----------- Connecting to Mongo --------------- */
 
@@ -159,15 +159,19 @@ var getDevs = particle.listDevices({
                                 db.collection('ch4_Temps').insert({
                                     "Dev_ID": pho_ID,
                                     "Time": getFormattedDate(),
+                                    "ISO_Date": new Date(),
+                                    // "hour": getFormattedDate().split(':')[0],
+                                    // "min": getFormattedDate().split(':')[1],
+                                    // "sec": getFormattedDate().split(':')[2],
                                     "Temp": numTemp
                                 }, function(err, records) {
-                                    if (err) console.log(); // err;
+                                    if (err) console.log("dups"); // err;
 
                                     // console.log(pho_ID, ": inserted into collection");
                                 });
 
                                 calAvg(db, function() {
-                                    //db.close();
+                                    db.close();
                                 });
                             }
                         });
@@ -194,7 +198,8 @@ var calAvg = function(db, callback) {
             _id: "$Time",
             avgTemp: {
                 $avg: "$Temp"
-            }
+            },
+            //iso: new Date(),
         }
     }, {
         $out: "AverageTemp"

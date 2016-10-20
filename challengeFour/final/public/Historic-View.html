@@ -22,8 +22,8 @@
 		<style type="text/css"></style>
 
 		<div id="chartContainer" style="height: 300px; width: 100%;">
-			Total Event : <input id="eventCount" type="text" value="0" readonly>   
-			Event Trigger : <input id="triggerLog" type="text" value="so far no events" readonly />
+			<!--Total Event : <input id="eventCount" type="text" value="0" readonly>   
+			Event Trigger : <input id="triggerLog" type="text" value="so far no events" readonly />-->
 	  </div>
 
 
@@ -52,11 +52,9 @@
 		var data = [];
 		var dataSeries = { type: "line" };
 		var dataPoints = [];
+		var lala;
 		socket.on('msg', function(newString){
 
-	    dataPoints.push({x:parseInt(newString[0]),y:newString[1]});
-	    dataSeries.dataPoints = dataPoints;
-     	data.push(dataSeries);
 		var chart = new CanvasJS.Chart("chartContainer", {
 			
 			zoomEnabled: true,
@@ -92,10 +90,22 @@
 				dataPoints: dataPoints,
 				}]
 			});
-			if (dataPoints.length > 15){
+		var update = function() {
+
+			var data = newString[0].split(':');
+			
+		    dataPoints.push({x:new Date(data[0],data[1],data[2], data[3],data[4],data[5]),y:newString[1],});//data[0],data[1],data[2]),y:newString[1],});
+		    dataSeries.dataPoints = dataPoints;
+	     	//data.push(dataSeries);
+	     	chart.render();
+			
+		}
+
+		setInterval(function(){update()},1000);
+
+			if (dataPoints.length > 100){
 				dataPoints.shift();
 			}
-			chart.render();
 		    	
 		  	});
 		
