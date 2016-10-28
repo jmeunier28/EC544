@@ -12,9 +12,7 @@ const int pwPin2 = 8;
 long pulse, inches, cm;
 long pulse2;
 long avg;
-
-
-
+const int stopPin = 1;
 
 void setup()
 
@@ -34,14 +32,10 @@ void loop()
 
   pinMode(pwPin, INPUT);
   pinMode(pwPin2, INPUT);
-
-
-
-  //Used to read in the pulse that is being sent by the MaxSonar device.
+  pinMode(stopPin, OUTPUT);
+  digitalWrite(stopPin, LOW);
 
   //Pulse Width representation with a scale factor of 147 uS per Inch.
-
-
 
   pulse = pulseIn(pwPin, HIGH);
   pulse2 = pulseIn(pwPin2, HIGH);
@@ -56,18 +50,16 @@ void loop()
     
   }*/
   
-  
-
   //change inches to centimetres
   
-    avg = (pulse + pulse2)/2;
-    inches = avg / 147;
-    cm = inches * 2.54;
+  avg = (pulse + pulse2)/2;
+  inches = avg / 147;
+  cm = inches * 2.54;
     
-
-  Serial.print(inches);
-
-  Serial.print("in, ");
+    if (cm <= 20){
+      digitalWrite(stopPin, HIGH);
+      Serial.println("STOP CAR!!");
+    }
 
   Serial.print(cm);
 
@@ -75,8 +67,7 @@ void loop()
 
   Serial.println();
 
-
  delay(50);
-  //delay(500);
+ //delay(500);
 
 }
