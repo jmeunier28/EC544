@@ -3,12 +3,15 @@
 //This variable is a constant because the pin will not change throughout execution of this code.
 
 const int pwPin = 7;
+const int pwPin2 = 8;
 
 
 
 //variables needed to store values
 
 long pulse, inches, cm;
+long pulse2;
+long avg;
 
 
 
@@ -30,6 +33,7 @@ void loop()
 {
 
   pinMode(pwPin, INPUT);
+  pinMode(pwPin2, INPUT);
 
 
 
@@ -40,16 +44,26 @@ void loop()
 
 
   pulse = pulseIn(pwPin, HIGH);
+  pulse2 = pulseIn(pwPin2, HIGH);
 
   //147uS per inch
-
-  inches = pulse / 147;
+  /*for (int i = 0; i<5; i++){
+    
+    avg = (pulse + pulse2)/2;
+    inches = avg / 147;
+    cm = inches * 2.54;
+    delay(50);
+    
+  }*/
+  
+  
 
   //change inches to centimetres
-
-  cm = inches * 2.54;
-
-
+  
+    avg = (pulse + pulse2)/2;
+    inches = avg / 147;
+    cm = inches * 2.54;
+    
 
   Serial.print(inches);
 
@@ -62,7 +76,7 @@ void loop()
   Serial.println();
 
 
-
-  delay(500);
+ delay(50);
+  //delay(500);
 
 }
