@@ -1,6 +1,8 @@
 
 #include <PID_v1.h>
 #include <Servo.h>
+#include <SoftwareSerial.h>
+#include <math.h>
 
 
 
@@ -25,6 +27,9 @@ long ultra, inches, cm;
 long avg;
 const int stopPin = 1;
 
+//XBee comms
+SoftwareSerial XBee(2,3); // RX, TX
+
 
 
 //Define Variables we'll be connecting to PID control
@@ -44,6 +49,8 @@ void setup()
 {
   
   Serial.begin(9600); // Start serial communications
+  XBee.begin(9600); // Start XBee communications
+  
   // LIDAR left
   pinMode(2, OUTPUT); // Set pin 2 as trigger pin
   pinMode(3, INPUT); // Set pin 3 as monitor pin
@@ -117,36 +124,55 @@ void oscillate(){
 
 void loop()
 {
-
-
-
-
   // LIDAR
   pulse_width_left = pulseIn(3, HIGH); // Count how long the pulse is high in microseconds
   pulse_width_right = pulseIn(9, HIGH);
-  if(pulse_width_left != 0){ // If we get a reading that isn't zero, let's print it
+  
+  if(pulse_width_left != 0)
+  { // If we get a reading that isn't zero, let's print it
+  
       pulse_width_left = pulse_width_left/10; // 10usec = 1 cm of distance for LIDAR-Lite
       Serial.print("Left LIDAR: ");
       Serial.println(pulse_width_left); // Print the distance
-  }  
-  else{ // We read a zero which means we're locking up. 
+      
+      XBee.print("l, " + String(pulse_width_left)); // send values 
+      XBee.write("\n"); // binary data
+  }
+  
+  else
+  { // We read a zero which means we're locking up. 
+  
     digitalWrite(4,LOW); // Turn off the sensor
     delay(1);// Wait 1ms
     digitalWrite(4,HIGH); //Turn on te sensor
     delay(1);//Wait 1ms for it to turn on.
+    
   }
+  
   delay(1); //Delay so we don't overload the serial port
-  if(pulse_width_right != 0){ // If we get a reading that isn't zero, let's print it
+  
+  if(pulse_width_right != 0)
+  { // If we get a reading that isn't zero, let's print it
+  
         pulse_width_right = pulse_width_right/10; // 10usec = 1 cm of distance for LIDAR-Lite
         Serial.print("Right LIDAR: ");
         Serial.println(pulse_width_right); // Print the distance
+        
+        XBee.print("r, " + String(pulse_width_right)); // send values 
+        XBee.write("\n"); // binary data
+        
   }
-  else{ // We read a zero which means we're locking up. 
+  
+  else
+  { // We read a zero which means we're locking up.
+  
     digitalWrite(12,LOW); // Turn off the sensor
     delay(1);// Wait 1ms
     digitalWrite(12,HIGH); //Turn on te sensor
     delay(1);//Wait 1ms for it to turn on.
+    
   }
+  
   delay(1); //Delay so we don't overload the serial port
 
 
@@ -161,6 +187,8 @@ void loop()
   Serial.println(Input);
   Serial.print("PID output: ");
   Serial.println(Output);
+  XBee.print("p, " + String(Output)); // send values 
+  XBee.write("\n"); // binary data
 
 
   // turn
