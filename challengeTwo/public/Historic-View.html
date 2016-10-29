@@ -5,111 +5,115 @@
 <head>
 
 	<title>Historic View</title>
-	<link rel="stylesheet" type="text/css" href="mystyle2.css">
-<script type="text/javascript">
-  window.onload = function () {
-    var chart = new CanvasJS.Chart("chartContainer",
-    {
-      theme: "theme2",
-      title:{
-        text: "Temperature Change"
-      },
-      animationEnabled: true,
-      axisX: {
-        valueFormatString: "MM",
-        interval:1,
-        intervalType: "month"
-        
-      },
-      axisY:{
-        includeZero: false
-        
-      },
-      data: [
-      {        
-        type: "line",
-        //lineThickness: 3,        
-        dataPoints: [
-        { x: new Date(2016, 00, 1), y: 450 },
-        { x: new Date(2016, 01, 1), y: 414},
-        { x: new Date(2016, 02, 1), y: 520},
-        { x: new Date(2016, 03, 1), y: 460 },
-        { x: new Date(2016, 04, 1), y: 450 },
-        { x: new Date(2016, 05, 1), y: 500 },
-        { x: new Date(2016, 06, 1), y: 480 },
-        { x: new Date(2016, 07, 1), y: 480 },
-        { x: new Date(2016, 08, 1), y: 410 },
-        { x: new Date(2016, 09, 1), y: 500 },
-        { x: new Date(2016, 10, 1), y: 480 },
-        { x: new Date(2016, 11, 1), y: 510 }
-        
-        ]
-      }
-      
-      
-      ]
-    });
+	<body>
 
-chart.render();
-}
-</script>
+		<nav>
+				<a href="index.html">Home Page</a> |
+				<a href="Current-Reading.html">Live Feed</a> |
+				<a href="Historic-View.html">Historic Graph</a> |
+				<a href="Annoyingcat.html">Click It - I dare you!!!</a>
+		</nav>
+		
+		<h1><b>EC544 Challenge Two</b></h1>	
+		<h2>Group 04</h2>
+		<button id = "buttonOne" type="button">Draw Historic Graph</button>
+		<p id="demo"></p>
+		<label id="label"></label>
+		<style type="text/css"></style>
+
+		<div id="chartContainer" style="height: 300px; width: 100%;">
+			Total Event : <input id="eventCount" type="text" value="0" readonly>   
+			Event Trigger : <input id="triggerLog" type="text" value="so far no events" readonly />
+	  </div>
+
+
+		
+	</body>
+	<link rel="stylesheet" type="text/css" href="mystyle2.css">
 <script type="text/javascript" src="canvasjs.min.js"></script> 
-<!--<script type="text/javascript">
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
+<!-- <script src="/public/smoothie.js"></script> -->
+<!-- <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script> -->
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript">
 	window.onload = function() {
+			var time=[];
+			var temp=[];
+			var socket = io();
+		
+
+		$( "#buttonOne" ).click(function() {
+			  var string = "Historical Data"
+			  socket.emit('buttonPress',string);
+			  
+			});
+		var data = [];
+		var dataSeries = { type: "line" };
+		var dataPoints = [];
+		socket.on('msg', function(newString){
+
+	    dataPoints.push({x:parseInt(newString[0]),y:newString[1]});
+	    dataSeries.dataPoints = dataPoints;
+     	data.push(dataSeries);
 		var chart = new CanvasJS.Chart("chartContainer", {
+			
+			zoomEnabled: true,
+
+			// e:{ 
+			//    type, // event type
+			//    trigger, // "zoom", "pan", "reset"
+			//    chart,
+			//    axisX.viewportMinimum, //undefined for zoomType: "y"
+			//    axisX.viewportMaximum,
+			//    axisY.viewportMinimum,  //undefined for zoomType: "x"
+			//    axisY.viewportMaximum,
+			//    axisY2.viewportMinimum, //returned only if AxisY2 defined,
+			//    axisY2.viewportMaximum,
+			// }
+			
+			// rangeChanging: function (e) {
+	  // 		//update total count 
+  	//  		var eventCountElement = document.getElementById("eventCount");
+   //       	eventCountElement.setAttribute("value", parseInt(eventCountElement.getAttribute("value")) + 1);
+
+	  // 		// update event Trigger
+   //       	var triggerLogElement = document.getElementById("triggerLog");
+   //       	triggerLogElement.setAttribute("value", e.trigger);
+
+   //       	},
+
 			title: {
-				text: "Line Chart"
+				text: "Historic View"
 			},
-			axisX: {
-				interval: 10
-			},
+			axisX:{
+	            title: "Time Since App Has Started (sec)",
+	            titleFontColor: "rgb(0,75,141)"
+            },
+            axisY:{
+	            title: "Average Temperature (F)",
+	            titleFontColor: "rgb(0,75,141)"
+            },
 			data: [{
-				type: "line",
-				dataPoints: [
-				  { x: 10, y: 45 },
-				  { x: 20, y: 14 },
-				  { x: 30, y: 20 },
-				  { x: 40, y: 60 },
-				  { x: 50, y: 50 },
-				  { x: 60, y: 80 },
-				  { x: 70, y: 40 },
-				  { x: 80, y: 60 },
-				  { x: 90, y: 10 },
-				  { x: 100, y: 50 },
-				  { x: 110, y: 40 },
-				  { x: 120, y: 14 },
-				  { x: 130, y: 70 },
-				  { x: 140, y: 40 },
-				  { x: 150, y: 90 },
-				]
-			}]
-		});
-		chart.render();
+				type:"line",
+				dataPoints: dataPoints,
+				}]
+			});
+			if (dataPoints.length > 15){
+				dataPoints.shift();
+			}
+			chart.render();
+		    	
+		  	});
+		
 	}
 	</script>
-	<script src="canvasjs.min.js"></script>
-	-->
 
 </head>
 
-
-
-<body>
-
-	<nav>
-			<a href="index.html">Home Page</a> |
-			<a href="Current-Reading.html">Live Feed</a> |
-			<a href="Historic-View.html">Historic Graph</a> |
-			<a href="Annoyingcat.html">Click It - I dare you!!!</a>
-	</nav>
 	
-	<h1><b>EC544 Challenge Two</b></h1>	
-	<h2>Group 04</h2>
-	<p>Displaying the live feed obtained from the sensors</p>
 
-	<div id="chartContainer" style="height: 300px; width: 100%;">
-  </div>
-	
-</body>
+
 
 </html>
