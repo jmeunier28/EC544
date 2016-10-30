@@ -19,8 +19,8 @@
 #define ULTRA_PIN 11
 #define ULTRA_STOP 1
 
-
 /* ---------- Global Variables ---------- */
+
 // Servo global variables
 Servo wheels;
 Servo esc;
@@ -33,6 +33,7 @@ const double Kp=1, Ki=0, Kd=0;
 
 // Lidar readings
 unsigned long lidar_L, lidar_R;
+double lidar_L_signed, lidar_R_signed;
 
 // Ultrasonic global variables
 long ultra, inches, cm, average;
@@ -41,12 +42,13 @@ long ultra, inches, cm, average;
 int start = 1;
 
 // PID global variables
-const double dt = 200; // poll interval in ms
-double delta, delta_90, process_feedback;
+const double dt = 10; // poll interval in ms
+double delta, delta_90, process_feedback, wheel_angle;
 double error, previous_error, integral, derivative, output;
 
 /* --------------------- Functions --------------------- */
 
+// PID CONTROL
 void PID_Control() {
   delay(dt);  
   Serial.print("setpoint: ");
@@ -74,24 +76,38 @@ void PID_Control() {
     Serial.println("Turning RIGHT.");
   }
   Serial.println();
+  
   // control wheels
-  wheels.write(90 + output);
+  wheel_angle = 90 + output;
+  Serial.print("wheel_angle: ");
+  Serial.println(wheel_angle);
+  wheels.write(wheel_angle);
 }                 
 
+// LIDAR SENSORS
 void Poll_Lidars() {
   lidar_L = pulseIn(L_LIDAR_MON, HIGH) / 10; // 10usec = 1 cm of distance for LIDAR-Lite
   lidar_R = pulseIn(R_LIDAR_MON, HIGH) / 10;
+  lidar_L_signed = double(lidar_L);
+  lidar_R_signed = double(lidar_R);
   Serial.print("lidar_L: ");
-  Serial.print(lidar_L);
+  Serial.print(lidar_L_signed);
   Serial.print("cm       ");
   Serial.print("lidar_R: ");
-  Serial.print(lidar_R);
+  Serial.print(lidar_R_signed);
   Serial.println("cm");
-  delta = lidar_L - lidar_R;
-  delta_90 = 90*(2*((delta + 2500)/(5000)) - 1);
-  process_feedback = 90 - delta_90;
+  delta = lidar_L_signed - lidar_R_signed;
+   Serial.print("delta: ");
+  Serial.println(delta); 
+  int maxDelta = 200; // max difference of lidar readings
+  int n_constant = 90; // scales -1:1 to -90:90
+  delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
+  process_feedback = 90 - delta_90; 
+  Serial.print("delta_90: ");
+  Serial.println(delta_90);
 }
 
+// ULTRASONIC
 void Poll_Ultrasonic(){
   ultra = pulseIn(ULTRA_PIN, HIGH);
   inches = ultra / 147;
@@ -104,7 +120,7 @@ void Poll_Ultrasonic(){
     Serial.println("Stop car!");
   }
   else {
-    esc.write(70); // go slow
+    esc.write(74); // go 
   }
 }
 
@@ -136,14 +152,11 @@ void setup() {
     pinMode(ULTRA_PIN, INPUT);
     pinMode(ULTRA_STOP, OUTPUT);
     digitalWrite(ULTRA_STOP, LOW);
-  
-    // PID controller setup
-    delta = lidar_L - lidar_R;
-    delta_90 = 90*(2*((delta + 2500)/(5000)) - 1);
-    process_feedback = 90 - delta_90;
+    // Initial lidar poll
+    Poll_Lidars();
+    // initialize PID variables
     previous_error = setpoint - process_feedback;
     integral = 0;
-
     /* A bunch of initial setup print statements */
     // distances
     Serial.print("Distance from left wall: ");
@@ -183,11 +196,11 @@ void setup() {
 /* --------------------------------- MAIN --------------------------------- */
 
 void loop() {
-
   // Stopping
   Poll_Ultrasonic();
   
   // Steering
+  Poll_Lidars();
   PID_Control();  
 }
 
