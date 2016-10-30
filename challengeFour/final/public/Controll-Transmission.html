@@ -1,0 +1,72 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title> Toggler Page</title>
+    <center>
+    <h3>The toggle options for different nodes </h3>
+    <link rel="stylesheet" type="text/css" href="mystylex.css">
+    </center>
+  </head>
+  <body>
+  
+  <nav>
+      <a href="index.html">Home Page</a> |
+      <a href="Controll-Transmission.html">Control-Transmission</a> | 
+      <a href="Current-Reading.html">Live Feed</a> | 
+      <a href="Historic-View.html">Historic Graph</a> |
+      <a href="Annoyingcat.html">Click It - I dare you!!!</a>
+  </nav>
+
+  <center>
+
+
+
+  <br>
+  <br>
+  <form action="https://api.particle.io/v1/devices/vampire_morphing/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
+    Tell your device <b> vampire_morphing </b> what to do!<br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the Temperature sensing on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the Temperature sensing off.
+    <br>
+    <br>
+    <input type="submit" value="Toggle Operation Mode">
+  </form>
+  <br>
+  <form action="https://api.particle.io/v1/devices/Grp4_Dev1/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
+    Tell your device <b> Grp4_dev1 </b> what to do!<br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the Temperature sensing on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the Temperature sensing off.
+    <br>
+    <br>
+    <input type="submit" value="Toggle Operation Mode">
+  </form>
+    <br>
+  <form action="https://api.particle.io/v1/devices/aardvark_tasty/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
+    Tell your device <b> aardvark_tasty </b> what to do!<br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the Temperature sensing on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the Temperature sensing off.
+    <br>
+    <br>
+    <input type="submit" value="Toggle Operation Mode">
+  </form>
+  <br>
+  <form action="https://api.particle.io/v1/devices/wombat_cracker/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
+    Tell your device <b> wombat_cracker </b> what to do!<br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the Temperature sensing on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the Temperature sensing off.
+    <br>
+    <br>
+    <input type="submit" value="Toggle Operation Mode">
+  </form>
+
+  </center>
+  </body>
+</html>

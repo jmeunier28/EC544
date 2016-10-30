@@ -1,0 +1,61 @@
+Ways to access Pi remotely:
+
+
+#1: Direct ssh through openssh-server port forwarding
+-----------------------------------------------------
+ssh pi@grp4router.ddns.net -p 5555
+password: pw
+
+
+#2: 2-hop, ssh to router then telnet to pi
+-----------------------------------------------------
+ssh root@grp4router.ddns.net -p 2222
+telnet 192.168.1.134
+username: pi
+password: pw
+
+
+#3: VNC
+-----------------------------------------------------
+VNC Server: grp4router.ddns.net:7777
+password: vncpw1
+
+
+[TEMPLATE TO ADD]: #4: Web
+-----------------------------------------------------
+www.ec544-grp4.com (If Express server is running)
+
+
+_____________________________________________________
+_____________________________________________________
+_____________________________________________________
+
+
+Turn on LED:
+
+node led.js   (default is red)
+arguments: r, g, b
+
+Ctrl+C to turn off
+
+
+
+
+
+
+
+
+
+_____________________________________________________
+_____________________________________________________
+_____________________________________________________
+
+
+godaddy domain info:
+ec544-grp4.com   (same as slack name)
+username: austinmw
+password: EC544pw123
+pin: 0682
+
+management page to forward domain:
+https://dcc.godaddy.com/dcc50/

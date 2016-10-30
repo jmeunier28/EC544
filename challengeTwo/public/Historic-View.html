@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+	
+<head>
+
+	<title>Historic View</title>
+	<body>
+
+		<nav>
+				<a href="index.html">Home Page</a> |
+				<a href="Current-Reading.html">Live Feed</a> |
+				<a href="Historic-View.html">Historic Graph</a> |
+				<a href="Annoyingcat.html">Click It - I dare you!!!</a>
+		</nav>
+		
+		<h1><b>EC544 Challenge Two</b></h1>	
+		<h2>Group 04</h2>
+		<button id = "buttonOne" type="button">Draw Historic Graph</button>
+		<p id="demo"></p>
+		<label id="label"></label>
+		<style type="text/css"></style>
+
+		<div id="chartContainer" style="height: 300px; width: 100%;">
+			Total Event : <input id="eventCount" type="text" value="0" readonly>   
+			Event Trigger : <input id="triggerLog" type="text" value="so far no events" readonly />
+	  </div>
+
+
+		
+	</body>
+	<link rel="stylesheet" type="text/css" href="mystyle2.css">
+<script type="text/javascript" src="canvasjs.min.js"></script> 
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
+<!-- <script src="/public/smoothie.js"></script> -->
+<!-- <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script> -->
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+	window.onload = function() {
+			var time=[];
+			var temp=[];
+			var socket = io();
+		
+
+		$( "#buttonOne" ).click(function() {
+			  var string = "Historical Data"
+			  socket.emit('buttonPress',string);
+			  
+			});
+		var data = [];
+		var dataSeries = { type: "line" };
+		var dataPoints = [];
+		socket.on('msg', function(newString){
+
+	    dataPoints.push({x:parseInt(newString[0]),y:newString[1]});
+	    dataSeries.dataPoints = dataPoints;
+     	data.push(dataSeries);
+		var chart = new CanvasJS.Chart("chartContainer", {
+			
+			zoomEnabled: true,
+
+			// e:{ 
+			//    type, // event type
+			//    trigger, // "zoom", "pan", "reset"
+			//    chart,
+			//    axisX.viewportMinimum, //undefined for zoomType: "y"
+			//    axisX.viewportMaximum,
+			//    axisY.viewportMinimum,  //undefined for zoomType: "x"
+			//    axisY.viewportMaximum,
+			//    axisY2.viewportMinimum, //returned only if AxisY2 defined,
+			//    axisY2.viewportMaximum,
+			// }
+			
+			// rangeChanging: function (e) {
+	  // 		//update total count 
+  	//  		var eventCountElement = document.getElementById("eventCount");
+   //       	eventCountElement.setAttribute("value", parseInt(eventCountElement.getAttribute("value")) + 1);
+
+	  // 		// update event Trigger
+   //       	var triggerLogElement = document.getElementById("triggerLog");
+   //       	triggerLogElement.setAttribute("value", e.trigger);
+
+   //       	},
+
+			title: {
+				text: "Historic View"
+			},
+			axisX:{
+	            title: "Time Since App Has Started (sec)",
+	            titleFontColor: "rgb(0,75,141)"
+            },
+            axisY:{
+	            title: "Average Temperature (F)",
+	            titleFontColor: "rgb(0,75,141)"
+            },
+			data: [{
+				type:"line",
+				dataPoints: dataPoints,
+				}]
+			});
+			if (dataPoints.length > 15){
+				dataPoints.shift();
+			}
+			chart.render();
+		    	
+		  	});
+		
+	}
+	</script>
+
+</head>
+
+	
+
+
+
+</html>
