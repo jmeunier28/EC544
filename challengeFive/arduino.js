@@ -77,6 +77,7 @@ sp = new SerialPort.SerialPort(portName, portConfig);
 sp.on("open", function (err) {
 
 	var buffer;
+	var info;
 	var num = 0;
 	var count = 0;
 	str = "";
@@ -92,31 +93,30 @@ sp.on("open", function (err) {
 		console.log('a user connected');
 
 		sp.on('data',function(data){ //grab data from XBee 
-			buffer = String(data).split('\n');
-			
-			console.log(buffer[0]);
+			buffer = String(data).split('\n'); // break by new line
+			console.log("This is XBee "+ data);
+			//info = buffer[0].split(', '); // break into [ID, Data]
+			//console.log(buffer[0]);
 
-			if(buffer[0] === "l"){
-				str = buffer[1]; // data from Left Lidar
+			/*if(info[0] === "l"){
+				str = info[1]; // data from Left Lidar
 				socket.emit('left', str);
 			}
 
-			if(buffer[0] === "r"){
+			if(info[0] === "r"){
 
-				str = buffer[1]; // data from Right Lidar
+				str = info[1]; // data from Right Lidar
 				socket.emit('right', str);
 			}
 
-			if(buffer[0] === 'p'){
+			if(info[0] === 'p'){
 
-				str = buffer[1]; // data output from PID
+				str = info[1]; // data output from PID
 				socket.emit('pid', str);
-			}
+			}*/
 
 
 		}); //end data conn
-
-
 		
 			
 	}); //end io conn
