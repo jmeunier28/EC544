@@ -28,11 +28,14 @@
 	<p>Car Readings:</p>
 
     <div style="border-radius: 150px; background: #151B54; padding: 50px; width: 500px; margin-left: auto; margin-right: auto;">
-    <h2 style="text-align: center;">Left Lidar: <b id="left"> - </b></h2>
+    <h2 style="text-align: center;">Left Lidar:</h2>
+    <label id = "left"></label>
     <br><br>
-    <h2 style="text-align: center;">Right Lidar: <b id="right"> - </b></h2>
+    <h2 style="text-align: center;">Right Lidar:</h2>
+    <label id = "right"></label>
     <br><br>
-    <h2 style="text-align: center;">PID OUT: <b id="pid"> - </b></h2>
+    <h2 style="text-align: center;">PID OUT:</h2>
+    <label id = "pid"></label>
     
         <br /><br />
 
@@ -48,12 +51,6 @@
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script>
 	  var socket = io();
-
-	 $('form').submit(function(){
-	    socket.emit('left', $('#m').val());
-	    $('#m').val('');
-	    return false;
-	  });
 
 	  socket.on('left', function(msg){
 	    $('#left').append($('#left').text(msg));
