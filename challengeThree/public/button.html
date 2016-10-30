@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+	
+<head>
+
+	<title>Button Controls</title>
+	<body>
+		
+		<h1><b>EC544 Challenge Three</b></h1>	
+		<h2>Group 04</h2>
+		<br>
+		<br>
+		<button id = "redButton" type="button">Red LED ON</button>
+		<button id = "greenButton" type="button" >Green LED ON</button>
+		<button id = "blueButton" type="button">Blue LED ON</button>
+		<button id = "killButton" type="button">Turn OFF LEDs</button>
+		<br>
+		<br>
+		<label id="label"></label>
+		<style type="text/css"></style>
+		
+	</body>
+	<link rel="stylesheet" type="text/css" href="mystyle2.css"> 
+
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+		var socket = io();
+
+		$( "#redButton" ).click(function() {
+			  var string = "redButton"
+			  socket.emit('redbuttonPress',string);
+			  
+			});
+		$( "#greenButton" ).click(function() {
+			  var string = "greenButton"
+			  socket.emit('greenbuttonPress',string);
+			  
+			});
+		$( "#blueButton" ).click(function() {
+			  var string = "blueButton"
+			  socket.emit('bluebuttonPress',string);
+			  
+			});
+		$( "#killButton" ).click(function() {
+			  var string = "killButton"
+			  socket.emit('killbuttonPress',string);
+			  
+			});
+		socket.on('msg', function(msg){
+			$('#label').append($('#label').text(msg));
+		});
+
+
+	</script>
+
+</head>
+
+</html>
