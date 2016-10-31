@@ -19,6 +19,11 @@
 #define ULTRA_PIN 11
 #define ULTRA_STOP 1
 
+//LED Control Pins
+#define STOP 0
+#define STRAIGHT 1
+#define RIGHT 13
+#define LEFT 10
 /* ---------- Global Variables ---------- */
 
 // Servo global variables
@@ -29,7 +34,7 @@ Servo esc;
 const double setpoint = 90;
 
 // PID constants
-const double Kp=1, Ki=0, Kd=0;
+const double Kp=1.5, Ki=0, Kd=0;
 
 // Lidar readings
 unsigned long lidar_L, lidar_R;
@@ -46,6 +51,8 @@ int start = 1;
 const double dt = 10; // poll interval in ms
 double delta, delta_90, process_feedback, wheel_angle;
 double error, previous_error, integral, derivative, output;
+int maxDelta = 150; // max difference of lidar readings
+int n_constant = 90; // scales -1:1 to -90:90
 
 /* --------------------- Functions --------------------- */
 
@@ -73,70 +80,94 @@ Different Cases for movement along Path:
 */
 
 // Initialize Poisition of Car to a neutral spot
-void InitializeCarPosition()
+/*void InitializeCarPosition()
 {
   Serial.print("Initializing Position");
  //Check initial condition cases
- if (delta < 20 ) // walls approx equidistant do nothing
+ if (abs(delta) < 20 ) // walls approx equidistant do nothing
  {
    Serial.print("Walls are only: ");
    Serial.println(delta);
    Serial.print(" apart, move forward");
+   wheels.write(90);
+   delay(1);
+   esc.write(75);
+   delay(100);
  }
- else if (20 < delta < 200)
+ 
+ else if (20 < abs(delta) < 150)
  {
-    Serial.print("Difference is bigger than 20 but less than 200 wall is there try to find it");
+    Serial.print("Difference is bigger than 20 but less than 200 wall is there try to find it"); 
  }
- else if (delta > 200)
+ else if (abs(delta) > 150)
  {
    Serial.print("No wall next to start point... adjust");
    wheels.write(90);
    delay(1);
    esc.write(74); //jolt forward
-   delay(500); 
+   delay(100); 
  }
 
      //NEED TO DETERMINE HOW TO FIX CASE WHERE CAR IS NOT STRAIGHT  
-}
+}*/
 
-// PID CONTROL
-void PID_Control() {
-  delay(dt);  
+void printPID()
+{
   Serial.print("setpoint: ");
   Serial.println(setpoint);
   Serial.print("process_feedback: ");
   Serial.println(process_feedback);
-  error = setpoint - process_feedback;
-  integral = integral + (error * dt);
-  derivative = (error - previous_error) / dt;
-  output = (Kp * error) + (Ki * integral) + (Kd * derivative);
-  previous_error = error;
   Serial.print("error: ");
   Serial.println(error);
   Serial.print("PID output: ");
   Serial.println(output);
-  //Serial.print("previous_error: ");
-  //Serial.print(previous_error);
-  if ((output >= -0.000001) && (output <= 0.000001)){ // (supposedly bad practice to use == with floats,
-    Serial.println("Going STRAIGHT.");        // but when it shows -0.000000 it's actually less than 0) 
-  }
-  else if (output > 0.000001) {
+  
+    if ((output >= -0.000001) && (output <= 0.000001))
+    { // (supposedly bad practice to use == with floats,
+      Serial.println("Going STRAIGHT."); 
+      digitalWrite(STRAIGHT, HIGH);
+      digitalWrite(RIGHT, LOW);
+      digitalWrite(LEFT, LOW);
+      digitalWrite(STOP, LOW);
+    }
+  else if (output > 0.000001) 
+  {
     Serial.println("Turning LEFT.");
+    digitalWrite(LEFT, HIGH);
+    digitalWrite(RIGHT, LOW);
+    digitalWrite(STRAIGHT, LOW);
+    digitalWrite(STOP, LOW);
   }
   else if (output < -0.000001) {
     Serial.println("Turning RIGHT.");
+    digitalWrite(RIGHT, HIGH);
+    digitalWrite(LEFT, LOW);
+    digitalWrite(STRAIGHT, LOW);
+    digitalWrite(STOP, LOW);
   }
-  Serial.println();
-  
-  // control wheels
-  wheel_angle = 90 + output;
   Serial.print("wheel_angle: ");
   Serial.println(wheel_angle);
+  Serial.println(); 
+  
+}
+  
+
+// PID CONTROL
+void PID_Control() {
+  delay(dt);  
+  error = setpoint - process_feedback;
+  integral = integral + (error * dt);
+  derivative = (error - previous_error) / dt;
+  output = (Kp * error) + (Ki * integral) + (Kd * derivative);
+  previous_error = error; 
+  // control wheels
+  wheel_angle = 90 + output;
   //wheels.write(wheel_angle);
-  MoveCar();
+  printPID();
+  MoveCar(output);
 }
 
-void MoveCar()
+void MoveCar(double output)
 {
    
   if (stopCar)
@@ -145,73 +176,124 @@ void MoveCar()
     esc.write(90);
     delay(1);
     wheels.write(90); 
+    delay(10);
+    digitalWrite(RIGHT, LOW);
+    digitalWrite(LEFT, LOW);
+    digitalWrite(STRAIGHT, LOW);
+    digitalWrite(STOP, HIGH);
+    
+    //esc.write(120); //backup
+    //delay(100); 
   }
-  else {
+  
+  else 
+  {
   // Address Speed Cases:
   
     //Case One Wheel Angle Adj is small
      if (abs(output) < 10)
       {
+        Serial.print("Case One: ");
          wheels.write(wheel_angle);
          delay(1);
-         esc.write(74); //can move pretty fast here
-         
+         esc.write(72); //can move pretty fast here
+         delay(50);
+       
        } //end case one
      
      //Case two Wheel adj medium
      else if (10 < abs(output) < 25)
      {
+       Serial.print("Case Two: ");
         wheels.write(wheel_angle);
-        delay(1);
-        esc.write(78); //slow down to make this adj
+        delay(200);
+        esc.write(76); //slow down to make this adj
+        delay(50);
         
       } //end case two
       
       //Case three wheel adj large
       else if(abs(output) > 25) 
         {
-          if (delta > 200) //if diff greater than 200 we lost a wall
+          Serial.print("Case Three output: ");
+          if (abs(delta) > 150) //if diff greater than 200 we lost a wall
           { 
             wheels.write(90); //keep moving straight 
             delay(1);
-            esc.write(78); //slow down a little bit
+            esc.write(76); //slow down a little bit
+            delay(50);
           }
           
           else
           {
             wheels.write(wheel_angle);
             delay(1);
-            esc.write(81); // go real slow to make this adjustment
+            esc.write(77); // go real slow to make this adjustment
+            delay(50);
           }
           
         } //end case three
-        
+       
   } //end car moving else statement 
         
         
 } //end MoveCar function 
 
-// LIDAR SENSORS
-void Poll_Lidars() {
-  lidar_L = pulseIn(L_LIDAR_MON, HIGH) / 10; // 10usec = 1 cm of distance for LIDAR-Lite
-  lidar_R = pulseIn(R_LIDAR_MON, HIGH) / 10;
-  lidar_L_signed = double(lidar_L);
-  lidar_R_signed = double(lidar_R);
+void printLidar()
+{  
   Serial.print("lidar_L: ");
   Serial.print(lidar_L_signed);
   Serial.print("cm       ");
   Serial.print("lidar_R: ");
   Serial.print(lidar_R_signed);
   Serial.println("cm");
-  delta = lidar_L_signed - lidar_R_signed;
   Serial.print("delta: ");
-  Serial.println(delta); 
-  int maxDelta = 200; // max difference of lidar readings
-  int n_constant = 90; // scales -1:1 to -90:90
-  delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
-  process_feedback = 90 - delta_90; 
-  Serial.print("delta_90: ");
-  Serial.println(delta_90);
+  Serial.println(delta);
+  Serial.println();
+}
+  
+
+// LIDAR SENSORS
+void Poll_Lidars() 
+{
+  lidar_L = pulseIn(L_LIDAR_MON, HIGH) / 10; // 10usec = 1 cm of distance for LIDAR-Lite
+  lidar_R = pulseIn(R_LIDAR_MON, HIGH) / 10;
+  lidar_L_signed = double(lidar_L);
+  lidar_R_signed = double(lidar_R);
+  delta = lidar_L_signed - lidar_R_signed;
+  printLidar();
+
+ if (abs(delta) > 150)
+ {
+   if (lidar_L_signed > lidar_R_signed)
+   {
+      delta = 75 - lidar_R_signed; //left wall dropped out assign it to be max distance away
+      Serial.print("New Delta no left wall: ");
+      Serial.println(delta);
+      delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
+      process_feedback = 90 - delta_90; 
+      Serial.print("delta_90: ");
+      Serial.println(delta_90);
+   }
+   
+   else if (lidar_L_signed < lidar_R_signed)
+   {
+      delta = lidar_L_signed - 75; // if its greater than 150 we lost a wall so we want to just move straight
+      Serial.print("No Right wall, new delta: ");
+      Serial.println(delta);
+      delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
+      process_feedback = 90 - delta_90; 
+      Serial.print("delta_90: ");
+      Serial.println(delta_90);
+   } 
+ }
+ else
+ {
+      delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
+      process_feedback = 90 - delta_90; 
+      Serial.print("delta_90: ");
+      Serial.println(delta_90);
+ }
 }
 
 // ULTRASONIC
@@ -235,15 +317,31 @@ void Poll_Ultrasonic(){
 
 /* --------------------------- SETUP --------------------------- */
 
-void setup() {
-  if (start) { // to be remote start signal 
+void setup() 
+{
+  if (start) 
+  { // to be remote start signal 
     Serial.begin(9600);
+    
+    //DRIVING LIGHTS
+    pinMode(STRAIGHT, OUTPUT);
+    pinMode(RIGHT, OUTPUT);
+    pinMode(LEFT, OUTPUT);
+    pinMode(STOP, OUTPUT);    
+    
+    
+    digitalWrite(STRAIGHT, LOW);
+    digitalWrite(RIGHT, LOW);
+    digitalWrite(LEFT, LOW);
+    digitalWrite(STOP, LOW);
+   
     //Left lidar
     pinMode(L_LIDAR_TRIG, OUTPUT);
     pinMode(L_LIDAR_MON, INPUT);
     pinMode(L_LIDAR_ENABLE, OUTPUT);
     digitalWrite(L_LIDAR_ENABLE, HIGH); //Turn sensor on
     digitalWrite(L_LIDAR_TRIG, LOW); // Set trigger LOW for continuous read
+    
     // Right lidar
     pinMode(R_LIDAR_TRIG, OUTPUT);
     pinMode(R_LIDAR_MON, INPUT);
@@ -274,32 +372,10 @@ void setup() {
     Serial.print("Distance from right wall: ");
     Serial.print(lidar_R);
     Serial.println("cm");
-    // left-right orientation
-    /*if (lidar_L > lidar_R)
-      Serial.println("Starting car closer to right wall.");
-    else if ( lidar_L < lidar_R) 
-      Serial.println("Starting car closer to left wall.");
-    else 
-      Serial.println("Starting car evenly between walls.");
-    // process_feedback (interpreted based on how it needs to affect output)
-    //Serial.print("process_feedback: ");
-    //Serial.println(process_feedback);
-    // Left or Right turn required
-    if (process_feedback < 90) {
-      Serial.print("LEFT turn required from initial position in order to ");
-      Serial.println("move process_feedback toward setpoint.");
-    }
-    else if (process_feedback > 90) {
-      Serial.print("RIGHT turn required from initial position in order to ");
-      Serial.println("move process_feedback toward setpoint."); 
-    }
-    else if (process_feedback == 90) {
-      Serial.println("Going STRAIGHT already! (process_feedback == setpoint)");   
-    }*/
-    InitializeCarPosition();
+    //InitializeCarPosition();
     Serial.println("Starting...");
     Serial.println("\n");
-    delay(1500);
+    delay(1000);
   }
 }
 
