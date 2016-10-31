@@ -19,8 +19,8 @@
 #define ULTRA_PIN 11
 #define ULTRA_STOP 1
 
-
 /* ---------- Global Variables ---------- */
+
 // Servo global variables
 Servo wheels;
 Servo esc;
@@ -33,20 +33,73 @@ const double Kp=1, Ki=0, Kd=0;
 
 // Lidar readings
 unsigned long lidar_L, lidar_R;
+double lidar_L_signed, lidar_R_signed;
 
 // Ultrasonic global variables
 long ultra, inches, cm, average;
+bool stopCar = false;
 
 // On/off 
 int start = 1;
 
 // PID global variables
-const double dt = 200; // poll interval in ms
-double delta, delta_90, process_feedback;
+const double dt = 10; // poll interval in ms
+double delta, delta_90, process_feedback, wheel_angle;
 double error, previous_error, integral, derivative, output;
 
 /* --------------------- Functions --------------------- */
 
+/*
+
+Different Cases For Speed:
+
+  (1) Wheel adj angle is small (< 5): can keep moving at fast speed
+  (2) Wheel adj is of medium size (< 10): slow down by 3 while turning
+  (3) Wheel adj is large (> 10): slow down by 5 while turning 
+
+Different Cases for movement along Path:
+
+  (1) Lidar initial position senses walls on both sides 
+      - walls are close to equidistant --> move forward
+      - one wall is closer than other by > 20 cm --> slowly bring car to center
+  (2) Lidar initial posiiton senses only one wall 
+      - one wall is much farther away or not there diff >> 200cm  --> will move straight with wall next to lidar
+        do this until Lidar sees walls on both sides (diff < 200cm)
+  (3) Car is in sideways initial position ******* NEED TO THINK ABOUT HOW TO DEAL WITH THIS ******
+  (4) Lidar is moving and loses one wall 
+      - diff between left and right >> 200cm --> continue straight do not adjust 
+        until Lidar sees two walls
+        
+*/
+
+// Initialize Poisition of Car to a neutral spot
+void InitializeCarPosition()
+{
+  Serial.print("Initializing Position");
+ //Check initial condition cases
+ if (delta < 20 ) // walls approx equidistant do nothing
+ {
+   Serial.print("Walls are only: ");
+   Serial.println(delta);
+   Serial.print(" apart, move forward");
+ }
+ else if (20 < delta < 200)
+ {
+    Serial.print("Difference is bigger than 20 but less than 200 wall is there try to find it");
+ }
+ else if (delta > 200)
+ {
+   Serial.print("No wall next to start point... adjust");
+   wheels.write(90);
+   delay(1);
+   esc.write(74); //jolt forward
+   delay(500); 
+ }
+
+     //NEED TO DETERMINE HOW TO FIX CASE WHERE CAR IS NOT STRAIGHT  
+}
+
+// PID CONTROL
 void PID_Control() {
   delay(dt);  
   Serial.print("setpoint: ");
@@ -74,24 +127,94 @@ void PID_Control() {
     Serial.println("Turning RIGHT.");
   }
   Serial.println();
+  
   // control wheels
-  wheels.write(90 + output);
-}                 
+  wheel_angle = 90 + output;
+  Serial.print("wheel_angle: ");
+  Serial.println(wheel_angle);
+  //wheels.write(wheel_angle);
+  MoveCar();
+}
 
+void MoveCar()
+{
+   
+  if (stopCar)
+  {
+    //put everything in neutral
+    esc.write(90);
+    delay(1);
+    wheels.write(90); 
+  }
+  else {
+  // Address Speed Cases:
+  
+    //Case One Wheel Angle Adj is small
+     if (abs(output) < 10)
+      {
+         wheels.write(wheel_angle);
+         delay(1);
+         esc.write(74); //can move pretty fast here
+         
+       } //end case one
+     
+     //Case two Wheel adj medium
+     else if (10 < abs(output) < 25)
+     {
+        wheels.write(wheel_angle);
+        delay(1);
+        esc.write(78); //slow down to make this adj
+        
+      } //end case two
+      
+      //Case three wheel adj large
+      else if(abs(output) > 25) 
+        {
+          if (delta > 200) //if diff greater than 200 we lost a wall
+          { 
+            wheels.write(90); //keep moving straight 
+            delay(1);
+            esc.write(78); //slow down a little bit
+          }
+          
+          else
+          {
+            wheels.write(wheel_angle);
+            delay(1);
+            esc.write(81); // go real slow to make this adjustment
+          }
+          
+        } //end case three
+        
+  } //end car moving else statement 
+        
+        
+} //end MoveCar function 
+
+// LIDAR SENSORS
 void Poll_Lidars() {
   lidar_L = pulseIn(L_LIDAR_MON, HIGH) / 10; // 10usec = 1 cm of distance for LIDAR-Lite
   lidar_R = pulseIn(R_LIDAR_MON, HIGH) / 10;
+  lidar_L_signed = double(lidar_L);
+  lidar_R_signed = double(lidar_R);
   Serial.print("lidar_L: ");
-  Serial.print(lidar_L);
+  Serial.print(lidar_L_signed);
   Serial.print("cm       ");
   Serial.print("lidar_R: ");
-  Serial.print(lidar_R);
+  Serial.print(lidar_R_signed);
   Serial.println("cm");
-  delta = lidar_L - lidar_R;
-  delta_90 = 90*(2*((delta + 2500)/(5000)) - 1);
-  process_feedback = 90 - delta_90;
+  delta = lidar_L_signed - lidar_R_signed;
+  Serial.print("delta: ");
+  Serial.println(delta); 
+  int maxDelta = 200; // max difference of lidar readings
+  int n_constant = 90; // scales -1:1 to -90:90
+  delta_90 = n_constant * (2*((delta + maxDelta)/(2*maxDelta)) - 1);
+  process_feedback = 90 - delta_90; 
+  Serial.print("delta_90: ");
+  Serial.println(delta_90);
 }
 
+// ULTRASONIC
 void Poll_Ultrasonic(){
   ultra = pulseIn(ULTRA_PIN, HIGH);
   inches = ultra / 147;
@@ -101,10 +224,12 @@ void Poll_Ultrasonic(){
   Serial.println("cm");
   if (cm <= 50) {
     esc.write(90); // stop
+    stopCar = true;
     Serial.println("Stop car!");
   }
   else {
-    esc.write(70); // go slow
+    //esc.write(74); // go slow
+    stopCar = false;
   }
 }
 
@@ -136,14 +261,11 @@ void setup() {
     pinMode(ULTRA_PIN, INPUT);
     pinMode(ULTRA_STOP, OUTPUT);
     digitalWrite(ULTRA_STOP, LOW);
-  
-    // PID controller setup
-    delta = lidar_L - lidar_R;
-    delta_90 = 90*(2*((delta + 2500)/(5000)) - 1);
-    process_feedback = 90 - delta_90;
+    // Initial lidar poll
+    Poll_Lidars();
+    // initialize PID variables
     previous_error = setpoint - process_feedback;
     integral = 0;
-
     /* A bunch of initial setup print statements */
     // distances
     Serial.print("Distance from left wall: ");
@@ -153,7 +275,7 @@ void setup() {
     Serial.print(lidar_R);
     Serial.println("cm");
     // left-right orientation
-    if (lidar_L > lidar_R)
+    /*if (lidar_L > lidar_R)
       Serial.println("Starting car closer to right wall.");
     else if ( lidar_L < lidar_R) 
       Serial.println("Starting car closer to left wall.");
@@ -173,7 +295,8 @@ void setup() {
     }
     else if (process_feedback == 90) {
       Serial.println("Going STRAIGHT already! (process_feedback == setpoint)");   
-    }
+    }*/
+    InitializeCarPosition();
     Serial.println("Starting...");
     Serial.println("\n");
     delay(1500);
@@ -183,11 +306,11 @@ void setup() {
 /* --------------------------------- MAIN --------------------------------- */
 
 void loop() {
-
   // Stopping
   Poll_Ultrasonic();
   
   // Steering
+  Poll_Lidars();
   PID_Control();  
 }
 
