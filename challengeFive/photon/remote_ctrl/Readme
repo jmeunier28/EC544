@@ -1,0 +1,8 @@
+This code is used to control the car remotely using the photon.
+
+Digital pin goes HIGH when the user asks the car to start. 
+This signal is then fed into the arduino to control it.
+
+Digital pin goes LOW when the user asks the car to stop.
+
+The Digital pin used for this purpose is PIN 'D0'
