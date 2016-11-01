@@ -1,0 +1,34 @@
+
+<!DOCTYPE>
+<html>
+  <head>
+   <link rel="stylesheet" type="text/css" href="mystyle1.css">
+    <title> Remote Control Page</title>
+    <center>
+    <h1 style="color: black";> EC544 Group4 Challenge Five </h1>
+    <h3 style="color: black";> Controlling the car remotely </h3>
+    </center>
+  </head>
+  <body>
+  
+
+  <center>
+
+
+  <br>
+  <br>
+  <form action="https://api.particle.io/v1/devices/vampire_morphing/transmission?access_token=88b141e21247beccd05c9688f98f11101a898eec" method="POST">
+    Tell your car <b> vampire_morphing </b> to start or stop <br>
+    <br>
+    <input type="radio" name="args" value="on">Turn the car on.
+    <br>
+    <input type="radio" name="args" value="off">Turn the car off.
+    <br>
+    <br>
+    <input type="submit" value="Toggle Operation Mode">
+  </form>
+  
+
+  </center>
+  </body>
+</html>
