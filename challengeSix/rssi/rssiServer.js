@@ -18,6 +18,18 @@ var app = require('express')();
 var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+var C = xbee_api.constants;
+var XBeeAPI = new xbee_api.XBeeAPI({
+    api_mode: 2
+});
+
+var portName = process.argv[2];
+
+//var binNum = process.argv[3];
+
+//var sampleDelay = 3000;
+var sampleDelay = 2000;
 var math = require('mathjs');
 
 var C = xbee_api.constants;
@@ -27,20 +39,71 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 
 /* ----------- HTML Pages ------------ */
 
+//return main page
 app.get('/', function(req, res) {
-    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/index.html');
+    res.sendFile('/public/index.html');
 });
 
+
+/* ------------ Error Handling ---------------*/
+
+//catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// development error handler
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
+
+
+/* -----Run App on LocalHost Port 3000----- */
+
+http.listen(3000, function() {
+    console.log('listening on *:3000');
+});
+
+ON_DEATH(function(signal, err) {
+    console.log("\n\nClose Application and processes!.\n\n")
+    process.exit();
+})
+
+
+/*----------- Beacon Data point arrays --------------- */
 
 //takes sample every 2 seconds
 var sampleDelay = 2000;
 
-/*----------- Beacon Data point arrays --------------- */
 var r1 = [];
 var r2 = [];
 var r3 = [];
 var r4 = [];
 
+/*----------- Getting Current Date + Time in Right Format --------------- */
+
+function getFormattedDate() {
+    var date = new Date();
+    var str = (date.getMonth() + 1) + ":" + date.getDate() + ":" + date.getFullYear() + ":" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    return str;
+}
 
 /*----------- Connecting to Mongo --------------- */
 
@@ -48,7 +111,6 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/chal6';
-
 
 
 //Note that with the XBeeAPI parser, the serialport's "data" event will not fire when messages are received!
@@ -80,6 +142,7 @@ sp.on("open", function() {
     requestRSSI();
     setInterval(requestRSSI, sampleDelay);
 });
+
 
 XBeeAPI.on("frame_object", function(frame) {
     if (frame.type == 144) {

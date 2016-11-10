@@ -22,7 +22,6 @@ var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var math = require('mathjs');
-var excel = require('exceljs');
 
 
 var C = xbee_api.constants;
