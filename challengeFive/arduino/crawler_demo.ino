@@ -10,7 +10,7 @@ double maxWheelOffset = 85; // maximum wheel turn magnitude, in servo 'degrees'
  
 void setup()
 {
-  wheels.attach(6); // initialize wheel servo to Digital IO Pin #8
+  //wheels.attach(6); // initialize wheel servo to Digital IO Pin #8
   esc.attach(5); // initialize ESC to Digital IO Pin #9
   /*  If you're re-uploading code via USB while leaving the ESC powered on, 
    *  you don't need to re-calibrate each time, and you can comment this part out.
@@ -30,13 +30,13 @@ double radToDeg(double radians){
 
 /* Calibrate the ESC by sending a high signal, then a low, then middle.*/
 void calibrateESC(){
-    esc.write(180); // full backwards
-    delay(startupDelay);
-    esc.write(0); // full forwards
-    delay(startupDelay);
+  //  esc.write(180); // full backwards
+  //  delay(startupDelay);
+  //  esc.write(0); // full forwards
+  //  delay(startupDelay);
     esc.write(90); // neutral
     delay(startupDelay);
-    esc.write(90); // reset the ESC to neutral (non-moving) value
+   // esc.write(90); // reset the ESC to neutral (non-moving) value
 }
 
 /* Oscillate between various servo/ESC states, using a sine wave to gradually 
@@ -52,10 +52,14 @@ void oscillate(){
     delay(50);
   }
 }
+
  
 void loop()
 {
-   oscillate();
+
+    esc.write(70);
+    delay(100);
+  // oscillate();
 }
 
 
