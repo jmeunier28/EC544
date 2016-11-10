@@ -26,15 +26,6 @@ var r3 = [];
 var r4 = [];
 var finalPoints = [];
 
-
-/*----------- Getting Current Date + Time in Right Format --------------- */
-
-function getFormattedDate() {
-    var date = new Date();
-    var str = (date.getMonth() + 1) + ":" + date.getDate() + ":" + date.getFullYear() + ":" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    return str;
-}
-
 /*----------- Connecting to Mongo --------------- */
 
 var MongoClient = require('mongodb').MongoClient;
@@ -52,7 +43,6 @@ portConfig = {
 
 var sp;
 sp = new SerialPort.SerialPort(portName, portConfig);
-
 
 //Create a packet to be sent to all other XBEE units on the PAN.
 // The value of 'data' is meaningless, for now.
@@ -87,10 +77,6 @@ XBeeAPI.on("frame_object", function(frame) {
     if (beconID == 1){
         r1.push(rssiVal);
         console.log("Added to BEACON 1: " + rssiVal);
-        //console.log(r1.length);
-        // console.log('\r\n');
-        // var avg = math.mean(r1);
-        // console.log(avg);
         console.log('\r\n');
 
      }
@@ -106,9 +92,6 @@ XBeeAPI.on("frame_object", function(frame) {
      if (beconID == 3){
         r3.push(rssiVal);
         console.log("Added to BEACON 3: " + rssiVal);
-        //console.log(r3.length);
-        //var avg = math.mean(r3);
-        //console.log(avg);
         console.log('\r\n');
 
      }
@@ -164,27 +147,6 @@ XBeeAPI.on("frame_object", function(frame) {
 
      }
 
-
-    
- //  MongoClient.connect(url, function(err, db) {
- //                            if (err) {
- //                                console.log('Unable to connect to the mongoDB server. Error:', err);
- //                            } else {
-
- //                                db.collection('training').insert({
- //                                   // "Beacon 1": avg1,
- //                                   // "Beacon 2": avg2,
- //                                    "Beacon 3": avg3,
- //                                    // "Beacon 4": avg4,
- //                                    "Bin_Number": binNum,
- //                                }, function(err, records) {
- //                                    if (err) console.log("dups"); // err;
-
- //                                    // console.log(pho_ID, ": inserted into collection");
- //                                });
-
- // }
- //                        });  //end of Mongo DB 
 }
                        
 });
