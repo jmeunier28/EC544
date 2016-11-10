@@ -49,6 +49,7 @@ double error, previous_error, integral, derivative, output;
 
 /* --------------------- Functions --------------------- */
 
+<<<<<<< HEAD
 /*
 
 Different Cases For Speed:
@@ -99,6 +100,8 @@ void InitializeCarPosition()
      //NEED TO DETERMINE HOW TO FIX CASE WHERE CAR IS NOT STRAIGHT  
 }
 
+=======
+>>>>>>> df2dcf8a1c1998ec4464a818d9b8c43f1ef77dbb
 // PID CONTROL
 void PID_Control() {
   delay(dt);  
@@ -132,6 +135,7 @@ void PID_Control() {
   wheel_angle = 90 + output;
   Serial.print("wheel_angle: ");
   Serial.println(wheel_angle);
+<<<<<<< HEAD
   //wheels.write(wheel_angle);
   MoveCar();
 }
@@ -190,6 +194,10 @@ void MoveCar()
         
         
 } //end MoveCar function 
+=======
+  wheels.write(wheel_angle);
+}                 
+>>>>>>> df2dcf8a1c1998ec4464a818d9b8c43f1ef77dbb
 
 // LIDAR SENSORS
 void Poll_Lidars() {
@@ -204,7 +212,11 @@ void Poll_Lidars() {
   Serial.print(lidar_R_signed);
   Serial.println("cm");
   delta = lidar_L_signed - lidar_R_signed;
+<<<<<<< HEAD
   Serial.print("delta: ");
+=======
+   Serial.print("delta: ");
+>>>>>>> df2dcf8a1c1998ec4464a818d9b8c43f1ef77dbb
   Serial.println(delta); 
   int maxDelta = 200; // max difference of lidar readings
   int n_constant = 90; // scales -1:1 to -90:90
@@ -228,8 +240,12 @@ void Poll_Ultrasonic(){
     Serial.println("Stop car!");
   }
   else {
+<<<<<<< HEAD
     //esc.write(74); // go slow
     stopCar = false;
+=======
+    esc.write(74); // go 
+>>>>>>> df2dcf8a1c1998ec4464a818d9b8c43f1ef77dbb
   }
 }
 
