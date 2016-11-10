@@ -5,15 +5,6 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var math = require('mathjs');
 var excel = require('exceljs');
-//var workbook = new excel.Workbook();
-//var sheet = workbook.addWorksheet('RSSI_Vals');
-/*var workbook = createAndFillWorkbook();
-workbook.xlsx.writeFile('RSSI_Vals')
-    .then(function() {
-        // done
-    });
-sheet.addRow()
-*/
 
 
 var C = xbee_api.constants;
@@ -22,19 +13,18 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 });
 
 var portName = process.argv[2];
-
 var binNum = process.argv[3];
-
-//var sampleDelay = 3000;
 
 //takes sample every 2 seconds
 var sampleDelay = 2000;
+
+
+/*----------- Beacon Data point arrays --------------- */
 var r1 = [];
 var r2 = [];
 var r3 = [];
 var r4 = [];
 var finalPoints = [];
-//var points
 
 
 /*----------- Getting Current Date + Time in Right Format --------------- */
@@ -44,7 +34,6 @@ function getFormattedDate() {
     var str = (date.getMonth() + 1) + ":" + date.getDate() + ":" + date.getFullYear() + ":" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     return str;
 }
-
 
 /*----------- Connecting to Mongo --------------- */
 
@@ -88,86 +77,74 @@ sp.on("open", function () {
 XBeeAPI.on("frame_object", function(frame) {
   if (frame.type == 144){
   	//console.log(frame);
-  	//for(var i =0; i < 10)
-  	//while (r1.length)
+  	
     console.log("Beacon ID: " + frame.data[1] + ", RSSI: " + (frame.data[0]));
     var beconID = frame.data[1];
     var rssiVal = frame.data[0];
-    //r3.push(rssiVal);
+   
 
-    // console.log(r3.length);
-
+/*----------- Add RSSI val to corresponding beacon array --------------- */
     if (beconID == 1){
-       r1.push(rssiVal);
-        console.log("Added to BEACON 1: " + beconID);
+        r1.push(rssiVal);
+        console.log("Added to BEACON 1: " + rssiVal);
+        //console.log(r1.length);
+        // console.log('\r\n');
+        // var avg = math.mean(r1);
+        // console.log(avg);
+        console.log('\r\n');
 
      }
 
      if (beconID == 2){
-       r2.push(rssiVal);
-        console.log("Added to BEACON 1: " + beconID);
+        r2.push(rssiVal);
+        console.log("Added to BEACON 2: " + rssiVal);
+        //console.log(r2.length);
+        console.log('\r\n');
 
      }
 
      if (beconID == 3){
-       r3.push(rssiVal);
-        console.log("Added to BEACON 1: " + beconID);
+        r3.push(rssiVal);
+        console.log("Added to BEACON 3: " + rssiVal);
+        //console.log(r3.length);
+        //var avg = math.mean(r3);
+        //console.log(avg);
+        console.log('\r\n');
 
      }
 
      if (beconID == 4){
-       r4.push(rssiVal);
-        console.log("Added to BEACON 1: " + beconID);
+        r4.push(rssiVal);
+        console.log("Added to BEACON 4: " + rssiVal);
+        // console.log(r4.length);
+        console.log('\r\n');
 
      }
+     
+//     if ((r1.length == 10) && (r2.length == 10) && (r3.length == 10) && (r4.length == 10)){
+      if ((r3.length >=10)){
 
-    // var hisdjh = math.mean(r3);
-    // //var avg = finalPoints.push(math.mean(r3)));
-    // console.log(hisdjh);
-    // console.log("Average RSSI Val: " , r3.length);
-    // if ((r1.length >= 10) && (r2.length >= 10) && (r3.length >= 10) && (r4.length >= 10)){
+      // var avg1 = math.mean(r1);
+      // var avg2 = math.mean(r2);
+      var avg3 = math.mean(r3);
+      // var avg4 = math.mean(r4);
+      // console.log("Beacon 1 Avg: ", avg1);
+      // console.log("Beacon 2 Avg: ", avg2);
+      console.log("Beacon 3 Avg: ", avg3);
+      // console.log("Beacon 4 Avg: ", avg4);
+      console.log('\r\n');
 
-    // 	finalPoints.push(math.mean(r1));
-    // 	finalPoints.push(math.mean(r2));
-    // 	finalPoints.push(math.mean(r3));
-    // 	finalPoints.push(math.mean(r4));
-    // 	finalPoints.push(binNum);
-
-    //   //console.log("BEACON TEST:" + beconID);
-
-    // } 
-    // else {
-    // 	if (beconID == 1){
-    // 		r1.push(rssiVal);
-    //     console.log("BEACON TEST:" + beconID);
-
-    // 	}
-    // 	else if(beconID == 2){
-    // 		r2.push(rssiVal);
-    //     console.log("BEACON TEST:" + beconID);
-    // 	}
-    // 	else if(beconID == 3){
-    // 		r3.push(rssiVal);
-    //     console.log("BEACON TEST:" + beconID);
-    // 	}
-    // 	else if(beconID == 4){
-    // 		r4.push(rssiVal);
-    //     console.log("BEACON TEST:" + beconID);
-    // 	}
-    // //	}
-
-    // }
-    //console.log("BEACON TEST:" + beconID);
-  MongoClient.connect(url, function(err, db) {
+        MongoClient.connect(url, function(err, db) {
                             if (err) {
                                 console.log('Unable to connect to the mongoDB server. Error:', err);
                             } else {
-
-                                db.collection('beacon').insert({
-                                    "Router_Number": beconID,
-                                    "Time": getFormattedDate(),
-                                    "RSSI": rssiVal,
-                                    "Bin_Number": binNum,
+                              console.log('CONNECTED! ');
+                                db.collection('training').insert({
+                                  "Bin_Number": binNum,
+                                   // "Beacon_1": avg1,
+                                   // "Beacon_2": avg2,
+                                  "Beacon_3": avg3,
+                                    // "Beacon_4": avg4,
                                 }, function(err, records) {
                                     if (err) console.log("dups"); // err;
 
@@ -175,6 +152,39 @@ XBeeAPI.on("frame_object", function(frame) {
                                 });
 
  }
-                        }); }
-                        //end of Mongo DB 
+                        }); //end of Mongo DB 
+        r1.length = 0;
+        r2.length = 0;
+        r3.length = 0;
+        r4.length = 0;
+
+      //finalPoints.push(math.mean(r1));
+
+      //process.exit()
+
+     }
+
+
+    
+ //  MongoClient.connect(url, function(err, db) {
+ //                            if (err) {
+ //                                console.log('Unable to connect to the mongoDB server. Error:', err);
+ //                            } else {
+
+ //                                db.collection('training').insert({
+ //                                   // "Beacon 1": avg1,
+ //                                   // "Beacon 2": avg2,
+ //                                    "Beacon 3": avg3,
+ //                                    // "Beacon 4": avg4,
+ //                                    "Bin_Number": binNum,
+ //                                }, function(err, records) {
+ //                                    if (err) console.log("dups"); // err;
+
+ //                                    // console.log(pho_ID, ": inserted into collection");
+ //                                });
+
+ // }
+ //                        });  //end of Mongo DB 
+}
+                       
 });
