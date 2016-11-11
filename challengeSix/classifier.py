@@ -1,14 +1,9 @@
 # python implementation of knn classifier
 
 from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
-import numpy as np
 import pandas as pd
-import pylab as pl
-import csv
-import socket
+import numpy as np
 import sys
-import os
-import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -23,10 +18,10 @@ b2 = args.get("b2",None)
 b3 = args.get("b3",None)
 b4 = args.get("b4",None)
 
-print("\nB1: "), print(b1)
-print("\nB2: "), print(b2)
-print("\nB3: "), print(b3)
-print("\nB4: "), print(b4)
+# print("\nB1: "), print(b1)
+# print("\nB2: "), print(b2)
+# print("\nB3: "), print(b3)
+# print("\nB4: "), print(b4)
 
 nbrs = KNeighborsClassifier(n_neighbors=10, algorithm='auto') # based off of 3 nearest neighbors
 
