@@ -99,7 +99,7 @@ var requestRSSI = function(){
 
 /* -------- App Logic ----------*/
 
-var numSamples = 4;
+var numSamples = 3;
 
 console.log(' Running till each beacon gets at least', numSamples ,'rssi values to average.')
 
@@ -168,11 +168,25 @@ sp.on("open", function () {
 				//finalPoints.push(binNum);
 				// print		
 				console.log('\nTraining point values and bin: ' + r1Arr[r1Arr.length-1] + r2Arr[r2Arr.length-1] + r3Arr[r2Arr.length-1] + r4Arr[r2Arr.length-1])
-				console.log("clearing little arrays...\n");
-				r1 = [];
-				r2 = [];
-				r3 = [];
-				r4 = [];
+				
+				options['args'][0] = r1Arr[r1Arr.length-1];
+				options['args'][1] = r2Arr[r2Arr.length-1];
+				options['args'][2] = r3Arr[r3Arr.length-1];
+				options['args'][3] = r4Arr[r4Arr.length-1];
+				console.log("\nOptions are: " + options['args']);
+				PythonShell.run('classifier.py',options,function(err, results){
+					console.log("Calling python classifier");
+					console.log("\nPoint is: \n" + options['args']);
+					if (err) throw err;
+
+					console.log("I am in bin: " + results);
+					console.log("clearing little arrays...\n");
+					r1 = [];
+					r2 = [];
+					r3 = [];
+					r4 = [];
+
+				});
 				
 			}
 			// populate beacon arrays up to sample number, error check, print data and totals
@@ -199,54 +213,54 @@ sp.on("open", function () {
 
 		}
 
-			options['args'][0] = r1Arr[r1Arr.length-1];
-			options['args'][1] = r2Arr[r2Arr.length-1];
-			options['args'][2] = r3Arr[r3Arr.length-1];
-			options['args'][3] = r4Arr[r4Arr.length-1];
-			console.log("Outside the interval: " + options['args']);
+		// 	options['args'][0] = r1Arr[r1Arr.length-1];
+		// 	options['args'][1] = r2Arr[r2Arr.length-1];
+		// 	options['args'][2] = r3Arr[r3Arr.length-1];
+		// 	options['args'][3] = r4Arr[r4Arr.length-1];
+		// 	console.log("Outside the interval: " + options['args']);
 
-		var i = 0;
-		var classify = function()
-		{
+		// var i = 0;
+		// var classify = function()
+		// {
 
-			console.log("In interval function")
-			console.log("options are: " + options['args']);
+		// 	console.log("In interval function")
+		// 	console.log("options are: " + options['args']);
 
-			PythonShell.run('classifier.py',options,function(err, results){
-				console.log("Calling python classifier");
-				console.log("\nPoint is: \n" + options['args']);
-				if (err) throw err;
+		// 	PythonShell.run('classifier.py',options,function(err, results){
+		// 		console.log("Calling python classifier");
+		// 		console.log("\nPoint is: \n" + options['args']);
+		// 		if (err) throw err;
 
-				console.log("I am in bin: " + results);
+		// 		console.log("I am in bin: " + results);
 
-			});
-			i +=1;
-			if(i === 5) clearInterval(timer);
+		// 	});
+		// 	i +=1;
+		// 	if(i === 5) clearInterval(timer);
 
-			// pyshell = new PythonShell('classifier.py', options);
-			// // // pyshell.end(function (err) {
-			// // // 	if (err) throw err;
-			// // // 	console.log('finished');
-			// // // });
-			// pyshell.on('message', function (message) 
-			// {
-			// 	console.log("Calling python classifier");
-			// 	console.log("\nPoint is: \n" + options['args']);
-			// 	//if (err) throw err;
-			// 	// results is an array consisting of messages collected during execution
-			// 	//console.log('results: %j', results);
-			// 	console.log("\nI think i'm in bin: " + message);
-			// 	//socket.emit('left', results);
-			// }); // end python call 
+		// 	// pyshell = new PythonShell('classifier.py', options);
+		// 	// // // pyshell.end(function (err) {
+		// 	// // // 	if (err) throw err;
+		// 	// // // 	console.log('finished');
+		// 	// // // });
+		// 	// pyshell.on('message', function (message) 
+		// 	// {
+		// 	// 	console.log("Calling python classifier");
+		// 	// 	console.log("\nPoint is: \n" + options['args']);
+		// 	// 	//if (err) throw err;
+		// 	// 	// results is an array consisting of messages collected during execution
+		// 	// 	//console.log('results: %j', results);
+		// 	// 	console.log("\nI think i'm in bin: " + message);
+		// 	// 	//socket.emit('left', results);
+		// 	// }); // end python call 
 
-			// pyshell.end(function (err) {
-			// 	if (err) throw err;
-			// 	console.log('finished');
-			// });
+		// 	// pyshell.end(function (err) {
+		// 	// 	if (err) throw err;
+		// 	// 	console.log('finished');
+		// 	// });
 
-		}
+		// }
 
-		var timer = setInterval(classify, 1*10000); // call every 10 seconds
+		// var timer = setInterval(classify, 1*10000); // call every 10 seconds
 
 		
 		io.on("connection",function(socket){
