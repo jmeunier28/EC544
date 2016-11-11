@@ -23,7 +23,7 @@ b4 = args.get("b4",None)
 # print("\nB3: "), print(b3)
 # print("\nB4: "), print(b4)
 
-nbrs = KNeighborsClassifier(n_neighbors=10, algorithm='auto') # based off of 3 nearest neighbors
+nbrs = KNeighborsClassifier(n_neighbors=3, weights='distance', algorithm='kd_tree', p=1) # based off of 3 nearest neighbors
 
 class FindPoint:
 

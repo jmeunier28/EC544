@@ -20,7 +20,7 @@ var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
 app.get('/', function(req, res){
-  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeFive/public/showdata.html');
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeSix/public/indoor.html');
 });
 
 app.use(express.static(__dirname + '/public'));
@@ -99,7 +99,7 @@ var requestRSSI = function(){
 
 /* -------- App Logic ----------*/
 
-var numSamples = 3;
+var numSamples = 2;
 
 console.log(' Running till each beacon gets at least', numSamples ,'rssi values to average.')
 
@@ -127,6 +127,8 @@ sp.on("open", function () {
 	setInterval(requestRSSI, sampleDelay);
 	// input
 	console.log("opened serialport");
+	io.on("connection",function(socket){
+		console.log("user connection");
 	XBeeAPI.on("frame_object", function(frame) {
 		if (frame.type == 144){
 			console.log("yooo im gettin that data");
@@ -180,7 +182,14 @@ sp.on("open", function () {
 					if (err) throw err;
 
 					console.log("I am in bin: " + results);
-					console.log("clearing little arrays...\n");
+					console.log("yo bitch ass bitch...\n");
+					
+  
+						console.log('a user connected');
+						socket.emit('binNumber', results);
+			
+					
+					
 					r1 = [];
 					r2 = [];
 					r3 = [];
@@ -262,14 +271,8 @@ sp.on("open", function () {
 
 		// var timer = setInterval(classify, 1*10000); // call every 10 seconds
 
-		
-		io.on("connection",function(socket){
-  
-			console.log('a user connected');
-
-			
-		}); //end io conn
 	}); // end Xbee conn
+}); //end io conn
 }); // end serial port conn
 
 
