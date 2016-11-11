@@ -66,35 +66,60 @@
  </g>
 </svg>
 
-<script type="text/javascript" src="canvasjs.min.js"></script> 
+<!-- <script type="text/javascript" src="canvasjs.min.js"></script>  -->
 <script src= "https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script type="text/javascript">
 
-    var color = #FE957E;
-
-    socket.on('rssiVals', function(data){
-        console.log(data);
-    });
+    var color = '#FE957E';
 
     window.onload = function() {
             
             var socket = io();
 
+          //   socket.on('beaconID', function(moreData){
+          //   console.log('Beacon ID: ', moreData);
+          // });
+
+          //   socket.on('rssiVals', function(data){
+          //   console.log('RSSI Val:', data);
+          // });
+
             socket.on('binNumber', function(binNum){
 
-                var svgElement = document.getElementById(binNum);
+              for (var i = 1; i <= 23; i++) {
+                
+                if (i == binNum){
+                  console.log(binNum);
+                  var svgElement = document.getElementById(binNum);
+                  //console.log('Bin Number', binNum);
+                  svgElement.style.fill = color;
+//                   setTimeout(function(){
+//     //do what you need here
+// }, 2000);
+                }
+                else{
 
-                svgElement.style.fill = color;
+                  document.getElementById(i).style.fill = '#fff';
 
-            }
+                }
+              }
+               // $(binNum).empty();
+                // svgElement.style.fill = "#fff";
 
-function currentBin(color)
-{
-    document.getElementById("rect").style.fill = color;
-}
+            })
+
+          // svgElement.style.fill = "#fff";
+
+         }
+
+
+// function currentBin(color)
+// {
+//     document.getElementById("rect").style.fill = color;
+// }
     </script>  
         </div>
 

@@ -136,7 +136,7 @@ sp.on("open", function() {
 XBeeAPI.on("frame_object", function(frame) {
     if (frame.type == 144) {
 
-        console.log("Beacon ID: " + frame.data[1] + ", RSSI: " + (frame.data[0]));
+        // console.log("Beacon ID: " + frame.data[1] + ", RSSI: " + (frame.data[0]));
         var beconID = frame.data[1];
         var rssiVal = frame.data[0];
 
@@ -144,26 +144,44 @@ XBeeAPI.on("frame_object", function(frame) {
             r1.push(rssiVal);
             console.log("Added to BEACON 1: " + rssiVal);
             //var sendIt = "Added to BEACON 1: " + rssiVal;
-            console.log(rssiVal);
-            io.emit('rssiVals', rssiVal);
+           // console.log(rssiVal);
+            // io.emit('rssiVals', rssiVal);
+           // io.emit('beaconID', beconID);
         }
 
         if (beconID == 2) {
             r2.push(rssiVal);
             console.log("Added to BEACON 2: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+           // io.emit('beaconID', beconID);
         }
 
         if (beconID == 3) {
             r3.push(rssiVal);
             console.log("Added to BEACON 3: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+            //io.emit('beaconID', beconID);
         }
 
         if (beconID == 4) {
             r4.push(rssiVal);
             console.log("Added to BEACON 4: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+            //io.emit('beaconID', beconID);
         }
 
+        var t3wt = [1,1,1,1,1,2,2,3,3,3,3,3,3,5,5,5,5,5,5,5,7,7,7,7,7,7,7,7,7,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9]
 
+        for(var i = 0; i <= t3wt.length; i++){
+        var test = t3wt[i];
+        io.emit('binNumber', test);
+
+        setTimeout(function(){
+   // do what you need here
+ }, 2000);
+        //await sleep(2000);
+
+        }
         // MongoClient.connect(url, function(err, db) {
         //     if (err) {
         //         console.log('Unable to connect to the mongoDB server. Error:', err);
