@@ -14,7 +14,9 @@ Kiran Vishal
 
 */
 var SerialPort = require("serialport");
-var app = require('express')();
+//var app = require('express')();
+var express = require('express');
+app = express();
 var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -31,8 +33,18 @@ var portName = process.argv[2];
 
 //return main page
 app.get('/', function(req, res) {
-    res.sendFile('/public/index.html');
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/indoor.html');
 });
+
+app.get('/cats', function(req, res) {
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/Annoyingcat.html');
+});
+
+app.get('/nearBy', function(req, res) {
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/nearBy.html');
+});
+
+app.use(express.static(__dirname + '/public'));
 
 /* ------------ Error Handling ---------------*/
 
@@ -131,9 +143,9 @@ XBeeAPI.on("frame_object", function(frame) {
         if (beconID == 1) {
             r1.push(rssiVal);
             console.log("Added to BEACON 1: " + rssiVal);
-            var sendIt = "Added to BEACON 1: " + rssiVal;
-            console.log(sendIt);
-            io.emit('rssiVals', sendIt);
+            //var sendIt = "Added to BEACON 1: " + rssiVal;
+            console.log(rssiVal);
+            io.emit('rssiVals', rssiVal);
         }
 
         if (beconID == 2) {
