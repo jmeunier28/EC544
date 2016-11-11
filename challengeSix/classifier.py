@@ -16,12 +16,14 @@ parser.add_argument("b1", help="signal Beacon one", type = float)
 parser.add_argument("b2", help="signal Beacon two", type = float)
 parser.add_argument("b3", help="signal Beacon three", type = float)
 parser.add_argument("b4", help="signal Beacon four", type = float)
+#parser.add_argument("train", help="signal to know if we need to train or not", type = int)
 args = vars(parser.parse_args())
 
 b1 = args.get("b1",None)
 b2 = args.get("b2",None)
 b3 = args.get("b3",None)
 b4 = args.get("b4",None)
+#train = args.get("train", None)
 
 nbrs = KNeighborsClassifier(n_neighbors=4, algorithm='auto')
 
@@ -53,8 +55,8 @@ class FindPoint:
 
 find = FindPoint()
 find.trainMe('train.csv','sample_rssi_values.csv')
+print(int(find.findBin(b1,b2,b3,b4)))
 
-print(find.findBin(b1,b2,b3,b4))
 
 
 # # test this
