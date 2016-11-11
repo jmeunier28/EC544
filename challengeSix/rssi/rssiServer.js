@@ -170,7 +170,7 @@ XBeeAPI.on("frame_object", function(frame) {
             //io.emit('beaconID', beconID);
         }
 
-        var t3wt = [1,1,1,1,1,2,2,3,3,3,3,3,3,5,5,5,5,5,5,5,7,7,7,7,7,7,7,7,7,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9]
+        var t3wt = [1,2,3,5,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9,11,11,11,11,11,18,6,1,11,6]
 
         for(var i = 0; i <= t3wt.length; i++){
         var test = t3wt[i];
@@ -178,7 +178,7 @@ XBeeAPI.on("frame_object", function(frame) {
 
         setTimeout(function(){
    // do what you need here
- }, 2000);
+ }, 4000);
         //await sleep(2000);
 
         }
