@@ -18,6 +18,7 @@ var app = require('express')();
 var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var math = require('mathjs');
 
 var C = xbee_api.constants;
 var XBeeAPI = new xbee_api.XBeeAPI({
@@ -26,24 +27,12 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 
 var portName = process.argv[2];
 
-//var binNum = process.argv[3];
-
-//var sampleDelay = 3000;
-var sampleDelay = 2000;
-var math = require('mathjs');
-
-var C = xbee_api.constants;
-var XBeeAPI = new xbee_api.XBeeAPI({
-    api_mode: 2
-});
-
 /* ----------- HTML Pages ------------ */
 
 //return main page
 app.get('/', function(req, res) {
     res.sendFile('/public/index.html');
 });
-
 
 /* ------------ Error Handling ---------------*/
 
@@ -81,11 +70,6 @@ http.listen(3000, function() {
     console.log('listening on *:3000');
 });
 
-ON_DEATH(function(signal, err) {
-    console.log("\n\nClose Application and processes!.\n\n")
-    process.exit();
-})
-
 
 /*----------- Beacon Data point arrays --------------- */
 
@@ -97,13 +81,6 @@ var r2 = [];
 var r3 = [];
 var r4 = [];
 
-/*----------- Getting Current Date + Time in Right Format --------------- */
-
-function getFormattedDate() {
-    var date = new Date();
-    var str = (date.getMonth() + 1) + ":" + date.getDate() + ":" + date.getFullYear() + ":" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    return str;
-}
 
 /*----------- Connecting to Mongo --------------- */
 
@@ -153,42 +130,45 @@ XBeeAPI.on("frame_object", function(frame) {
 
         if (beconID == 1) {
             r1.push(rssiVal);
-            console.log("Added to BEACON 1: " + beconID);
+            console.log("Added to BEACON 1: " + rssiVal);
+            var sendIt = "Added to BEACON 1: " + rssiVal;
+            console.log(sendIt);
+            io.emit('rssiVals', sendIt);
         }
 
         if (beconID == 2) {
             r2.push(rssiVal);
-            console.log("Added to BEACON 2: " + beconID);
+            console.log("Added to BEACON 2: " + rssiVal);
         }
 
         if (beconID == 3) {
             r3.push(rssiVal);
-            console.log("Added to BEACON 3: " + beconID);
+            console.log("Added to BEACON 3: " + rssiVal);
         }
 
         if (beconID == 4) {
             r4.push(rssiVal);
-            console.log("Added to BEACON 4: " + beconID);
+            console.log("Added to BEACON 4: " + rssiVal);
         }
 
 
-        MongoClient.connect(url, function(err, db) {
-            if (err) {
-                console.log('Unable to connect to the mongoDB server. Error:', err);
-            } else {
+        // MongoClient.connect(url, function(err, db) {
+        //     if (err) {
+        //         console.log('Unable to connect to the mongoDB server. Error:', err);
+        //     } else {
 
-                db.collection('beacon').insert({
-                    "Router_Number": beconID,
-                    "Time": getFormattedDate(),
-                    "RSSI": rssiVal,
-                    "Bin_Number": binNum,
-                }, function(err, records) {
-                    if (err) console.log("dups"); // err;
+        //         db.collection('beacon').insert({
+        //             "Router_Number": beconID,
+        //             //"Time": getFormattedDate(),
+        //             "RSSI": rssiVal,
+        //             //"Bin_Number": binNum,
+        //         }, function(err, records) {
+        //             if (err) console.log("dups"); // err;
 
-                });
+        //         });
 
-            }
-        }); //end of Mongo DB 
+        //     }
+        // }); //end of Mongo DB 
     }
 
 });
