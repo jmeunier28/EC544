@@ -20,7 +20,7 @@ var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
 app.get('/', function(req, res){
-  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeSix/public/indoor.html');
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeSix/public/nearBy.html');
 });
 
 app.use(express.static(__dirname + '/public'));
@@ -99,7 +99,7 @@ var requestRSSI = function(){
 
 /* -------- App Logic ----------*/
 
-var numSamples = 2;
+var numSamples = 3;
 
 console.log(' Running till each beacon gets at least', numSamples ,'rssi values to average.')
 
@@ -131,7 +131,6 @@ sp.on("open", function () {
 		console.log("user connection");
 	XBeeAPI.on("frame_object", function(frame) {
 		if (frame.type == 144){
-			console.log("yooo im gettin that data");
 			// split input, sample number
 			var beaconID = frame.data[1];
 			var rssiVal = frame.data[0];
@@ -139,7 +138,6 @@ sp.on("open", function () {
 			if ((r1.length >= numSamples) && (r2.length >= numSamples) && 
 			    (r3.length >= numSamples) && (r4.length >= numSamples))
 			{
-				console.log("in dis bitch");
 			//if (r4.length >= numSamples) { // for testing, use above with all 4 beacons
 				// Average each of the four beacons' values
 				var r1avg = 0;
@@ -182,7 +180,6 @@ sp.on("open", function () {
 					if (err) throw err;
 
 					console.log("I am in bin: " + results);
-					console.log("yo bitch ass bitch...\n");
 					
   
 						console.log('a user connected');
@@ -203,7 +200,6 @@ sp.on("open", function () {
 			{
 				//console.log("  Beacon ID: " + beaconID + ", RSSI: " + rssiVal);
 				//console.log('   Pushing value to beacon #', beaconID)
-				console.log("im back here");
 				console.log(r1Arr);
 				if (beaconID == 1){
 				r1.push(rssiVal);
