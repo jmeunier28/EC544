@@ -52,7 +52,7 @@ class FindPoint:
 		point2 = point2.reshape(1, -1)
 		bin = nbrs.predict(point)
 		bin2 = nbrs.predict(point2)
-		bin = np.concatenate((bin,bin2), axis = 0)
+		#bin = np.concatenate((bin,bin2), axis = 0)
 		return bin
 
 

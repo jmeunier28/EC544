@@ -18,7 +18,7 @@
                 <ul class="Main_Navigation">
                     <li><a class="selected" href="indoor.html">Home</a></li>
                     
-                    <li><a href="Annoyingcat.html">Click Me!</a></li>
+                    <!-- <li><a href="Annoyingcat.html">Click Me!</a></li> -->
                     
                 </ul>
 
@@ -185,18 +185,14 @@ function setURL(url){
 
             var socket = io.connect();
             socket.on('binNumber', function(binNum){
-              //binNum = binNum[1].substring(1,2);
+
               binNum = binNum[1].replace(/\D/g,'');
-              //bitNum = parseFloat(.replace( /[^\d\.]*/g, ''));
               console.log(binNum);
-              // var svgElement = document.getElementById(binNum);
-              // svgElement.style.fill = color;
               for (var i = 1; i <= 23; i++) 
               { 
                 if (i == binNum){
                   console.log(binNum);
                   var svgElement = document.getElementById(binNum);
-                  //console.log('Bin Number', binNum);
                   svgElement.style.fill = color;
                 }
                 else{
