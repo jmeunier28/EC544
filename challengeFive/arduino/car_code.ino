@@ -1,246 +1,453 @@
-
-#include <PID_v1.h>
-#include <Servo.h>
+// Libraries
 #include <SoftwareSerial.h>
-#include <math.h>
+#include <Servo.h>
 
+/* ------- PINS ------- */
 
+// Servo pins
+#define ESC_PIN 5
+#define WHEEL_PIN 6
 
+// Lidar pins
+#define L_LIDAR_TRIG 13
+#define L_LIDAR_MON 10
+#define L_LIDAR_ENABLE 4
+#define R_LIDAR_TRIG 8
+#define R_LIDAR_MON 9
+#define R_LIDAR_ENABLE 12
 
-#define PIN_INPUT 0
-#define PIN_OUTPUT 3
+// Ultrasonic pins
+#define ULTRA_PIN 11
 
-// Servos
+//LED Control Pins
+#define RIGHT 13
+#define LEFT 10
+
+/* ---------- Global Variables ---------- */
+// Remote
+SoftwareSerial XBee(2,3); // RX, TX
+int Start = 0;
+
+// Servo global variables
 Servo wheels;
 Servo esc;
-bool startup = true;
-int startupDelay = 1000;
-double maxSpeedOffset = 45;
-double maxWheelOffset = 85;
-int wheel_input;
-int esc_input;
+
+// PID Setpoint (difference in distance between walls)
+const int Setpoint = 0;   // maybe make this an int
+
+// PID constants
+const double Kp = 1;
+const double Ki = 0;
+const double Kd = 0;
+
+// Lidar readings
+unsigned long lidar_L, lidar_R;
+int lidar_L_signed, lidar_R_signed;
+
+// Ultrasonic global variables
+long ultra, inches, cm, average;
+int Stop = 0;
+int ObjectDetected = 0;
+
+// PID global variables
+const double dt = 10; // poll interval in ms
+int Input;   // Positive means closer to right (so move left)
+int Output; 
+int Error;
+int PreviousErr;
+double Integral;
+double Derivative;
+
+// Movement
+int Angle;
+int Speed;
+
+/* --------------------- Functions --------------------- */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID    PID
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// Ultrasonic sensor
-const int pwPin = 11;
-long ultra, inches, cm;
-long avg;
-const int stopPin = 1;
 
-//XBee comms
-SoftwareSerial XBee(2,3); // RX, TX
+// PID CONTROL
+void PID_Control() {
+  delay(dt);
 
+  Error = Setpoint - Input;
 
-
-//Define Variables we'll be connecting to PID control
-double Setpoint, Input, Output;
-long Input_long;
-double left_right;
-
-//Specify the links and initial tuning parameters
-double Kp=3.3, Ki=0, Kd=0;
-PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-
-// LIDAR
-unsigned long pulse_width_left, pulse_width_right;
-
-
-void setup()
-{
+  Integral = Integral + (Error * dt);
+  Derivative = (Error - PreviousErr) / dt;
   
-  Serial.begin(9600); // Start serial communications
-  XBee.begin(9600); // Start XBee communications
-  
-  // LIDAR left
-  pinMode(2, OUTPUT); // Set pin 2 as trigger pin
-  pinMode(3, INPUT); // Set pin 3 as monitor pin
-  pinMode(4, OUTPUT); // Set pin 4 to control power enable line
-  digitalWrite(4,HIGH); //Turn sensor on
-  digitalWrite(2, LOW); // Set trigger LOW for continuous read
-  // LIDAR right
-  pinMode(8, OUTPUT); // Set pin 2 as trigger pin
-  pinMode(9, INPUT); // Set pin 3 as monitor pin
-  pinMode(12, OUTPUT); // Set pin 4 to control power enable line
-  digitalWrite(12,HIGH); //Turn sensor on
-  digitalWrite(8, LOW); // Set trigger LOW for continuous read
+  Output = (Kp * Error) + (Ki * Integral) + (Kd * Derivative);
 
-  
-  
-  //initialize the variables we're linked to PID
-  Input = 30; // LIDAR Delta
-  Setpoint = 30; // distance we want to maintain
-  //turn the PID on
-  myPID.SetMode(AUTOMATIC);
+  PreviousErr = Error;
 
-  // Servo attach
-  wheels.attach(6);
-  esc.attach(5);
-  // Calibration
-  wheels.write(90);
-  delay(1000);
-  esc.write(90); // neutral
-
-  // Ultrasonic setup
-  pinMode(pwPin, INPUT);
-  pinMode(stopPin, OUTPUT);
-  digitalWrite(stopPin, LOW);
-  
-  
-}
-
-
-double degToRad(double degrees) {
-  return (degrees * 71) / 4068;
-}
-
-double ragToDeg(double radians) {
-  return (radians * 4068) / 71;
-}
-
-
-/*
-// Calibrate the ESC by sending a high signal, then a low, then middle.
-void calibrateESC(){
-    esc.write(180); // full backwards
-    delay(startupDelay);
-    esc.write(0); // full forwards
-    delay(startupDelay);
-    esc.write(90); // neutral
-    delay(startupDelay);
-    esc.write(90); // reset the ESC to neutral (non-moving) value
-}
-void oscillate(){
-  for (int i =0; i < 360; i++){
-    double rad = degToRad(i);
-    double speedOffset = sin(rad) * maxSpeedOffset;
-    double wheelOffset = sin(rad) * maxWheelOffset;
-    esc.write(90 + speedOffset);
-    wheels.write(90 + wheelOffset);
-    delay(50);
-  }
-}
-*/
-
-
-void loop()
-{
-  // LIDAR
-  pulse_width_left = pulseIn(3, HIGH); // Count how long the pulse is high in microseconds
-  pulse_width_right = pulseIn(9, HIGH);
-  
-  if(pulse_width_left != 0)
-  { // If we get a reading that isn't zero, let's print it
-  
-      pulse_width_left = pulse_width_left/10; // 10usec = 1 cm of distance for LIDAR-Lite
-      Serial.print("Left LIDAR: ");
-      Serial.println(pulse_width_left); // Print the distance
-      
-      XBee.print("l, " + String(pulse_width_left)); // send values 
-      XBee.write("\n"); // binary data
-  }
-  
-  else
-  { // We read a zero which means we're locking up. 
-  
-    digitalWrite(4,LOW); // Turn off the sensor
-    delay(1);// Wait 1ms
-    digitalWrite(4,HIGH); //Turn on te sensor
-    delay(1);//Wait 1ms for it to turn on.
-    
-  }
-  
-  delay(1); //Delay so we don't overload the serial port
-  
-  if(pulse_width_right != 0)
-  { // If we get a reading that isn't zero, let's print it
-  
-        pulse_width_right = pulse_width_right/10; // 10usec = 1 cm of distance for LIDAR-Lite
-        Serial.print("Right LIDAR: ");
-        Serial.println(pulse_width_right); // Print the distance
-        
-        XBee.print("r, " + String(pulse_width_right)); // send values 
-        XBee.write("\n"); // binary data
-        
-  }
-  
-  else
-  { // We read a zero which means we're locking up.
-  
-    digitalWrite(12,LOW); // Turn off the sensor
-    delay(1);// Wait 1ms
-    digitalWrite(12,HIGH); //Turn on te sensor
-    delay(1);//Wait 1ms for it to turn on.
-    
-  }
-  
-  delay(1); //Delay so we don't overload the serial port
-
-
-  // PID
-  Input_long = (pulse_width_left - pulse_width_right);
-  left_right = double(Input_long);
-  Input = abs(left_right);
-  myPID.Compute();
-  Serial.print("left_right: ");
-  Serial.println(left_right);  
-  Serial.print("PID input: ");
-  Serial.println(Input);
-  Serial.print("PID output: ");
+  Serial.print("Error: ");
+  Serial.println(Error);
+  Serial.print("Output: ");
   Serial.println(Output);
-  XBee.print("p, " + String(Output)); // send values 
-  XBee.write("\n"); // binary data
 
 
-  // turn
-  if (Input > 10) {
-    if (left_right > 0) {
-      Serial.print("Go <<LEFT<< with strength: ");
-      wheel_input = 60;   
-    }
-    else if (left_right < 0) {
-      Serial.print("Go >>RIGHT>> with strength: ");
-      wheel_input = -60;
-    }
-    Serial.println(Output);
-  } 
-  // don't turn
+  if (!ObjectDetected)
+    MoveCar();
   else {
-    Serial.println("Go ^^STRAIGHT^^");
-    wheel_input = 0;
+    Serial.println("OBJECT DETECTED! \/\/ Backing up. \/\/");
+    
+    Speed = 110;
+    esc.write(Speed);
+    delay(3000);
+
+    Serial.print("Speed: ");
+    Serial.println(Speed);
+    Serial.println();
   }
 
-  // update wheels
-  wheels.write(90 + wheel_input);
   
+}
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE    MOVE  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void MoveCar() {
+  int turnNumber;
+  int Angle;
+  int Speed;
+  int Offset;
+  int turnMultiplier = 7;
+
+  // Bad Lidar reading (really when == 0)
+  if ((lidar_L_signed < 15) || (lidar_R_signed < 15)) {
+    Serial.println("   CASE 1");
+    // slow down while lidar reading bad value
+    Speed = 78;
+    esc.write(Speed); // go slow when no walls on either side (for now at least) 
+    
+    // bad left reading
+    if (lidar_L_signed < 15) {
+      // try to stay ~2ft from only (right) wall
+      if (lidar_R_signed > 40) // move closer to only (right) wall
+        wheels.write(55);
+      else if (lidar_R_signed < 30) // move further from only (right) wall
+        wheels.write(105);
+      else 
+        wheels.write(90);
+      Serial.println("Bad lidar reading. Trying to follow RIGHT wall.");     
+      Serial.print("Speed: ");
+      Serial.println(Speed);
+    }
+    // bad right reading
+    else if (lidar_R_signed < 15) {
+      // try to stay ~2ft from only (left) wall
+      if (lidar_L_signed > 40) // move closer to only (left) wall
+        wheels.write(125);
+      else if (lidar_L_signed < 30) // move further from only (left) wall
+        wheels.write(75);
+      else 
+        wheels.write(90);
+      Serial.println("Bad lidar reading. Trying to follow LEFT wall.");     
+      Serial.print("Speed: ");
+      Serial.println(Speed);
+    }  
+  }
+     
+  // WALLS ON BOTH SIDES  (walls or objects on both sides)
+  else if ((abs(Input) < 150) && ((lidar_L_signed < 150) && (lidar_R_signed < 150))) {  
+    Serial.println("   CASE 2");
+      // Turn amount 5:max , 0:none
+      if (abs(Input) > 100) 
+        turnNumber = 5;
+      else if (abs(Input) > 70)
+        turnNumber = 4;
+      else if (abs(Input) > 50)
+        turnNumber = 3;
+      else if (abs(Input) > 30)
+        turnNumber = 2;
+      else if (abs(Input) > 15)
+        turnNumber = 1;
+      else 
+        turnNumber = 0;     
+        
+      // Make a turn
+      if (turnNumber > 0) {
+          // Move Left
+          if (Output < 0) { // Left turn is increasing angle
+              Angle = 90 + turnMultiplier*turnNumber;
+              wheels.write(Angle);
+              Serial.print("Wheels: << Left turn <<");  
+          }
+          // Move Right
+          else if (Output > 0) { // Right turn is decreasing angle
+              Angle = 90 - turnMultiplier*turnNumber; // lowered this
+              wheels.write(Angle);
+              Serial.print("Wheels: >> Right turn >>");
+          }
+          else { // Output == 0 and Input > 10 (should never happen)
+            Serial.print("Wheels: Fuckin up..shouldn't be here...");
+          }
+          Serial.print("   turnNumber: ");
+          Serial.print(turnNumber);
+          Serial.print("    Angle: ");
+          Serial.println(Angle);
+      }
+      else { // turnNumber == 0 (no turn)
+        wheels.write(90);
+        Serial.println("Wheels: Straight   turnNumber: 0"); 
+      }
+      // Bigger turn -> slower speed
+      Speed = 67 + turnNumber; 
+      esc.write(Speed);
+      Serial.print("Speed: ");
+      Serial.println(Speed);
+  }
+
+
+  // OPENING ON ONE OR BOTH SIDES
+  else {
+      Serial.println("   CASE 3");
+ 
+      // slow down while one or more walls is missing
+      Speed = 77;
+      esc.write(Speed); // go slow when no walls on either side (for now at least)  
+      // no walls
+      if ((lidar_L_signed > 155) && (lidar_R_signed > 155)) {
+          if (Input == 0) // straight
+            Offset = 0;
+          else if (Input < 0) // closer to left, drift right slightly
+            Offset = -5;
+          else if (Input > 0) // closer to right, drift left slightly
+            Offset = 5;
+          Angle = 90 + Offset;
+          wheels.write(Angle);
+          Serial.println("NO WALLS! Slowing down.");
+          Serial.print("Speed: ");
+          Serial.println(Speed);
+      }
+      // no left wall
+      else if (lidar_L_signed > lidar_R_signed) {
+        // try to stay ~2ft from only (right) wall
+        if (lidar_R_signed > 95) // move closer to only (right) wall
+          wheels.write(80);
+        else if (lidar_R_signed < 70) // move further from only (right) wall
+          wheels.write(140);
+        else 
+          wheels.write(90);
+        Serial.println("No LEFT wall! slowing down.");     
+        Serial.print("Speed: ");
+        Serial.println(Speed);
+      }
+      // no right wall
+      else if (lidar_R_signed > lidar_L_signed) {
+        // try to stay ~2ft from only (left) wall
+        if (lidar_L_signed > 95) // move closer to only (left) wall
+          wheels.write(100);
+        else if (lidar_L_signed < 70) // move further from only (left) wall
+          wheels.write(40);
+        else 
+          wheels.write(90);
+        Serial.println("No RIGHT wall! slowing down.");     
+        Serial.print("Speed: ");
+        Serial.println(Speed);
+    } 
+  }
+ 
   Serial.println();
-  delay(1000);
+}
 
 
 
-  // Ultrasonic sensor
-  ultra = pulseIn(pwPin, HIGH);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS    LIDARS  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// LIDAR SENSORS
+void Poll_Lidars()
+{
+  lidar_L = pulseIn(L_LIDAR_MON, HIGH) / 10; // 10usec = 1 cm of distance for LIDAR-Lite
+  lidar_R = pulseIn(R_LIDAR_MON, HIGH) / 10;
+  lidar_L_signed = double(lidar_L);
+  lidar_R_signed = double(lidar_R);
+  Input = lidar_L_signed - lidar_R_signed; 
+  PrintLidar();
+}
+
+void PrintLidar()
+{
+  Serial.print("Left: ");
+  Serial.print(lidar_L_signed);
+  Serial.print("cm       ");
+  Serial.print("Right: ");
+  Serial.print(lidar_R_signed);
+  Serial.println("cm");
+  Serial.print("Input (L - R): ");
+  Serial.println(Input);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ULTRASONIC    ULTRASONIC    ULTRASONIC    ULTRASONIC    ULTRASONIC    ULTRASONIC    ULTRASONIC    ULTRASONIC  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void Poll_Ultrasonic() {
+  ultra = pulseIn(ULTRA_PIN, HIGH);
   inches = ultra / 147;
   cm = inches * 2.54;
-  if (cm <= 50){
-    digitalWrite(stopPin, HIGH);
-    Serial.println("STOP CAR!!");
-    esc.write(90);  
-  }
-  else {
-    esc.write(20);
-  }
+  Serial.print("Front: ");
   Serial.print(cm);
   Serial.println("cm");
 
+  if (cm < 44)               // CHANGE THIS BACK AFTER TESTING
+    ObjectDetected = 1;
+  else
+    ObjectDetected = 0;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE    REMOTE  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Poll_Remote() {
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void setup() {
+
+  // Serial monitor
+  Serial.begin(9600);
+
+  // Xbee start
+  XBee.begin(9600);
   
+  // Servo attach
+  esc.attach(ESC_PIN);
+  wheels.attach(WHEEL_PIN);
 
-  // go slow
-  //esc.write(80);
+  // Remote start
+  for (int i = 0; i < 100; i++)
+  Serial.println();
+  Serial.println("Arduino on. Waiting for remote start.\n");
+  while (!Start)
+    CheckOn();
 
+  // Servo calibration
+  esc.write(90); // neutral
+  delay(1000);
+
+  //DRIVING LIGHTS
+  pinMode(RIGHT, OUTPUT);
+  pinMode(LEFT, OUTPUT);
+  digitalWrite(RIGHT, LOW);
+  digitalWrite(LEFT, LOW);
   
-  // SetSampleTime() // default 200ms
+  //Left lidar
+  pinMode(L_LIDAR_TRIG, OUTPUT);
+  pinMode(L_LIDAR_MON, INPUT);
+  pinMode(L_LIDAR_ENABLE, OUTPUT);
+  digitalWrite(L_LIDAR_ENABLE, HIGH); //Turn sensor on
+  digitalWrite(L_LIDAR_TRIG, LOW); // Set trigger LOW for continuous read
+  
+  // Right lidar
+  pinMode(R_LIDAR_TRIG, OUTPUT);
+  pinMode(R_LIDAR_MON, INPUT);
+  pinMode(R_LIDAR_ENABLE, OUTPUT);
+  digitalWrite(R_LIDAR_ENABLE, HIGH); //Turn sensor on
+  digitalWrite(R_LIDAR_TRIG, LOW); // Set trigger LOW for continuous read
+    
+  // Servo calibration
+  delay(500);
 
-  //analogWrite(PIN_OUTPUT, Output);
+  // Ultrasonic
+  pinMode(ULTRA_PIN, INPUT);
+
+  // initialize PID variables
+  PreviousErr = Setpoint - Input;
+  Integral = 0;
+
+  // Check distances
+  Serial.print("Initial Position:   "); 
+  Poll_Lidars();
+  Serial.println("Starting...");
+  Serial.println("\n");
+  delay(500);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF    ON/OFF  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CheckOn() {
+  char r;
+  String incomingData;
+  if (XBee.available()) {
+  do {
+    r = XBee.read();
+    incomingData += r;   
+  } 
+  while (r != -1);
+  incomingData = incomingData.substring(0,incomingData.length() - 1);
+  }
+  
+  // Check data for server shutdown signal while awaiting handshake
+  for (int i=0;i<incomingData.length();i++) {
+    // Quit command received
+    if (incomingData[i] == '1') {
+      Serial.println("Remote ON received. Calibrating ESC.");
+      Start = 1;
+    }
+  }
+}
+
+void CheckOff() {
+  char r;
+  String incomingData;
+  if (XBee.available()) {
+  do {
+    r = XBee.read();
+    incomingData += r;   
+  } 
+  while (r != -1);
+  incomingData = incomingData.substring(0,incomingData.length() - 1);
+  }
+  
+  // Check data for server shutdown signal while awaiting handshake
+  for (int i=0;i<incomingData.length();i++) {
+    // Quit command received
+    if (incomingData[i] == 'Q') {
+      Serial.println();
+      Serial.println("Remote OFF received. Exiting Loop.");
+      Serial.println();
+      esc.write(90);
+      Start = 0;
+      delay(250);
+      setup();
+    }
+  }
+}
+  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN    MAIN  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void loop() {
+
+
+  // Remote
+  CheckOff();
+
+  // Stopping
+  Poll_Ultrasonic();
+  Poll_Remote();
+
+  // Steering
+  Poll_Lidars();
+  PID_Control();
+
 }
