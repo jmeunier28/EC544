@@ -5,7 +5,7 @@
 // Define Baud Rate here
 #define BAUD 9600
 // Create an xBee object
-SoftwareSerial xbee(2,3); // Rx, Tx
+SoftwareSerial xbee(2, 3); // Rx, Tx
 
 // Global Variables
 boolean isLeader;
@@ -34,8 +34,8 @@ int switchState = 0;
 
 
 // Deboucning Test
-long lastDebounceTime = 0;  
-long debounceDelay = 50;  
+long lastDebounceTime = 0;
+long debounceDelay = 50;
 
 
 // Get the 'NI: ' value for node range from 1-4
@@ -59,7 +59,7 @@ int getNodeId() {
   xbee.write("ATNI\r");
   delay(100);
   while (xbee.available() > 0) {
-      s += char(xbee.read());
+    s += char(xbee.read());
   }
   delay(100);
 
@@ -79,51 +79,51 @@ int getNodeId() {
 
 
 // How to respond to the messages we get from other nodes
-void processResponse(){
+void processResponse() {
   if (xbee.available()) {
     String msg = readRecievedMsg();
     String info = msg.substring(msg.indexOf(':') + 1);
     Serial.println("INFO:  " + info);
     int sendCure = msg.indexOf('C');
     int sendInfect = msg.indexOf('I');
-    int id = msg.substring(0,msg.indexOf(':')).toInt();
+    int id = msg.substring(0, msg.indexOf(':')).toInt();
 
     // Widespread Infection
-    if(sendInfect == 0){    
+    if (sendInfect == 0) {
       infect();
     }
 
-    //Widespread Cure 
-    if(sendCure==0){    
+    //Widespread Cure
+    if (sendCure == 0) {
       cure();
     }
-    
+
     if (info == "Leader") {
       isLeader = false;
       digitalWrite(BLUE, LOW);
       verifyLeaderTimer = 0;
       if (id == leaderID) {
         Serial.println("leader is alive");
-//        verifyLeaderTimer = 0;
+        //        verifyLeaderTimer = 0;
       } else {
         election(id);
       }
     }
-     
+
   } else {
     checkLeader();
   }
 }
 
 // Cure infected nodes
-void cure(){
-    digitalWrite(RED, LOW);
-    digitalWrite(GREEN, HIGH);
+void cure() {
+  digitalWrite(RED, LOW);
+  digitalWrite(GREEN, HIGH);
 }
 
 // Infect non-leader nodes
-void infect(){
-  if(!isLeader){
+void infect() {
+  if (!isLeader) {
     digitalWrite(RED, HIGH);
     digitalWrite(GREEN, LOW);
   }
@@ -133,16 +133,16 @@ void setup() {
   xbee.begin(BAUD);
   Serial.begin(BAUD);
   isLeader = false;
-  
+
   pinMode(GREEN, OUTPUT);
   pinMode(BLUE, OUTPUT);
   pinMode(RED, OUTPUT);
   pinMode(BUTTON, INPUT);
-  digitalWrite(GREEN,HIGH);
-  digitalWrite(RED,LOW);
-  digitalWrite(BLUE,LOW);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(RED, LOW);
+  digitalWrite(BLUE, LOW);
 
-  
+
   myIdentity = getNodeId();
   final_id = myIdentity;
   leaderID = -1;
@@ -152,7 +152,7 @@ void setup() {
 
 String readRecievedMsg() {
   String msg  = "";
-  while(xbee.available() > 0) {
+  while (xbee.available() > 0) {
     char c = char(xbee.read());
     if (c == '\n') {
       break;
@@ -169,10 +169,12 @@ void broadcastMsg(int id) {
 }
 
 void leaderBroadcast() {
-  xbee.print(String(myIdentity)+ ":Leader\n");
+  xbee.print(String(myIdentity) + ":Leader\n");
   Serial.println("Current Leader:" + String(leaderID) + "\n");
   digitalWrite(BLUE, HIGH);
+  digitalWrite(RED, LOW);
   digitalWrite(GREEN, HIGH);
+
   isLeader = true;
 }
 
@@ -190,7 +192,7 @@ void election(int id) {
     broadcastMsg(final_id);
     Serial.println("new node higher than me...\n");
   } else {
-    if (elecTimer >= electionTimeLength){
+    if (elecTimer >= electionTimeLength) {
       elecTimer = 0;
       timeCount = 0;
       timeoutFlag = true;
@@ -223,62 +225,63 @@ void checkLeader() {
     } else {
       leader_timer++;
     }
-  } else if(verifyLeaderTimer >= verifyLeaderTimeout){
-        verifyLeaderTimer = 0;
-        broadcastMsg(myIdentity);
-        Serial.println("Leader "+String(leaderID) + " is dead.");
-        leaderID = -1;
-    }else {
-      if (leaderID == -1) {
-        verifyLeaderTimer = 0;
-        if (elecTimer < electionTimeLength) {
-          broadcastMsg(final_id);
-          elecTimer++;
-        } else {
-          elecTimer = 0;
-          leaderID = final_id;
-          final_id = myIdentity;
-        }
+  } else if (verifyLeaderTimer >= verifyLeaderTimeout) {
+    verifyLeaderTimer = 0;
+    broadcastMsg(myIdentity);
+    Serial.println("Leader " + String(leaderID) + " is dead.");
+    leaderID = -1;
+  } else {
+    if (leaderID == -1) {
+      verifyLeaderTimer = 0;
+      if (elecTimer < electionTimeLength) {
+        broadcastMsg(final_id);
+        elecTimer++;
       } else {
-         verifyLeaderTimer++;
+        elecTimer = 0;
+        leaderID = final_id;
+        final_id = myIdentity;
       }
+    } else {
+      verifyLeaderTimer++;
     }
+  }
 }
 
 
-void loop(){
+void loop() {
   switchState = digitalRead(BUTTON);
-  if(switchState ==1 ){
+  if (switchState == 1 ) {
     if ( (millis() - lastDebounceTime) > debounceDelay) {
-   if(leaderID == myIdentity){
+      if (leaderID == myIdentity) {
 
-    // Leader Logic
-    // if button pushed clear infections
+        // Leader Logic
+        // if button pushed clear infections
 
-    xbee.println("Cure\n");
-    digitalWrite(RED, LOW);
-    lastDebounceTime = millis();
+        xbee.println("Cure\n");
+       // digitalWrite(RED, LOW);
+        lastDebounceTime = millis();
 
+      }
+      else {
+
+        // Follower Logic
+        // if button pushed send out mass infections
+
+        if (digitalRead(BUTTON) == HIGH) {
+          countPresses += 1;
+          Serial.println("HIGH!!!");
+          if (countPresses == 1) {
+            digitalWrite(GREEN, LOW);
+            digitalWrite(RED, HIGH);
+            digitalWrite(BLUE, LOW);
+            xbee.println("Inf\n");
+            lastDebounceTime = millis();
+            countPresses = 0;
+          }
+        }
+      }
     }
-    else {
-   
-    // Follower Logic
-    // if button pushed send out mass infections
-   
-    if (digitalRead(BUTTON) == HIGH) {
-    countPresses += 1;
-    Serial.println("HIGH!!!");
-     if(countPresses == 1){
-      digitalWrite(GREEN,LOW);
-      digitalWrite(RED,HIGH);
-      digitalWrite(BLUE,LOW);
-      xbee.println("Inf\n");
-      lastDebounceTime = millis();
-      countPresses = 0;
-     }
-    }
-  } 
- }}
+  }
   processResponse();
   delay(1000);
 }
