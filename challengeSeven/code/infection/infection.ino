@@ -80,10 +80,10 @@ void setup() {
   pinMode(blue, OUTPUT);
   pinMode(red, OUTPUT);
   pinMode(8, INPUT);
-  digitalWrite(green,HIGH);
+  digitalWrite(green,LOW);
 
-  //digitalWrite(blue, LOW);
-  //digitalWrite(red, LOW);
+  digitalWrite(blue, LOW);
+  digitalWrite(red, LOW);
   
 
   id = getIdentity();
@@ -102,36 +102,46 @@ void infection(){
     digitalWrite(green, LOW);
     digitalWrite(blue,LOW);
     status = 1;
+    Serial.println("\n\nIm not the leader so im infected");
+  }
+  else{
+    Serial.println("\n\nI think im the leader so im not infected");
+    digitalWrite(blue,HIGH);
   }
 }
 
 //Healthy
 void cure(){
   if(!isLeader){
+    Serial.println("\nNot leader but im healthy");
     digitalWrite(red, LOW);
     digitalWrite(green, HIGH);
     digitalWrite(blue,LOW);
   }
   else{
+    Serial.println("\n\nI am the health leader");
     digitalWrite(blue,HIGH);
+    digitalWrite(green,LOW);
+    digitalWrite(red,LOW);
   }
   status = 0;
 }
 
 
-//Response function
+//Response 
 void processResponse(){
   if (xbee.available()) {
     String msg = readTheMsg();
     String info = msg.substring(msg.indexOf(':') + 1);
     int id = msg.substring(0, msg.indexOf(':')).toInt();
-    if (info == "Infection") {
+    //Serial.println("MY IDDDDD: " + id);
+    if (info == "I") {
       infection();
-    } else if (info == "Curing") {
+    } else if (info == "C") {
       cure();
       checkingTime = 0;
     } else {
-      Serial.println(info);
+      Serial.println("\n" + info);
       String othersStatus = info.substring(info.indexOf(':') + 1);
       info = info.substring(0, info.indexOf(':'));
       if (othersStatus == "1") {
@@ -236,6 +246,7 @@ void pickLeader() {
     status = 0;
     digitalWrite(green, LOW);
     digitalWrite(blue, HIGH);
+    digitalWrite(red, LOW);
   } else {
     if (status == 1) {
       digitalWrite(red, HIGH);
@@ -285,16 +296,23 @@ void leaderStatus() {
 void loop(){
   switchState = digitalRead(8);
   if(switchState == 1){
+    Serial.print("\nSwithed state is high and its real val is: ");
+    Serial.println(switchState);
+    Serial.println(isLeader);
     if(isLeader){
-        xbee.print(String(id) + ":Curing\n");
+      Serial.println("\n hey bitch");
+        xbee.print(String(id) + ":C\n");
         status = 0;
-    }else{
-        xbee.print(String(id) + ":Infect\n");
-        digitalWrite(red, HIGH);
-        digitalWrite(green, LOW);
-        digitalWrite(blue, LOW);
-        status = 1;
     }
+  if(!isLeader){
+      xbee.print(String(id) + ":I\n");
+      Serial.println("\nOH NOOOOOO");
+      digitalWrite(red, HIGH);
+      digitalWrite(green, LOW);
+      digitalWrite(blue, LOW);
+      status = 1;
+  }
+    
   }
   processResponse();
   delay(1000);
