@@ -18,15 +18,21 @@
 // Ultrasonic pins
 #define ULTRA_PIN 11
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
 
 //LED Control Pins
 #define PHOTON 1
 #define RIGHT 13
 #define LEFT 10
+<<<<<<< HEAD
 =======
 #define ULTRA_STOP 1
 
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
 /* ---------- Global Variables ---------- */
 
 // Servo global variables
@@ -60,9 +66,12 @@ int n_constant = 90; // scales -1:1 to -90:90
 /* --------------------- Functions --------------------- */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
 /*
 
 Different Cases For Speed:
@@ -70,6 +79,9 @@ Different Cases For Speed:
   (1) Wheel adj angle is small (< 5): can keep moving at fast speed
   (2) Wheel adj is of medium size (< 10): slow down by 3 while turning
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
   (3) Wheel adj is large (> 10): slow down by 5 while turning
 
 Different Cases for movement along Path:
@@ -93,6 +105,7 @@ Different Cases for movement along Path:
   Serial.print("Initializing Position");
  //Check initial condition cases
  if (abs(delta) < 20 ) // walls approx equidistant do nothing
+<<<<<<< HEAD
 =======
   (3) Wheel adj is large (> 10): slow down by 5 while turning 
 
@@ -118,11 +131,16 @@ void InitializeCarPosition()
  //Check initial condition cases
  if (delta < 20 ) // walls approx equidistant do nothing
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
  {
    Serial.print("Walls are only: ");
    Serial.println(delta);
    Serial.print(" apart, move forward");
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
    wheels.write(90);
    delay(1);
    esc.write(75);
@@ -134,6 +152,7 @@ void InitializeCarPosition()
     Serial.print("Difference is bigger than 20 but less than 200 wall is there try to find it");
  }
  else if (abs(delta) > 150)
+<<<<<<< HEAD
 =======
  }
  else if (20 < delta < 200)
@@ -142,12 +161,17 @@ void InitializeCarPosition()
  }
  else if (delta > 200)
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
  {
    Serial.print("No wall next to start point... adjust");
    wheels.write(90);
    delay(1);
    esc.write(74); //jolt forward
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
    delay(100);
  }
 
@@ -156,6 +180,7 @@ void InitializeCarPosition()
 
 void printPID()
 {
+<<<<<<< HEAD
 =======
    delay(500); 
  }
@@ -169,6 +194,8 @@ void printPID()
 void PID_Control() {
   delay(dt);  
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
   Serial.print("setpoint: ");
   Serial.println(setpoint);
   Serial.print("process_feedback: ");
@@ -199,6 +226,9 @@ void PID_Control() {
   Serial.println(wheel_angle);
   Serial.println();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
 
 }
 
@@ -290,6 +320,7 @@ void MoveCar(double output)
 
 void printLidar()
 {
+<<<<<<< HEAD
 =======
   
   // control wheels
@@ -367,6 +398,8 @@ void Poll_Lidars() {
   lidar_L_signed = double(lidar_L);
   lidar_R_signed = double(lidar_R);
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
   Serial.print("lidar_L: ");
   Serial.print(lidar_L_signed);
   Serial.print("cm       ");
@@ -374,6 +407,9 @@ void Poll_Lidars() {
   Serial.print(lidar_R_signed);
   Serial.println("cm");
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dami
   Serial.print("delta: ");
   Serial.println(delta);
   Serial.println();
@@ -425,6 +461,7 @@ void Poll_Lidars()
 
 // ULTRASONIC
 void Poll_Ultrasonic() {
+<<<<<<< HEAD
 =======
   delta = lidar_L_signed - lidar_R_signed;
 <<<<<<< HEAD
@@ -444,6 +481,8 @@ void Poll_Ultrasonic() {
 // ULTRASONIC
 void Poll_Ultrasonic(){
 >>>>>>> austin-branch
+=======
+>>>>>>> dami
   ultra = pulseIn(ULTRA_PIN, HIGH);
   inches = ultra / 147;
   cm = inches * 2.54;
@@ -463,6 +502,7 @@ void Poll_Ultrasonic(){
   }*/
   else {
 <<<<<<< HEAD
+<<<<<<< HEAD
     //esc.write(74); // go slow
     Serial.print("Going");
     stopCar = false;
@@ -474,6 +514,11 @@ void Poll_Ultrasonic(){
     esc.write(74); // go 
 >>>>>>> df2dcf8a1c1998ec4464a818d9b8c43f1ef77dbb
 >>>>>>> austin-branch
+=======
+    //esc.write(74); // go slow
+    Serial.print("Going");
+    stopCar = false;
+>>>>>>> dami
   }
 }
 
@@ -518,12 +563,17 @@ void setup()
     // Ultrasonic
     pinMode(ULTRA_PIN, INPUT);
 <<<<<<< HEAD
+<<<<<<< HEAD
     //pinMode(ULTRA_STOP, OUTPUT);
     //digitalWrite(ULTRA_STOP, LOW);
 =======
     pinMode(ULTRA_STOP, OUTPUT);
     digitalWrite(ULTRA_STOP, LOW);
 >>>>>>> austin-branch
+=======
+    //pinMode(ULTRA_STOP, OUTPUT);
+    //digitalWrite(ULTRA_STOP, LOW);
+>>>>>>> dami
     // Initial lidar poll
     Poll_Lidars();
     // initialize PID variables
@@ -537,6 +587,7 @@ void setup()
     Serial.print("Distance from right wall: ");
     Serial.print(lidar_R);
     Serial.println("cm");
+<<<<<<< HEAD
 <<<<<<< HEAD
     //InitializeCarPosition();
 =======
@@ -564,6 +615,9 @@ void setup()
     }*/
     InitializeCarPosition();
 >>>>>>> austin-branch
+=======
+    //InitializeCarPosition();
+>>>>>>> dami
     Serial.println("Starting...");
     Serial.println("\n");
     delay(1000);
@@ -579,9 +633,13 @@ void loop() {
   // Steering
   Poll_Lidars();
 <<<<<<< HEAD
+<<<<<<< HEAD
   PID_Control();
 =======
   PID_Control();  
 >>>>>>> austin-branch
+=======
+  PID_Control();
+>>>>>>> dami
 }
 

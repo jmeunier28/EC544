@@ -14,7 +14,13 @@ Kiran Vishal
 
 */
 var SerialPort = require("serialport");
+<<<<<<< HEAD
 var app = require('express')();
+=======
+//var app = require('express')();
+var express = require('express');
+app = express();
+>>>>>>> dami
 var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -25,6 +31,7 @@ var XBeeAPI = new xbee_api.XBeeAPI({
     api_mode: 2
 });
 
+<<<<<<< HEAD
 /* ----------- HTML Pages ------------ */
 
 app.get('/', function(req, res) {
@@ -36,6 +43,69 @@ app.get('/', function(req, res) {
 var sampleDelay = 2000;
 
 /*----------- Beacon Data point arrays --------------- */
+=======
+var portName = process.argv[2];
+
+/* ----------- HTML Pages ------------ */
+
+//return main page
+app.get('/', function(req, res) {
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/indoor.html');
+});
+
+app.get('/cats', function(req, res) {
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/Annoyingcat.html');
+});
+
+app.get('/nearBy', function(req, res) {
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeSix/rssi/public/nearBy.html');
+});
+
+app.use(express.static(__dirname + '/public'));
+
+/* ------------ Error Handling ---------------*/
+
+//catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// development error handler
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
+
+
+/* -----Run App on LocalHost Port 3000----- */
+
+http.listen(3000, function() {
+    console.log('listening on *:3000');
+});
+
+
+/*----------- Beacon Data point arrays --------------- */
+
+//takes sample every 2 seconds
+var sampleDelay = 2000;
+
+>>>>>>> dami
 var r1 = [];
 var r2 = [];
 var r3 = [];
@@ -50,7 +120,10 @@ var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/chal6';
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> dami
 //Note that with the XBeeAPI parser, the serialport's "data" event will not fire when messages are received!
 portConfig = {
     baudRate: 9600,
@@ -81,30 +154,59 @@ sp.on("open", function() {
     setInterval(requestRSSI, sampleDelay);
 });
 
+<<<<<<< HEAD
 XBeeAPI.on("frame_object", function(frame) {
     if (frame.type == 144) {
 
         console.log("Beacon ID: " + frame.data[1] + ", RSSI: " + (frame.data[0]));
+=======
+
+XBeeAPI.on("frame_object", function(frame) {
+    if (frame.type == 144) {
+
+        // console.log("Beacon ID: " + frame.data[1] + ", RSSI: " + (frame.data[0]));
+>>>>>>> dami
         var beconID = frame.data[1];
         var rssiVal = frame.data[0];
 
         if (beconID == 1) {
             r1.push(rssiVal);
+<<<<<<< HEAD
             console.log("Added to BEACON 1: " + beconID);
+=======
+            console.log("Added to BEACON 1: " + rssiVal);
+            //var sendIt = "Added to BEACON 1: " + rssiVal;
+           // console.log(rssiVal);
+            // io.emit('rssiVals', rssiVal);
+           // io.emit('beaconID', beconID);
+>>>>>>> dami
         }
 
         if (beconID == 2) {
             r2.push(rssiVal);
+<<<<<<< HEAD
             console.log("Added to BEACON 2: " + beconID);
+=======
+            console.log("Added to BEACON 2: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+           // io.emit('beaconID', beconID);
+>>>>>>> dami
         }
 
         if (beconID == 3) {
             r3.push(rssiVal);
+<<<<<<< HEAD
             console.log("Added to BEACON 3: " + beconID);
+=======
+            console.log("Added to BEACON 3: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+            //io.emit('beaconID', beconID);
+>>>>>>> dami
         }
 
         if (beconID == 4) {
             r4.push(rssiVal);
+<<<<<<< HEAD
             console.log("Added to BEACON 4: " + beconID);
         }
 
@@ -126,6 +228,42 @@ XBeeAPI.on("frame_object", function(frame) {
 
             }
         }); //end of Mongo DB 
+=======
+            console.log("Added to BEACON 4: " + rssiVal);
+            // io.emit('rssiVals', rssiVal);
+            //io.emit('beaconID', beconID);
+        }
+
+        var t3wt = [1,2,3,5,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9,11,11,11,11,11,18,6,1,11,6]
+
+        for(var i = 0; i <= t3wt.length; i++){
+        var test = t3wt[i];
+        io.emit('binNumber', test);
+
+        setTimeout(function(){
+   // do what you need here
+ }, 4000);
+        //await sleep(2000);
+
+        }
+        // MongoClient.connect(url, function(err, db) {
+        //     if (err) {
+        //         console.log('Unable to connect to the mongoDB server. Error:', err);
+        //     } else {
+
+        //         db.collection('beacon').insert({
+        //             "Router_Number": beconID,
+        //             //"Time": getFormattedDate(),
+        //             "RSSI": rssiVal,
+        //             //"Bin_Number": binNum,
+        //         }, function(err, records) {
+        //             if (err) console.log("dups"); // err;
+
+        //         });
+
+        //     }
+        // }); //end of Mongo DB 
+>>>>>>> dami
     }
 
 });

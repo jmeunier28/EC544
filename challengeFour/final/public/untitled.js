@@ -47,11 +47,7 @@ var devCount = 0;
 
 function getFormattedDate() {
     var date = new Date();
-<<<<<<< HEAD
-    var str = date.getFullYear() + ":" + (date.getMonth() + 1) + ":" + date.getDate() + ":" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-=======
-    var str = date.getFullYear() + ":" + (date.getMonth() + 1) + ":" + date.getDate() + ":" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
->>>>>>> dami
+    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     return str;
 }
 
@@ -163,13 +159,12 @@ var getDevs = particle.listDevices({
                                 db.collection('ch4_Temps').insert({
                                     "Dev_ID": pho_ID,
                                     "Time": getFormattedDate(),
-                                    "ISO_Date": new Date(),
-                                    // "hour": getFormattedDate().split(':')[0],
-                                    // "min": getFormattedDate().split(':')[1],
-                                    // "sec": getFormattedDate().split(':')[2],
+                                    "hour": getFormattedDate().split(':')[0],
+                                    "min": getFormattedDate().split(':')[1],
+                                    "sec": getFormattedDate().split(':')[2],
                                     "Temp": numTemp
                                 }, function(err, records) {
-                                    if (err) console.log("dups"); // err;
+                                    if (err) console.log(); // err;
 
                                     // console.log(pho_ID, ": inserted into collection");
                                 });
@@ -198,16 +193,35 @@ var getDevs = particle.listDevices({
 var calAvg = function(db, callback) {
 
     db.collection('ch4_Temps').aggregate([{
-        $group: {
-            _id: "$Time",
+        $group: 
+        {
+            _id: { 
+
+              "hours": {$hour:"$$Time"},
+              "min": {$minute:"$$Time"},
+              "sec": {$second:"$$Time"},
+
+              "interval":
+              {
+                "$subtract": [
+                    {"$minute": "$Time"},
+                    {"$mod": [{ "$minute": "$Time", 1}]}
+                    ],
+                }, // end int
+
+             // "$Time",
+          
             avgTemp: {
                 $avg: "$Temp"
-            },
-            //iso: new Date(),
+            }
         }
-    }, {
+      
+    }, 
+
+    {
         $out: "AverageTemp"
-    }], function(err, result) {
+    }
+  }], function(err, result) {
         //console.log('TESTING', result)
         //db.close();
         //end of aggregate

@@ -22,7 +22,10 @@ var xbee_api = require('xbee-api');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var math = require('mathjs');
+<<<<<<< HEAD
 var excel = require('exceljs');
+=======
+>>>>>>> dami
 
 
 var C = xbee_api.constants;
