@@ -172,6 +172,7 @@ void leaderBroadcast() {
   xbee.print(String(myIdentity)+ ":Leader\n");
   Serial.println("Current Leader:" + String(leaderID) + "\n");
   digitalWrite(BLUE, HIGH);
+  digitalWrite(GREEN, HIGH);
   isLeader = true;
 }
 
