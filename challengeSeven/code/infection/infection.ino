@@ -100,14 +100,21 @@ void infection(){
   if(!isLeader){
     digitalWrite(red, HIGH);
     digitalWrite(green, LOW);
+    digitalWrite(blue,LOW);
     status = 1;
   }
 }
 
 //Healthy
 void cure(){
-  digitalWrite(red, LOW);
-  digitalWrite(green, HIGH);
+  if(!isLeader){
+    digitalWrite(red, LOW);
+    digitalWrite(green, HIGH);
+    digitalWrite(blue,LOW);
+  }
+  else{
+    digitalWrite(blue,HIGH);
+  }
   status = 0;
 }
 
@@ -173,9 +180,9 @@ void broadcastMsg(int id) {
 void leaderBroadcast() {
   xbee.print(String(id)+ ":Leader:2\n");
   Serial.println("New Leader :" + String(leaderID));
-  //digitalWrite(blue, HIGH);
-  digitalWrite(green, HIGH);
-  digitalWrite(red, LOW);
+//  digitalWrite(blue, HIGH);
+//  digitalWrite(green, LOW);
+//  digitalWrite(red, LOW);
   isLeader = true;
 }
 
@@ -227,15 +234,17 @@ void pickLeader() {
   Serial.println("Leader ID : "  + String(leaderID));
   if (leaderID == id) {
     status = 0;
-    digitalWrite(green, HIGH);
+    digitalWrite(green, LOW);
     digitalWrite(blue, HIGH);
   } else {
     if (status == 1) {
       digitalWrite(red, HIGH);
       digitalWrite(green, LOW);
+      digitalWrite(blue,LOW);
     } else {
       digitalWrite(green, HIGH);
       digitalWrite(red, LOW);
+      digitalWrite(blue, LOW);
     }
   }
 }
@@ -283,6 +292,7 @@ void loop(){
         xbee.print(String(id) + ":Infect\n");
         digitalWrite(red, HIGH);
         digitalWrite(green, LOW);
+        digitalWrite(blue, LOW);
         status = 1;
     }
   }
