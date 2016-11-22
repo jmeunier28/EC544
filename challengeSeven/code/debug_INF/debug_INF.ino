@@ -32,6 +32,12 @@ int BLUE = 6;
 int BUTTON = 8;
 int switchState = 0;
 
+
+// Deboucning Test
+long lastDebounceTime = 0;  
+long debounceDelay = 50;  
+
+
 // Get the 'NI: ' value for node range from 1-4
 int getNodeId() {
   String s;
@@ -189,11 +195,9 @@ void election(int id) {
       timeoutFlag = true;
       leaderID = final_id;
       final_id = myIdentity;
-      //Serial.println("election timeout");
     } else {
       elecTimer++;
       broadcastMsg(final_id);
-     // Serial.println("election continue" + String(elecTimer));
     }
   }
 }
@@ -244,13 +248,16 @@ void checkLeader() {
 void loop(){
   switchState = digitalRead(BUTTON);
   if(switchState ==1 ){
+    if ( (millis() - lastDebounceTime) > debounceDelay) {
    if(leaderID == myIdentity){
 
     // Leader Logic
     // if button pushed clear infections
 
     xbee.println("Cure\n");
-    //Serial.println(switchState);
+    digitalWrite(RED, LOW);
+    lastDebounceTime = millis();
+
     }
     else {
    
@@ -265,11 +272,12 @@ void loop(){
       digitalWrite(RED,HIGH);
       digitalWrite(BLUE,LOW);
       xbee.println("Inf\n");
+      lastDebounceTime = millis();
       countPresses = 0;
      }
     }
   } 
- }
+ }}
   processResponse();
   delay(1000);
 }
