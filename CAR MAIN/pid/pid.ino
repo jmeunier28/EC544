@@ -172,7 +172,7 @@ void AdjustSetpoint()
     setpoint = (leftDistance+rightDistance)/2; // middle distance
   // one wall (follow wall)
   else
-    setpoint = minHallWidth / 2; // cm
+    setpoint = (minHallWidth + 30) / 2; // cm
 }
 
 void AdjustInput()
@@ -261,7 +261,8 @@ void Move() {
   if (!objectDetected) 
     Forward();
   else
-    StopCar(); 
+    wheels.write(90);
+    //StopCar(); 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -459,7 +460,7 @@ void setup()
   pinMode(ULTRA_RIGHT, INPUT);
 
   // initialize PID variables
-  SetTunings(0.5,0.1,0);
+  SetTunings(0.5,0,0.01);
   SetsampleTime(10); 
 
     while (!Start) {
