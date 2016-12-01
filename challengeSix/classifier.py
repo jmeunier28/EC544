@@ -26,6 +26,7 @@ from sklearn.externals import joblib
 
 nbrs = KNeighborsClassifier(n_neighbors=3, weights='distance', algorithm='kd_tree', p=1) # based off of 3 nearest neighbors
 
+<<<<<<< HEAD
 # class FindPoint:
 
 
@@ -69,23 +70,89 @@ nbrs = KNeighborsClassifier(n_neighbors=10, algorithm='auto')
 nbrs.fit(trainArr, trainOut) #fit the data
 joblib.dump(nbrs,'data.pkl')
 
+=======
+class FindPoint:
+
+
+	def __init__(self):
+		print(" ")
+
+	def trainMe(self,test_file, train_file):
+
+		train = pd.read_csv(test_file)
+		test = pd.read_csv(train_file)
+		train.head()
+		col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
+		col2 = ['Bin']
+		trainArr = train.as_matrix(col)
+		trainOut = train.as_matrix(col2)
+		testArr = test.as_matrix(col)
+		testOut = test.as_matrix(col2)
+		nbrs.fit(trainArr, trainOut) #fit the data
+
+	def findBin(self,b1,b2,b3,b4):
+		point = np.array([b1,b2,b3,b4])
+		arr = [b1,b2,b3,b4]
+		point2 = np.array([i*.17 + i for i in arr])
+		point = point.reshape(1, -1)
+		point2 = point2.reshape(1, -1)
+		bin = nbrs.predict(point)
+		bin2 = nbrs.predict(point2)
+		#bin = np.concatenate((bin,bin2), axis = 0)
+		return bin
+
+
+find = FindPoint()
+find.trainMe('train2.csv','sample_rssi_values.csv')
+print(find.findBin(b1,b2,b3,b4))
+
+# train = pd.read_csv('train.csv')
+# test = pd.read_csv('test.csv')
+# train.head()
+# col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
+# col2 = ['Bin']
+# trainArr = train.as_matrix(col)
+# trainOut = train.as_matrix(col2)
+# testArr = test.as_matrix(col)
+# testOut = test.as_matrix(col2)
+# nbrs = KNeighborsClassifier(n_neighbors=7, weights='distance', algorithm='kd_tree', p=1)
+# hello = NearestNeighbors(n_neighbors = 7, algorithm='kd_tree').fit(trainArr)
+# nbrs.fit(trainArr, trainOut) #fit the data
+>>>>>>> ee6330c26f4f67e5a46b76d774e6a65f9c60c176
 # point = np.array([b1,b2,b3,b4])
+# arr = [b1,b2,b3,b4]
+# point2 = np.array([i*.17 + i for i in arr])
 # point = point.reshape(1, -1)
 # bin = nbrs.predict(point)
+# bin2 = nbrs.predict(point2)
+# bin3 = nbrs.predict(point3)
 # print(bin)
+# print("\n\n")
+# print(bin2) # could also be in this bin accuracy at about 83%
 # location = nbrs.predict(testArr)
 
-# correct = 0.0
+# # score = nbrs.predict_proba([b1,b2,b3,b4])
+# # print("\n\n")
+# # print(score)
 
-# correct = 0.0
-# for i in range(len(location)):
-# 	# print("\nActuatl Bin: ")
-# 	# print(trainOut[i][0])
-# 	# print(" Predicted Bin: ")
-# 	#print(testOut[i][0])
+# # Y = np.array([b1,b2,b3,b4])
+# # Y = Y.reshape(1,-1)
 
-# 	if testOut[i][0] == location[i]: 
-# 		correct += 1
+# # index, dist = hello.kneighbors(Y)
+# # print("\n\n")
+# # print(dist)
 
-# print(correct / len(location))
+# # correct = 0.0
+
+# # correct = 0.0
+# # for i in range(len(location)):
+# # 	# print("\nActuatl Bin: ")
+# # 	# print(trainOut[i][0])
+# # 	# print(" Predicted Bin: ")
+# # 	#print(testOut[i][0])
+
+# # 	if testOut[i][0] == location[i]: 
+# # 		correct += 1
+
+# # print(correct / len(location))
 

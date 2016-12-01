@@ -1,5 +1,3 @@
-CHALLENGE SIX
+EC544 Group 4: Challenge 6
 
-GROUP 4
-
-Find the	Device
+Wireless Indoor Localization using XBee

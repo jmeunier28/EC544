@@ -20,7 +20,11 @@ var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
 app.get('/', function(req, res){
+<<<<<<< HEAD
   res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeSix/public/indoor.html');
+=======
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeFive/public/showdata.html');
+>>>>>>> dami
 });
 
 app.use(express.static(__dirname + '/public'));
@@ -72,8 +76,13 @@ var XBeeAPI = new xbee_api.XBeeAPI({
   api_mode: 2
 });
 
+<<<<<<< HEAD
 var portName = '/dev/cu.usbserial-AD01SSII';
+var sampleDelay = 2000;
+=======
+var portName = '/dev/cu.usbserial-DA01LOA2';
 var sampleDelay = 3000;
+>>>>>>> dami
 
 
 //Note that with the XBeeAPI parser, the serialport's "data" event will not fire when messages are received!
@@ -99,7 +108,11 @@ var requestRSSI = function(){
 
 /* -------- App Logic ----------*/
 
+<<<<<<< HEAD
 var numSamples = 2;
+=======
+var numSamples = 5;
+>>>>>>> dami
 
 console.log(' Running till each beacon gets at least', numSamples ,'rssi values to average.')
 
@@ -126,12 +139,14 @@ sp.on("open", function () {
 	requestRSSI();
 	setInterval(requestRSSI, sampleDelay);
 	// input
+<<<<<<< HEAD
 	console.log("opened serialport");
 	io.on("connection",function(socket){
 		console.log("user connection");
+=======
+>>>>>>> dami
 	XBeeAPI.on("frame_object", function(frame) {
 		if (frame.type == 144){
-			console.log("yooo im gettin that data");
 			// split input, sample number
 			var beaconID = frame.data[1];
 			var rssiVal = frame.data[0];
@@ -139,7 +154,6 @@ sp.on("open", function () {
 			if ((r1.length >= numSamples) && (r2.length >= numSamples) && 
 			    (r3.length >= numSamples) && (r4.length >= numSamples))
 			{
-				console.log("in dis bitch");
 			//if (r4.length >= numSamples) { // for testing, use above with all 4 beacons
 				// Average each of the four beacons' values
 				var r1avg = 0;
@@ -169,6 +183,7 @@ sp.on("open", function () {
 				// add cluster number to end for matlab code
 				//finalPoints.push(binNum);
 				// print		
+<<<<<<< HEAD
 				console.log('\nTraining point values and bin: ' + r1Arr[r1Arr.length-1] + r2Arr[r2Arr.length-1] + r3Arr[r2Arr.length-1] + r4Arr[r2Arr.length-1])
 				
 				options['args'][0] = r1Arr[r1Arr.length-1];
@@ -182,7 +197,6 @@ sp.on("open", function () {
 					if (err) throw err;
 
 					console.log("I am in bin: " + results);
-					console.log("yo bitch ass bitch...\n");
 					
   
 						console.log('a user connected');
@@ -196,6 +210,9 @@ sp.on("open", function () {
 					r4 = [];
 
 				});
+=======
+				console.log('Training point values and bin: ' + r1Arr[0] + r2Arr[0] + r3Arr[0] + r4Arr[0])
+>>>>>>> dami
 				
 			}
 			// populate beacon arrays up to sample number, error check, print data and totals
@@ -203,8 +220,10 @@ sp.on("open", function () {
 			{
 				//console.log("  Beacon ID: " + beaconID + ", RSSI: " + rssiVal);
 				//console.log('   Pushing value to beacon #', beaconID)
-				console.log("im back here");
+<<<<<<< HEAD
 				console.log(r1Arr);
+=======
+>>>>>>> dami
 				if (beaconID == 1){
 				r1.push(rssiVal);
 				}
@@ -217,11 +236,16 @@ sp.on("open", function () {
 				else if(beaconID == 4){
 				r4.push(rssiVal);
 				}
+<<<<<<< HEAD
 				console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
+=======
+				//console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
+>>>>>>> dami
 			}
 
 		}
 
+<<<<<<< HEAD
 		// 	options['args'][0] = r1Arr[r1Arr.length-1];
 		// 	options['args'][1] = r2Arr[r2Arr.length-1];
 		// 	options['args'][2] = r3Arr[r3Arr.length-1];
@@ -273,6 +297,55 @@ sp.on("open", function () {
 
 	}); // end Xbee conn
 }); //end io conn
+=======
+
+		setInterval(function()
+		{
+			options['args'][0] = r1Arr.pop();
+			options['args'][1] = r2Arr.pop();
+			options['args'][2] = r3Arr.pop();
+			options['args'][3] = r4Arr.pop();
+			for (var i = 0; i < options['args'].length; i++){
+				if (options['args'][i] == 'undefined'){
+					options['args'][i] = 50; // randomly reassingn so program keeps running
+				}
+			}
+			console.log(options['args']);
+			console.log("In interval function")
+			console.log("options are: " + options['args']);
+
+			pyshell = new PythonShell('classifier.py', options);
+			// // pyshell.end(function (err) {
+			// // 	if (err) throw err;
+			// // 	console.log('finished');
+			// // });
+			pyshell.on('message', function (message) 
+			{
+				console.log("Calling python classifier");
+				console.log("\nPoint is: \n" + options['args']);
+				//if (err) throw err;
+				// results is an array consisting of messages collected during execution
+				//console.log('results: %j', results);
+				console.log("\nI think i'm in bin: " + message);
+				//socket.emit('left', results);
+			}); // end python call 
+
+			pyshell.end(function (err) {
+				if (err) throw err;
+				console.log('finished');
+			});
+
+		}, 1*10000); // call every 5 seconds
+
+		
+		io.on("connection",function(socket){
+  
+			console.log('a user connected');
+
+			
+		}); //end io conn
+	}); // end Xbee conn
+>>>>>>> dami
 }); // end serial port conn
 
 
