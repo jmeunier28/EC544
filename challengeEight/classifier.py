@@ -5,18 +5,19 @@ import pandas as pd
 import numpy as np
 import sys
 import argparse
+from sklearn.externals import joblib
 
-parser = argparse.ArgumentParser()
-parser.add_argument("b1", help="signal Beacon one", type = float)
-parser.add_argument("b2", help="signal Beacon two", type = float)
-parser.add_argument("b3", help="signal Beacon three", type = float)
-parser.add_argument("b4", help="signal Beacon four", type = float)
-args = vars(parser.parse_args())
+# parser = argparse.ArgumentParser()
+# parser.add_argument("b1", help="signal Beacon one", type = float)
+# parser.add_argument("b2", help="signal Beacon two", type = float)
+# parser.add_argument("b3", help="signal Beacon three", type = float)
+# parser.add_argument("b4", help="signal Beacon four", type = float)
+# args = vars(parser.parse_args())
 
-b1 = args.get("b1",None)
-b2 = args.get("b2",None)
-b3 = args.get("b3",None)
-b4 = args.get("b4",None)
+# b1 = args.get("b1",None)
+# b2 = args.get("b2",None)
+# b3 = args.get("b3",None)
+# b4 = args.get("b4",None)
 
 # print("\nB1: "), print(b1)
 # print("\nB2: "), print(b2)
@@ -25,53 +26,50 @@ b4 = args.get("b4",None)
 
 nbrs = KNeighborsClassifier(n_neighbors=3, weights='distance', algorithm='kd_tree', p=1) # based off of 3 nearest neighbors
 
-class FindPoint:
+# class FindPoint:
 
 
-	def __init__(self):
-		print(" ")
+# 	def __init__(self):
+# 		print(" ")
 
-	def trainMe(self,test_file, train_file):
+# 	def trainMe(self,test_file, train_file):
 
-		train = pd.read_csv(test_file)
-		test = pd.read_csv(train_file)
-		train.head()
-		col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
-		col2 = ['Bin']
-		trainArr = train.as_matrix(col)
-		trainOut = train.as_matrix(col2)
-		testArr = test.as_matrix(col)
-		testOut = test.as_matrix(col2)
-		nbrs.fit(trainArr, trainOut) #fit the data
+# 		train = pd.read_csv(test_file)
+# 		test = pd.read_csv(train_file)
+# 		train.head()
+# 		col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
+# 		col2 = ['Bin']
+# 		trainArr = train.as_matrix(col)
+# 		trainOut = train.as_matrix(col2)
+# 		testArr = test.as_matrix(col)
+# 		testOut = test.as_matrix(col2)
+# 		nbrs.fit(trainArr, trainOut) #fit the data
 
-	def findBin(self,b1,b2,b3,b4):
-		point = np.array([b1,b2,b3,b4])
-		arr = [b1,b2,b3,b4]
-		point2 = np.array([i*.17 + i for i in arr])
-		point = point.reshape(1, -1)
-		point2 = point2.reshape(1, -1)
-		bin = nbrs.predict(point)
-		bin2 = nbrs.predict(point2)
-		#bin = np.concatenate((bin,bin2), axis = 0)
-		return bin
+# 	def findBin(self,b1,b2,b3,b4):
+# 		point = np.array([b1,b2,b3,b4])
+# 		point = point.reshape(1, -1)
+# 		bin = nbrs.predict(point)
+# 		return bin
 
 
-find = FindPoint()
-find.trainMe('train2.csv','sample_rssi_values.csv')
-print(find.findBin(b1,b2,b3,b4))
+# find = FindPoint()
+# find.trainMe('train2.csv','sample_rssi_values.csv')
+# print(find.findBin(b1,b2,b3,b4))
 
-# train = pd.read_csv('train.csv')
-# test = pd.read_csv('test.csv')
-# train.head()
-# col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
-# col2 = ['Bin']
-# trainArr = train.as_matrix(col)
-# trainOut = train.as_matrix(col2)
-# testArr = test.as_matrix(col)
-# testOut = test.as_matrix(col2)
-# nbrs = KNeighborsClassifier(n_neighbors=7, weights='distance', algorithm='kd_tree', p=1)
-# hello = NearestNeighbors(n_neighbors = 7, algorithm='kd_tree').fit(trainArr)
-# nbrs.fit(trainArr, trainOut) #fit the data
+train = pd.read_csv('train.csv')
+test = pd.read_csv('test.csv')
+train.head()
+col = ['Beacon 1', 'Beacon 2','Beacon 3', 'Beacon 4']
+col2 = ['Bin']
+trainArr = train.as_matrix(col)
+trainOut = train.as_matrix(col2)
+testArr = test.as_matrix(col)
+testOut = test.as_matrix(col2)
+nbrs = KNeighborsClassifier(n_neighbors=10, algorithm='auto')
+nbrs.fit(trainArr, trainOut) #fit the data
+joblib.dump(nbrs,'data.pkl')
+
+
 # point = np.array([b1,b2,b3,b4])
 # arr = [b1,b2,b3,b4]
 # point2 = np.array([i*.17 + i for i in arr])
