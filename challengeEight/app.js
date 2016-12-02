@@ -19,7 +19,8 @@ var ON_DEATH = require('death');
 var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
-app.get('/', function(req, res){
+app.get('/', function(req, res)
+{
   res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeEight/public/lala.html');
 
 });
@@ -150,6 +151,7 @@ sp.on("open", function () {
 		console.log("user connection");
 
 	XBeeAPI.on("frame_object", function(frame) {
+		console.log("I'm getting data heyyy")
 		if (frame.type == 144){
 			// split input, sample number
 			var beaconID = frame.data[1];
@@ -219,6 +221,7 @@ sp.on("open", function () {
 			// populate beacon arrays up to sample number, error check, print data and totals
 			else if ((rssiVal != 0) && (rssiVal != 255))
 			{
+				console.log("Trying to populate arrays with data\n");
 				//console.log("  Beacon ID: " + beaconID + ", RSSI: " + rssiVal);
 				//console.log('   Pushing value to beacon #', beaconID)
 
@@ -236,14 +239,66 @@ sp.on("open", function () {
 				else if(beaconID == 4){
 				r4.push(rssiVal);
 				}
+				//This could be beacon of CAR????
+				else if(beaconID == 5){ 
+					//emit some msg idk what this will be yet
+				}
 
 				console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
 
 				//console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
 
-			}
+			}//end else if arrays arent full
 
-		}
+			/*
+				Need to implement some functionailty so that I can commmunicate with XBee that is on Car
+
+				Need to know XBee's Beacon ID... so I can do two way communication 
+				Also dont know if this funciton should be here 
+			*/
+
+			//Functions for controlling the car manually 
+
+			socket.on('goLeft', function(string){
+				console.log("Moving wheels 10 degrees to the left...\n");
+				sp.write('l'); //send ASCII char l to arduino
+				//then emit some OK message back to client
+			});
+			socket.on('goRight', function(string){
+				console.log("Moving wheels 10 degrees to the right...\n");
+				sp.write('r'); // send ASCII char r to arduino
+				//then emit some OK message to client
+			});
+			socket.on('goForward', function(string){
+				console.log("Moving forward...\n");
+				sp.write('f'); //send ASCII char f to arduino
+				//then emit some OK message back to client
+			});
+			socket.on('goBack', function(string){
+				console.log("Moving Backwards...\n");
+				sp.write('b'); // send ASCII char b to arduino
+				//then emit some OK message to client
+			});
+			socket.on('stopCar', function(string){
+				console.log("Stopping...\n");
+				sp.write('s'); // send ASCII char s to arduino
+				//then emit some OK message to client
+			});
+
+			//Functions for starting/stopping manual control
+			socket.on('startMan', function(string){
+				console.log("Overriding Autonomy of car. starting manual control..\n");
+				sp.write('m'); // send ASCII char m to arduino
+				//then emit some OK message to client
+			});
+			socket.on('stopMan', function(string){
+				console.log("Overriding manual drive... Autonomous control..\n");
+				sp.write('a') // Send ASCII char a to arduino
+				//then emit some OK message to client
+			});
+
+
+		}// end if frame data correct
 	});
 });
 
