@@ -31,11 +31,11 @@
     <h2 style="text-align: center;">Left Lidar:</h2>
     <label id = "left"></label>
     <br><br>
-    <h2 style="text-align: center;">Right Lidar:</h2>
+<!--     <h2 style="text-align: center;">Right Lidar:</h2>
     <label id = "right"></label>
     <br><br>
     <h2 style="text-align: center;">PID OUT:</h2>
-    <label id = "pid"></label>
+    <label id = "pid"></label> -->
     
         <br /><br />
 
@@ -56,13 +56,13 @@
 	    $('#left').append($('#left').text(msg));
 	  });
 
-	  socket.on('right', function(msg){
-	  	$('#right').append($('#right').text(msg));
-	  });
+	  // socket.on('right', function(msg){
+	  // 	$('#right').append($('#right').text(msg));
+	  // });
 
-	  socket.on('pid', function(msg){
-	  	$('#pid').append($('#pid').text(msg));
-	  });
+	  // socket.on('pid', function(msg){
+	  // 	$('#pid').append($('#pid').text(msg));
+	  // });
 
 </script>
 

@@ -1,10 +1,8 @@
 /*
-
 EC544 group 4
 Challenge Six 
 Read values from XBee
 And locate object on map
-
 */
 
 /* -------- Declare Dependices --------- */
@@ -19,8 +17,9 @@ var ON_DEATH = require('death');
 var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
-app.get('/', function(req, res){
-  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeEight/public/lala.html');
+app.get('/', function(req, res)
+{
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeEight/public/nearBy.html');
 
 });
 
@@ -74,7 +73,7 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 });
 
 
-var portName = '/dev/cu.usbserial-AD01SSII';
+var portName = '/dev/cu.usbserial-DA01LOA2';
 var sampleDelay = 2000;
 
 
@@ -134,10 +133,10 @@ options2 = {
 
 // Call script to get a model 
 
-PythonShell.run('classifier.py',options,function(err, results){
-	console.log("Calling python trainer and outputting model file");
-	if (err) throw err;
-});
+// PythonShell.run('classifier.py',options,function(err, results){
+// 	console.log("Calling python trainer and outputting model file");
+// 	if (err) throw err;
+// });
 
 
 sp.on("open", function () {
@@ -150,22 +149,23 @@ sp.on("open", function () {
 		console.log("user connection");
 
 	XBeeAPI.on("frame_object", function(frame) {
+		console.log("I'm getting data heyyy")
 		if (frame.type == 144){
 			// split input, sample number
 			var beaconID = frame.data[1];
 			var rssiVal = frame.data[0];
 			// check if finished data collection	
-			if ((r1.length >= numSamples) && (r2.length >= numSamples) && 
+			if (/*(r1.length >= numSamples) &&*/ (r2.length >= numSamples) && 
 			    (r3.length >= numSamples) && (r4.length >= numSamples))
 			{
 			//if (r4.length >= numSamples) { // for testing, use above with all 4 beacons
 				// Average each of the four beacons' values
-				var r1avg = 0;
+				/*var r1avg = 0;
 				for (var i = 0; i < r1.length; i++)
 					r1avg += r1[i];
 				r1avg /= r1.length;
 				finalPoints.push(r1avg);
-				r1Arr.push(r1avg);
+				r1Arr.push(r1avg);*/
 				var r2avg = 0;
 				for (var i = 0; i < r2.length; i++)
 					r2avg += r2[i];
@@ -187,14 +187,14 @@ sp.on("open", function () {
 		
 				console.log('\nTraining point values and bin: ' + r1Arr[r1Arr.length-1] + r2Arr[r2Arr.length-1] + r3Arr[r2Arr.length-1] + r4Arr[r2Arr.length-1])
 				
-				options['args'][0] = r1Arr[r1Arr.length-1];
-				options['args'][1] = r2Arr[r2Arr.length-1];
-				options['args'][2] = r3Arr[r3Arr.length-1];
-				options['args'][3] = r4Arr[r4Arr.length-1];
-				console.log("\nOptions are: " + options['args']);
-				PythonShell.run('predict.py',options,function(err, results){
+				options2['args'][0] = r2Arr[r2Arr.length-1];
+				options2['args'][1] = r2Arr[r2Arr.length-1];
+				options2['args'][2] = r3Arr[r3Arr.length-1];
+				options2['args'][3] = r4Arr[r4Arr.length-1];
+				console.log("\nOptions are: " + options2['args']);
+				PythonShell.run('predict.py',options2,function(err, results){
 					console.log("Calling python classifier");
-					console.log("\nPoint is: \n" + options['args']);
+					console.log("\nPoint is: \n" + options2['args']);
 					if (err) throw err;
 
 					console.log("I am in bin: " + results);
@@ -219,6 +219,7 @@ sp.on("open", function () {
 			// populate beacon arrays up to sample number, error check, print data and totals
 			else if ((rssiVal != 0) && (rssiVal != 255))
 			{
+				console.log("Trying to populate arrays with data\n");
 				//console.log("  Beacon ID: " + beaconID + ", RSSI: " + rssiVal);
 				//console.log('   Pushing value to beacon #', beaconID)
 
@@ -236,14 +237,65 @@ sp.on("open", function () {
 				else if(beaconID == 4){
 				r4.push(rssiVal);
 				}
+				//This could be beacon of CAR????
+				else if(beaconID == 5){ 
+					//emit some msg idk what this will be yet
+				}
 
 				console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
 
 				//console.log("Totals::  r1:", r1.length, "  r2:", r2.length, "  r3:", r3.length, "  r4:", r4.length);
 
-			}
+			}//end else if arrays arent full
 
-		}
+			/*
+				Need to implement some functionailty so that I can commmunicate with XBee that is on Car
+				Need to know XBee's Beacon ID... so I can do two way communication 
+				Also dont know if this funciton should be here 
+			*/
+
+			//Functions for controlling the car manually 
+
+			socket.on('goLeft', function(string){
+				console.log("Moving wheels 10 degrees to the left...\n");
+				sp.write('l'); //send ASCII char l to arduino
+				//then emit some OK message back to client
+			});
+			socket.on('goRight', function(string){
+				console.log("Moving wheels 10 degrees to the right...\n");
+				sp.write('r'); // send ASCII char r to arduino
+				//then emit some OK message to client
+			});
+			socket.on('goForward', function(string){
+				console.log("Moving forward...\n");
+				sp.write('f'); //send ASCII char f to arduino
+				//then emit some OK message back to client
+			});
+			socket.on('goBack', function(string){
+				console.log("Moving Backwards...\n");
+				sp.write('b'); // send ASCII char b to arduino
+				//then emit some OK message to client
+			});
+			socket.on('stopCar', function(string){
+				console.log("Stopping...\n");
+				sp.write('s'); // send ASCII char s to arduino
+				//then emit some OK message to client
+			});
+
+			//Functions for starting/stopping manual control
+			socket.on('startMan', function(string){
+				console.log("Overriding Autonomy of car. starting manual control..\n");
+				sp.write('m'); // send ASCII char m to arduino
+				//then emit some OK message to client
+			});
+			socket.on('stopMan', function(string){
+				console.log("Overriding manual drive... Autonomous control..\n");
+				sp.write('a') // Send ASCII char a to arduino
+				//then emit some OK message to client
+			});
+
+
+		}// end if frame data correct
 	});
 });
 
