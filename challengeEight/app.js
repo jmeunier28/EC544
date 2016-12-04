@@ -21,7 +21,7 @@ var xbee_api = require('xbee-api');
 
 app.get('/', function(req, res)
 {
-  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeEight/public/lala.html');
+  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeEight/public/nearBy.html');
 
 });
 
@@ -75,7 +75,7 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 });
 
 
-var portName = '/dev/cu.usbserial-AD01SSII';
+var portName = '/dev/cu.usbserial-DA01LOA2';
 var sampleDelay = 2000;
 
 
@@ -135,10 +135,10 @@ options2 = {
 
 // Call script to get a model 
 
-PythonShell.run('classifier.py',options,function(err, results){
-	console.log("Calling python trainer and outputting model file");
-	if (err) throw err;
-});
+// PythonShell.run('classifier.py',options,function(err, results){
+// 	console.log("Calling python trainer and outputting model file");
+// 	if (err) throw err;
+// });
 
 
 sp.on("open", function () {
@@ -157,17 +157,17 @@ sp.on("open", function () {
 			var beaconID = frame.data[1];
 			var rssiVal = frame.data[0];
 			// check if finished data collection	
-			if ((r1.length >= numSamples) && (r2.length >= numSamples) && 
+			if (/*(r1.length >= numSamples) &&*/ (r2.length >= numSamples) && 
 			    (r3.length >= numSamples) && (r4.length >= numSamples))
 			{
 			//if (r4.length >= numSamples) { // for testing, use above with all 4 beacons
 				// Average each of the four beacons' values
-				var r1avg = 0;
+				/*var r1avg = 0;
 				for (var i = 0; i < r1.length; i++)
 					r1avg += r1[i];
 				r1avg /= r1.length;
 				finalPoints.push(r1avg);
-				r1Arr.push(r1avg);
+				r1Arr.push(r1avg);*/
 				var r2avg = 0;
 				for (var i = 0; i < r2.length; i++)
 					r2avg += r2[i];
@@ -189,14 +189,14 @@ sp.on("open", function () {
 		
 				console.log('\nTraining point values and bin: ' + r1Arr[r1Arr.length-1] + r2Arr[r2Arr.length-1] + r3Arr[r2Arr.length-1] + r4Arr[r2Arr.length-1])
 				
-				options['args'][0] = r1Arr[r1Arr.length-1];
-				options['args'][1] = r2Arr[r2Arr.length-1];
-				options['args'][2] = r3Arr[r3Arr.length-1];
-				options['args'][3] = r4Arr[r4Arr.length-1];
-				console.log("\nOptions are: " + options['args']);
-				PythonShell.run('predict.py',options,function(err, results){
+				options2['args'][0] = r2Arr[r2Arr.length-1];
+				options2['args'][1] = r2Arr[r2Arr.length-1];
+				options2['args'][2] = r3Arr[r3Arr.length-1];
+				options2['args'][3] = r4Arr[r4Arr.length-1];
+				console.log("\nOptions are: " + options2['args']);
+				PythonShell.run('predict.py',options2,function(err, results){
 					console.log("Calling python classifier");
-					console.log("\nPoint is: \n" + options['args']);
+					console.log("\nPoint is: \n" + options2['args']);
 					if (err) throw err;
 
 					console.log("I am in bin: " + results);

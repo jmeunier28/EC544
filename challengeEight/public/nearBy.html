@@ -185,8 +185,8 @@ function setURL(url){
 
             var socket = io.connect();
             socket.on('binNumber', function(binNum){
-
-              binNum = binNum[1].replace(/\D/g,'');
+              console.log(binNum[0])
+              binNum = binNum[0].replace(/\D/g,'');
               console.log(binNum);
               for (var i = 1; i <= 23; i++) 
               { 
