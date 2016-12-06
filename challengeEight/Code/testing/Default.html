@@ -23,7 +23,7 @@
             <div id="Navigation">
 
                 <!-- <img src="http://192.168.1.112:4444/" width="320" height="240"/> -->
-                <h4> Driving Mode: <button id="reverse">Switch Mode</button> </h4>
+                <h4> Driving Mode: <button id="switch">Switch Mode</button> </h4>
                 <p id="mode" style="font-size: small;"> - </p>
                 <h4> Wheel Angle: </h4>
                 <p id="angle" style="font-size: small;"> - </p>
@@ -271,24 +271,30 @@
 
                         var callbackLeft = function() {
                             console.log("LEFT");
+                            socket.emit('goLeft','<');
                         };
 
                         var callbackRight = function() {
                             console.log("RIGHT");
+                            socket.emit('goRight','>');
                         };
 
                         var callbackReverse = function() {
-                            console.log("REVERSE");
+                            console.log("SLLLOOOOOWWWWWWWWWWWW");
+                            socket.emit('decreaseSpeed','D');
                         };
 
                         var callbackForward = function() {
                             console.log("GOOOOOOOO");
+                            socket.emit('increaseSpeed','U');
                         };
                         var callbackStop = function() {
                             console.log("Starting or Stopping");
+                            socket.emit('stopCar','S');
                         };
                         var callbackManual = function() {
                             console.log("Manual or AUTO");
+                            socket.emit('startMan','T');
                         };
 
                         // $("input").keypress(function() {
@@ -325,8 +331,9 @@
                         $('#left').click(callbackLeft);
                         $('#right').click(callbackRight);
                         $('#reverse').click(callbackReverse);
-                        //});
                         $('#forward').click(callbackForward);
+                        $('#stop').click(callbackStop);
+                        $('#switch').click(callbackManual);
 
 
 
