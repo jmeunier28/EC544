@@ -1,34 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Indoor Localization</title>
+    <title>Challenge 8: Autonomous </title>
     <link rel="stylesheet" type="text/css" href="StyleSheet.css" />
     <meta charset="utf-8" />
+    <style type="text/css">
+        .auto-style1 {
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
     <div id="Container">
-        <div id="Header">
-            <header>
-               <p>
-                     <a href="https://en.wikipedia.org/wiki/Indoor_positioning_system" ><img src="logo.jpg" /></a></p>
-            </header>
-        </div>
-        <div id="Nav">
-            <nav>
-                <ul class="Main_Navigation">
-                    <li><a class="selected" href="indoor.html">Home</a></li>
-                    
-                    <!-- <li><a href="Annoyingcat.html">Click Me!</a></li> -->
-                    
-                </ul>
+        <div id="header">
+            <h1> Challenge 8: Autonomous Driving </h1>
 
-            </nav>
         </div>
 
-        <div id="content">
+        <div id="Content">
+            <div id="Navigation">
 
-            <svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
- <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+                <!-- <img src="http://192.168.1.112:4444/" width="320" height="240"/> -->
+                <h4> Driving Mode: <button id="switch">Switch Mode</button> </h4>
+                <p id="mode" style="font-size: small;"> - </p>
+                <h4> Wheel Angle: </h4>
+                <p id="angle" style="font-size: small;"> - </p>
+                <!-- <h3> Location: </h3> -->
+                <!-- <h3> Direction: </h3> -->
+                <!-- <p id="mode"> - </p> -->
+                <h4> Speed: </h4>
+                <p id="speed" style="font-size: small;"> - </p>
+                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" />
+
+                <button id="forward">Forward</button> <br>
+                <button id="left">Left</button>
+                <button id="stop">Stop</button>
+                <button id="right">Right</button> <br>
+                <button id="reverse">Reverse</button>
+
+
+
+            </div>
+
+            <div id="Main">
+
+                <p></p>
+                <svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
  <g>
   <title>background</title>
   <rect fill="#fff" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
@@ -39,7 +58,8 @@
  <g>
   <title>Layer 1</title>
   <rect id="svg_1" height="337" width="531" y="31.5" x="24.5" stroke-width="1.5" stroke="#000" fill="#fff"/>
-  <rect stroke="#fff" id="svg_2" height="302.99998" width="435.00004" y="60.50002" x="72" stroke-width="1.5" fill="#000"/>
+  <rect id="video" height="302.99998" width="435.00004" y="60.50002" x="72" stroke-width="1.5"         />
+    <!-- <img src="http://192.168.1.112:4444/" width="320" height="240"/> -->
   <rect stroke="#000" id="1" height="52" width="65" y="316" x="490.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="2" height="58" width="62" y="258" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="3" height="60" width="62" y="197" x="493.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
@@ -60,230 +80,317 @@
   <rect stroke="#000" id="20" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="21" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="22" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect id="15" height="86" width="52" y="163" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
-  <rect id="14" height="86" width="52" y="163" x="140.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
-  <g id="svg_30">
+ <!--  <rect id="15" height="86" width="52" y="163" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <rect id="14" height="86" width="52" y="163" x="140.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/> -->
+  <!-- <g id="svg_30">
    <text xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_28" y="177" x="297.5" stroke-opacity="null" stroke-width="0" stroke="#fff" fill="#aad4ff">Group 4</text>
    <text stroke="#fff" transform="matrix(1.4059 0 0 2.12663 -165 10.1221)" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_29" y="108.45607" x="296.96187" stroke-opacity="null" stroke-width="0" fill="#aad4ff">Challenge 6</text>
-  </g>
+  </g> -->
  </g>
 </svg>
 
-<!--  <script>
-function setURL(url){
-    document.getElementById('iframe').src = url;
-}
-</script>
-<iframe id="iframe" src="idreesinc.com/research.html" />
-<input type="button" onclick="setURL('URLHere')" /> -->
+                <style type="text/css">
+                    .tg {
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                    }
+                    
+                    .tg td {
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        padding: 10px 5px;
+                        border-style: solid;
+                        border-width: 1px;
+                        overflow: hidden;
+                        word-break: normal;
+                    }
+                    
+                    .tg th {
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        font-weight: normal;
+                        padding: 10px 5px;
+                        border-style: solid;
+                        border-width: 1px;
+                        overflow: hidden;
+                        word-break: normal;
+                    }
+                    
+                    .tg .tg-zl50 {
+                        font-weight: bold;
+                        font-size: 20px;
+                        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+                        ;
+                        color: #000000;
+                        text-align: center;
+                        vertical-align: top
+                    }
+                    
+                    .tg .tg-f053 {
+                        font-weight: bold;
+                        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+                        ;
+                        background-color: #cbcefb;
+                        color: #000000;
+                        vertical-align: top
+                    }
+                    
+                    .tg .tg-1lt6 {
+                        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+                        ;
+                        background-color: #cbcefb;
+                        color: #000000;
+                        text-align: center;
+                        vertical-align: top
+                    }
+                    
+                    .tg .tg-36h7 {
+                        font-weight: bold;
+                        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+                        ;
+                        color: #000000;
+                        vertical-align: top
+                    }
+                    
+                    .tg .tg-4858 {
+                        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+                        ;
+                        color: #000000;
+                        text-align: center;
+                        vertical-align: top
+                    }
+                </style>
+                <table class="tg" id="Bin1" style="display:none">
+                    <tr>
+                        <th class="tg-zl50" colspan="2">Near You:</th>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Bar:</td>
+                        <td class="tg-1lt6">Patrons</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">Shopping:</td>
+                        <td class="tg-4858">Buffalo Exchange</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Grocery:</td>
+                        <td class="tg-1lt6">Shaws</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">School:</td>
+                        <td class="tg-4858">Harvard</td>
+                    </tr>
+                </table>
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg .tg-zl50{font-weight:bold;font-size:20px;font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif !important;;color:#000000;text-align:center;vertical-align:top}
-.tg .tg-f053{font-weight:bold;font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif !important;;background-color:#cbcefb;color:#000000;vertical-align:top}
-.tg .tg-1lt6{font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif !important;;background-color:#cbcefb;color:#000000;text-align:center;vertical-align:top}
-.tg .tg-36h7{font-weight:bold;font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif !important;;color:#000000;vertical-align:top}
-.tg .tg-4858{font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif !important;;color:#000000;text-align:center;vertical-align:top}
-</style>
-<table class="tg" id="Bin1" style="display:none">
-  <tr>
-    <th class="tg-zl50" colspan="2">Near You:</th>
-  </tr>
-  <tr>
-    <td class="tg-f053">Bar:</td>
-    <td class="tg-1lt6">Patrons</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">Shopping:</td>
-    <td class="tg-4858">Buffalo Exchange</td>
-  </tr>
-  <tr>
-    <td class="tg-f053">Grocery:</td>
-    <td class="tg-1lt6">Shaws</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">School:</td>
-    <td class="tg-4858">Harvard</td>
-  </tr>
-</table>
+                <table class="tg" id="Bin6" style="display:none">
+                    <tr>
+                        <th class="tg-zl50" colspan="2">Near You:</th>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Bar:</td>
+                        <td class="tg-1lt6">Waxy's</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">Shopping:</td>
+                        <td class="tg-4858">Target</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Grocery:</td>
+                        <td class="tg-1lt6">Whole Foods</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">School:</td>
+                        <td class="tg-4858">Boston College</td>
+                    </tr>
+                </table>
 
-<table class="tg" id="Bin6" style="display:none">
-  <tr>
-    <th class="tg-zl50" colspan="2">Near You:</th>
-  </tr>
-  <tr>
-    <td class="tg-f053">Bar:</td>
-    <td class="tg-1lt6">Waxy's</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">Shopping:</td>
-    <td class="tg-4858">Target</td>
-  </tr>
-  <tr>
-    <td class="tg-f053">Grocery:</td>
-    <td class="tg-1lt6">Whole Foods</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">School:</td>
-    <td class="tg-4858">Boston College</td>
-  </tr>
-</table>
+                <table class="tg" id="Bin11" style="display:none">
+                    <tr>
+                        <th class="tg-zl50" colspan="2">Near You:</th>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Bar:</td>
+                        <td class="tg-1lt6">Drinks</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">Shopping:</td>
+                        <td class="tg-4858">Newbury Street</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Grocery:</td>
+                        <td class="tg-1lt6">Too many to list</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">School:</td>
+                        <td class="tg-4858">NorthEastern University</td>
+                    </tr>
+                </table>
 
-<table class="tg" id="Bin11" style="display:none">
-  <tr>
-    <th class="tg-zl50" colspan="2">Near You:</th>
-  </tr>
-  <tr>
-    <td class="tg-f053">Bar:</td>
-    <td class="tg-1lt6">Drinks</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">Shopping:</td>
-    <td class="tg-4858">Newbury Street</td>
-  </tr>
-  <tr>
-    <td class="tg-f053">Grocery:</td>
-    <td class="tg-1lt6">Too many to list</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">School:</td>
-    <td class="tg-4858">NorthEastern University</td>
-  </tr>
-</table>
+                <table class="tg" id="Bin18" style="display:none">
+                    <tr>
+                        <th class="tg-zl50" colspan="2">Near You:</th>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Bar:</td>
+                        <td class="tg-1lt6">Waxy's</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">Shopping:</td>
+                        <td class="tg-4858">Cambridge Side Galleria</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-f053">Grocery:</td>
+                        <td class="tg-1lt6">Porter Square</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-36h7">School:</td>
+                        <td class="tg-4858">MIT</td>
+                    </tr>
+                </table>
 
-<table class="tg" id="Bin18" style="display:none">
-  <tr>
-    <th class="tg-zl50" colspan="2">Near You:</th>
-  </tr>
-  <tr>
-    <td class="tg-f053">Bar:</td>
-    <td class="tg-1lt6">Waxy's</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">Shopping:</td>
-    <td class="tg-4858">Cambridge Side Galleria</td>
-  </tr>
-  <tr>
-    <td class="tg-f053">Grocery:</td>
-    <td class="tg-1lt6">Porter Square</td>
-  </tr>
-  <tr>
-    <td class="tg-36h7">School:</td>
-    <td class="tg-4858">MIT</td>
-  </tr>
-</table>
+                <!-- <div id="textbox" style="position:absolute;padding:10px;background:#FFFFCC;width:300px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec tincidunt purus. Donec eleifend libero in orci mattis pulvinar. Ut et felis eu leo malesuada eleifend. Ut sit amet odio eu ipsum rutrum consequat. Aliquam congue ultricies sagittis.</div>
+ -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
+                <script src="/socket.io/socket.io.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
+                <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+                <script type="text/javascript">
+                    var color = '#FE957E';
+                    window.onload = function() {
 
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-<script type="text/javascript">
-    var color = '#FE957E';
-    window.onload = function() {
+                        var socket = io();
 
-            var socket = io.connect();
-            socket.on('binNumber', function(binNum){
-              console.log(binNum[0])
-              binNum = binNum[0].replace(/\D/g,'');
-              console.log(binNum);
-              for (var i = 1; i <= 23; i++) 
-              { 
-                if (i == binNum){
-                  console.log(binNum);
-                  var svgElement = document.getElementById(binNum);
-                  svgElement.style.fill = color;
-                }
-                else{
-                  document.getElementById(i).style.fill = '#fff';
-                }
-                if (binNum == 1){
-                document.getElementById('Bin1').style.display = 'block';
-              }
-              else{
-                document.getElementById('Bin1').style.display = 'none';
-              }
-              if (binNum == 6){
-                document.getElementById('Bin6').style.display = 'block';
-              }
-              else{
-                document.getElementById('Bin6').style.display = 'none';
-              }
-            
-            if (binNum == 11){
-                document.getElementById('Bin11').style.display = 'block';
-              }
-              else{
-                document.getElementById('Bin11').style.display = 'none';
-              }
-            if (binNum == 18){
-                document.getElementById('Bin18').style.display = 'block';
-              }
-              else{
-                document.getElementById('Bin18').style.display = 'none';
-              }
-              }
-               // $(binNum).empty();
-                // svgElement.style.fill = "#fff";
-            })
-          // svgElement.style.fill = "#fff";
-         }
-// function currentBin(color)
-// {
-//     document.getElementById("rect").style.fill = color;
-// }
-            
-         //    var socket = io();
-          
-         //    socket.on('binNumber', function(binNum){
-         //      for (var i = 1; i <= 23; i++) {
-                
-         //        if (i == binNum){
-         //          console.log(binNum);
-         //          var svgElement = document.getElementById(binNum);
-         //          //console.log('Bin Number', binNum);
-         //          svgElement.style.fill = color;
-         //        }
-         //        else{
-         //          document.getElementById(i).style.fill = '#fff';
-         //        }
-         //        if (binNum == 1){
-         //        document.getElementById('Bin1').style.display = 'block';
-         //      }
-         //      else{
-         //        document.getElementById('Bin1').style.display = 'none';
-         //      }
-         //      if (binNum == 6){
-         //        document.getElementById('Bin6').style.display = 'block';
-         //      }
-         //      else{
-         //        document.getElementById('Bin6').style.display = 'none';
-         //      }
-            
-         //    if (binNum == 11){
-         //        document.getElementById('Bin11').style.display = 'block';
-         //      }
-         //      else{
-         //        document.getElementById('Bin11').style.display = 'none';
-         //      }
-         //    if (binNum == 18){
-         //        document.getElementById('Bin18').style.display = 'block';
-         //      }
-         //      else{
-         //        document.getElementById('Bin18').style.display = 'none';
-         //      }
-         //      }
-              
-         // })}
-    </script>  
+                        // <button id="forward">Forward</button>  <br>
+                        //     <button id="left">Left</button>
+                        //     <button id="stop">Stop</button>
+                        //     <button id="right">Right</button> <br>
+                        //     <button id="reverse">Reverse</button>
+
+                        // $(document).ready(function() {
+
+
+                        var callbackLeft = function() {
+                            console.log("LEFT");
+                            socket.emit('goLeft','<');
+                        };
+
+                        var callbackRight = function() {
+                            console.log("RIGHT");
+                            socket.emit('goRight','>');
+                        };
+
+                        var callbackReverse = function() {
+                            console.log("SLLLOOOOOWWWWWWWWWWWW");
+                            socket.emit('decreaseSpeed','D');
+                        };
+
+                        var callbackForward = function() {
+                            console.log("GOOOOOOOO");
+                            socket.emit('increaseSpeed','U');
+                        };
+                        var callbackStop = function() {
+                            console.log("Starting or Stopping");
+                            socket.emit('stopCar','S');
+                        };
+                        var callbackManual = function() {
+                            console.log("Manual or AUTO");
+                            socket.emit('startMan','T');
+                        };
+
+                        // $("input").keypress(function() {
+                        //     if (event.which == 13) callback();
+                        // });
+
+                        // $('#login_submit').click(callback);
+
+
+                        $(document).keydown(function(e) {
+                            switch (e.which) {
+                                case 32: //space bar: Start/stop
+                                    callbackStop();
+                                    break;
+                                case 37: //left arrow key
+                                    callbackLeft();
+                                    break;
+                                case 38: //up arrow key
+                                    callbackForward();
+                                    break;
+                                case 39: //right arrow key
+                                    callbackRight();
+                                    break;
+                                case 40: //bottom arrow key
+                                    callbackReverse();
+                                    break;
+                                case 84: //'t' key: toggle auto/manual
+                                    callbackManual();
+                                    break;
+                            }
+                        });
+
+
+                        $('#left').click(callbackLeft);
+                        $('#right').click(callbackRight);
+                        $('#reverse').click(callbackReverse);
+                        $('#forward').click(callbackForward);
+                        $('#stop').click(callbackStop);
+                        $('#switch').click(callbackManual);
+
+
+
+
+                        socket.on('binNumber', function(binNum) {
+                            for (var i = 1; i <= 23; i++) {
+
+                                if (i == binNum) {
+                                    console.log(binNum);
+                                    var svgElement = document.getElementById(binNum);
+                                    //console.log('Bin Number', binNum);
+                                    svgElement.style.fill = color;
+
+
+                                } else {
+                                    document.getElementById(i).style.fill = '#fff';
+                                }
+                                if (binNum == 1) {
+                                    document.getElementById('Bin1').style.display = 'block';
+                                } else {
+                                    document.getElementById('Bin1').style.display = 'none';
+                                }
+
+
+                                if (binNum == 6) {
+                                    document.getElementById('Bin6').style.display = 'block';
+                                } else {
+                                    document.getElementById('Bin6').style.display = 'none';
+                                }
+
+
+                                if (binNum == 11) {
+                                    document.getElementById('Bin11').style.display = 'block';
+                                } else {
+                                    document.getElementById('Bin11').style.display = 'none';
+                                }
+
+
+                                if (binNum == 18) {
+                                    document.getElementById('Bin18').style.display = 'block';
+                                } else {
+                                    document.getElementById('Bin18').style.display = 'none';
+                                }
+                            }
+
+                        })
+                    }
+                </script>
+            </div>
+
         </div>
-
         <div id="Footer" xmlns:dc="http://purl.org/dc/elements/1.1/">
             <span property="dc:dateCopyrighted">Copyright &copy Group 4</span>
-            
-        </div>
 
+        </div>
     </div>
+
 </body>
+
 </html>

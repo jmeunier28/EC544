@@ -1,87 +1,62 @@
 body {
-    align-content: center;
-    /*font-family: Arial, Helvetica, sans-serif;*/
-    overflow-x:hidden;
-    background-color: #f3f3f3;
+    background-color: #EEEEEE;
+    font-family: 'Times New Roman', Times, serif;
+    padding: 20px;
 }
 
 #Container {
-    padding: 32px;
-    align-content: center;
-}
-
-Header {
-    font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", sans-serif;
-    background-color: #fff;
-    height: 150px;
-    padding: 10px;
-}
-
-header p {
-    text-align: center;
-}
-
-.Main_Navigation {
-    padding: 0 5px 0 5px;
-    /*text-align: center;*/
-    line-height: 32px;
     background-color: #1F154A;
+    width: 1000px;
+    height: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: solid; 
+    border-width: 2px;
+    overflow-y: scroll
 }
 
-Nav{
-padding-top:10px;
-width:100%;
-}
-
-#Nav .selected {
-    color: cadetblue;
-    font-weight: bold;
-}
-
-ul.Main_Navigation {
-    margin-top: 15px;
-}
-
-.Main_Navigation li {
-    
-    display: inline-block;
-    padding: 0 10px 0 10px;
-}
-
-.Main_Navigation a {
-    font-size: 18px;
-    text-decoration: none;
-    color: #fff;
-    padding: 8px;
-    /*text-transform: capitalize;*/
-}
-
-.Main_Navigation a:hover {
-    color: #999;
-}
-
-
-#Footer {
+#header {
+    background-color: #999;
     text-align: center;
-    padding: 10px;
-    background-color: #1F154A;
     color: white;
-    clear: both;
-    bottom:0;
-    position: relative;
 }
 
-#content {
-    text-align: center;
-    margin: 50px;
+#Content {
+   padding: 20px;
+}
+#Navigation {
+    padding: 10px;
+    background-color: #EEE;
     color: #1F154A;
-    font-weight: bold;
-    font-size: 30px;
+    width: 300px;
+    float: left;
+    clear: CopyW;
+    height: 580px;
+    text-align: center;
 }
 
-#about {
+#Main {
+    width: 600px;
+    float: right;
     text-align: center;
-    margin: auto;
-    color: #1F154A;
+}
+
+#Navigation .selected{
     font-weight: bold;
+    color: black;
+}
+
+#Navigation ul {
+    list-style-type: none;
+    padding: 0;
+} 
+
+h1, h2, h3 {
+     text-align: center;
+     margin: 0;
+     padding: 10px;
+}
+a {
+    text-decoration: none;
+    text-align: center;
 }
