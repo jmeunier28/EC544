@@ -73,7 +73,8 @@ var XBeeAPI = new xbee_api.XBeeAPI({
 });
 
 
-var portName = '/dev/cu.usbserial-DA01LOA2';
+var portName = '/dev/cu.usbserial-AD01SSII';
+var usb = '/dev/cu.usbmodem1411';
 var sampleDelay = 2000;
 
 
@@ -155,17 +156,17 @@ sp.on("open", function () {
 			var beaconID = frame.data[1];
 			var rssiVal = frame.data[0];
 			// check if finished data collection	
-			if (/*(r1.length >= numSamples) &&*/ (r2.length >= numSamples) && 
+			if ((r1.length >= numSamples) && (r2.length >= numSamples) && 
 			    (r3.length >= numSamples) && (r4.length >= numSamples))
 			{
 			//if (r4.length >= numSamples) { // for testing, use above with all 4 beacons
 				// Average each of the four beacons' values
-				/*var r1avg = 0;
+				var r1avg = 0;
 				for (var i = 0; i < r1.length; i++)
 					r1avg += r1[i];
 				r1avg /= r1.length;
 				finalPoints.push(r1avg);
-				r1Arr.push(r1avg);*/
+				r1Arr.push(r1avg);
 				var r2avg = 0;
 				for (var i = 0; i < r2.length; i++)
 					r2avg += r2[i];
@@ -187,7 +188,7 @@ sp.on("open", function () {
 		
 				console.log('\nTraining point values and bin: ' + r1Arr[r1Arr.length-1] + r2Arr[r2Arr.length-1] + r3Arr[r2Arr.length-1] + r4Arr[r2Arr.length-1])
 				
-				options2['args'][0] = r2Arr[r2Arr.length-1];
+				options2['args'][0] = r1Arr[r2Arr.length-1];
 				options2['args'][1] = r2Arr[r2Arr.length-1];
 				options2['args'][2] = r3Arr[r3Arr.length-1];
 				options2['args'][3] = r4Arr[r4Arr.length-1];
@@ -263,7 +264,7 @@ sp.on("open", function () {
 			});
 			socket.on('goRight', function(string){
 				console.log("Moving wheels 10 degrees to the right...\n");
-				sp.write('r'); // send ASCII char r to arduino
+				sp.write('y'); // send ASCII char r to arduino
 				//then emit some OK message to client
 			});
 			socket.on('goForward', function(string){
