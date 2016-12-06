@@ -15,8 +15,8 @@
 #define R_LIDAR_ENABLE 12
 
 // Ultrasonic pins
-#define ULTRA_LEFT 7
-#define ULTRA_RIGHT 11
+#define ULTRA_LEFT 11 
+#define ULTRA_RIGHT 7 //7
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  GLOBAL VARS    GLOBAL VARS    GLOBAL VARS    GLOBAL VARS    GLOBAL VARS    GLOBAL VARS    GLOBAL VARS  
@@ -24,7 +24,7 @@
 
 // SET THIS
 const double minHallWidthInFt = 0;  // 5
-
+const int padding = 50;
 
 // Remote
 SoftwareSerial XBee(2,3); // RX, TX
@@ -38,11 +38,10 @@ Servo esc;
 unsigned long lidar_L, lidar_R;
 double leftDistance, rightDistance;
 
-
 // Ultrasonic global variables
 int stop = 0;
 int objectDetected = 0;
-int leftOrRight;  // L=-1 C=0 R=1 Both=2
+char leftOrRight = 'x';  
 
 // PID global variables
 unsigned long lastTime;
@@ -57,10 +56,30 @@ int sign;
 int Angle;
 int Speed;
 
+// super basic queue for past ultrasonic values
+const int queueSize = 8;
+char ultraPast[queueSize] = {'x'};
+
+// corner variables
+int cornerBins[4] = {1, 6, 11, 18};
+int binNum = 0;
+
+// Manual controls
+int driveMode = 0; // 0 for autonomous, 1 for manual (toggled with manualToggle)
+int manualSpeed = 90;
+int manualAngle = 90;
+const char manualToggle = 'T';
+const char manualIncreaseSpeed = 'U';
+const char manualDecreaseSpeed = 'D'; // also works to reverse
+const char manualLeftTurn = '<';
+const char manualRightTurn = '>';
+const char manualCenter = 'C';
+const char manualStop = 'S';
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 void Print() {
   // Lidars
@@ -95,9 +114,7 @@ void Print() {
   else 
     Serial.println("LEFT turn");
   Serial.println("\n");
-  
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  AUXILIARY FUNCTIONS    AUXILIARY FUNCTIONS    AUXILIARY FUNCTIONS    AUXILIARY FUNCTIONS  
@@ -122,23 +139,15 @@ void SetHall()
   }
   else 
     Serial.println("\nDEBUG\n");
-
-    
-  //Serial.println  
 }
-
 
 void signMultiplier()
 {
-  if (setpoint != (minHallWidth / 2)) // two walls
-    sign = 1; // could be either  
-  else {
     char m = minSide();
     if (m == 'L')
       sign = -1;
     else
-      sign = 1;
-  }
+      sign = 1; 
 }
 
 char minSide() 
@@ -161,23 +170,47 @@ int farWalls()
     return 0;
 }
 
+bool all_are(char* i_begin, size_t sz, char x)
+{
+  for (int i = 0; i < queueSize; i++) {
+    if (i_begin[i] != x)
+      return false;
+  }
+  return true;
+
+
+
+  
+  //  const int* i_end = i_begin + sz;
+ //   for(; i_begin != i_end; ++i_begin)
+ //       if(*i_begin != x) return false;
+//    return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SETPOINT/INPUT/SPEED  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AdjustSetpoint() 
 {
+  // no walls
+  if ((leftDistance >= 150) && (rightDistance >= 150)) 
+    setpoint = 0;
   // two walls (center)
-  if ((leftDistance < 150) && (rightDistance < 150)) 
+  else if ((leftDistance < 150) && (rightDistance < 150))    
     setpoint = (leftDistance+rightDistance)/2; // middle distance
   // one wall (follow wall)
-  else
-    setpoint = (minHallWidth + 30) / 2; // cm
+  else 
+    setpoint = (minHallWidth + padding) / 2; // cm
 }
 
 void AdjustInput()
 {
-  if (setpoint == (minHallWidth / 2)) {
+  // no walls
+  if (setpoint == 0) 
+    input = 0;
+  // one wall
+  else if (setpoint == (minHallWidth + padding) / 2) {
     // set input to shorter side
     char s = minSide();
     if (s == 'L')
@@ -185,8 +218,15 @@ void AdjustInput()
     else
       input = rightDistance;
   }
-  else input = rightDistance; // could be either
-
+  // two walls
+  else if (setpoint == (leftDistance+rightDistance)/2) {
+        char s = minSide();
+    if (s == 'L')
+      input = leftDistance;
+    else
+      input = rightDistance; 
+  }
+    //input = leftDistance; // could be either
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,6 +275,8 @@ void Compute()
  
       /*Compute PID output*/
       output = kp * error + ki * errSum - kd * dInput;
+      if ((input == 0) && (setpoint == 0)) // no walls, go straight
+        output = 0;
  
       /*Remember some variables for next time*/
       lastInput = input;
@@ -257,17 +299,13 @@ void Move() {
   Angle = 90 + sign*limitedOutput;
   wheels.write(Angle);
 
-  // Forward or Reverse
-  if (!objectDetected) 
-    Forward();
-  else
-    wheels.write(90);
-    //StopCar(); 
+
+if (!StopCheck()) 
+  Forward(); 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FORWARD/REVERSE   FORWARD/REVERSE   FORWARD/REVERSE   FORWARD/REVERSE   FORWARD/REVERSE   FORWARD/REVERSE  
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Forward() 
 {
@@ -275,18 +313,18 @@ void Forward()
   // change this a bit later
 
    if ((Angle > 70) && (Angle < 110) && (leftDistance > 40) && (rightDistance > 40))
-    Speed = 73;
+    Speed = 42; // 35
    else
-    Speed = 78;
+    Speed = 58;    // 58
   esc.write(Speed);
 }
 
 void Reverse() 
-{
-  Serial.println("   REVERSING!");
+{ // have to play with this to get timing correct
+  Serial.println("REVERSING.\n");
   Speed = 110;
   // left object
-  if (leftOrRight == -1) {
+  if (ultraPast[0] == 'L') {
     esc.write(Speed);
     wheels.write(5);
     delay(850);
@@ -296,7 +334,7 @@ void Reverse()
     esc.write(90);
   }
   // right object
-  else if (leftOrRight == 1) {
+  else if (ultraPast[0] == 'R') {
     esc.write(Speed);
     wheels.write(175);
     delay(850);
@@ -309,22 +347,41 @@ void Reverse()
     Serial.println("Error in Reverse function");
 }
 
-void StopCar() 
+int StopCheck() 
 {
-  if (leftOrRight == -1) {
-    Serial.println("\n   LEFT object detected.\n");
-    Reverse();
-  }
-  else if (leftOrRight == 1) {
-    Serial.println("\n   RIGHT object detected.\n");
-    Reverse();   
-  }  
-  else if (leftOrRight == 2) {
+  if ((ultraPast[0] == 'L') || (ultraPast[0] == 'R') || (ultraPast[0] == 'B'))
     esc.write(90);
-    Serial.println("\n    STOPPING!. Object detected on BOTH sides.");
+  
+  if (ultraPast[0] == 'B') {
+    Serial.println("STOPPING. Object detected on both sides.\n");
+    esc.write(90);
+    delay(1500);
+    return 1;
   }
-  else // should never reach this
-    Serial.println("Ultrasonic debug statement: bad condition");
+  
+  // check left (average of past n values)
+  else if (all_are(ultraPast, queueSize, 'L')) {
+    Serial.print("LEFT object detected. ");
+    esc.write(90);
+    Reverse(); 
+    for (int i = 0; i < queueSize; i++)
+      ultraPast[i] = 'x'; 
+    return 1;
+  }
+  // check right (average of past n values)
+  else if (all_are(ultraPast, queueSize, 'R')) {
+    Serial.print("RIGHT object detected. ");
+    esc.write(90);
+    Reverse(); 
+    for (int i = 0; i < queueSize; i++)
+      ultraPast[i] = 'x';  
+    return 1; 
+  }  
+
+  else {
+    return 0;
+  //   Serial.println("Single left or right ultrasonic value: bad data, ignore it");
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,18 +403,20 @@ void PollLidars()
 void PollUltrasonic() 
 {
   if(digitalRead(ULTRA_LEFT) && digitalRead(ULTRA_RIGHT)) 
-    leftOrRight = 2;
-  else if (digitalRead(ULTRA_LEFT))
-    leftOrRight = -1;
-  else if (digitalRead(ULTRA_RIGHT))
-    leftOrRight = 1;
+    leftOrRight = 'B';
+  else if (digitalRead(ULTRA_LEFT)) {
+    leftOrRight = 'L';
+  }
+  else if (digitalRead(ULTRA_RIGHT)) {
+    leftOrRight = 'R';
+  }
   else
-    leftOrRight = 0;
+    leftOrRight = 'N';
 
-  if (leftOrRight)
-    objectDetected = 1;  
-  else 
-    objectDetected = 0; 
+  // shift past values back, add current to front
+  for (int i = queueSize-2; i >= 0; i--)
+    ultraPast[i+1] = ultraPast[i];
+  ultraPast[0] = leftOrRight;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -387,7 +446,7 @@ void CheckOn()
   }
 }
 
-void CheckOff() 
+void CheckOffOrToggle() 
 {
   char r;
   String incomingData;
@@ -412,8 +471,80 @@ void CheckOff()
       delay(250);
       setup();
     }
+    else if (incomingData[i] == manualToggle) {
+      driveMode = !driveMode;
+    }
+    
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+int CheckCorners()
+{
+  int inCorner;
+  if ((binNum != cornerBins[0]) && (binNum != cornerBins[1]) 
+      && (binNum != cornerBins[2]) && (binNum != cornerBins[3]))
+    inCorner = 0;
+  else
+    inCorner = 1;
+  return inCorner; 
+}
+
+// going to always turn left
+void turnCorner() {
+  
+  // check front collision
+  if (ultraPast[0] = 'B') {
+    esc.write(110);
+    delay(1000);
+    esc.write(90);
+  } 
+  // navigate turn
+  else {
+    esc.write(90);
+    PollLidars();
+    
+    // if very close to the wall move away from it
+    if (leftDistance < 30) {
+      wheels.write(50);
+      esc.write(80);
+      delay(1000);
+    }
+    // if near the wall but not very close continue to go straight
+    else if (leftDistance < 60) {
+        wheels.write(90);
+        esc.write(80);
+    }
+    // if enough distance between wall make the turn
+    else {     
+      wheels.write(135); // try this (left turn)
+      esc.write(80);
+    }
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP  
@@ -460,7 +591,7 @@ void setup()
   pinMode(ULTRA_RIGHT, INPUT);
 
   // initialize PID variables
-  SetTunings(0.5,0,0.01);
+  SetTunings(0.62,0.0,0.01);
   SetsampleTime(10); 
 
     while (!Start) {
@@ -486,18 +617,38 @@ void setup()
 
 void loop() 
 {
-  // Stopping
-  CheckOff();
+  // forward collision detection
   PollUltrasonic();
+  // Stopping
+  checkOffOrToggle();
+  
+  // autonomous driving
+  if (driveMode == 0) {
+    if (CheckCorners()) { // going to drive counter-clockwise around loop
+       // do corner stuff
 
-  // Moving
-  PollLidars();
-  AdjustSetpoint();
-  AdjustInput();  
-  Compute();
-  Move();
+       turnCorner();
+         
+    } 
+    else { // going straight down hallway
+      // Moving
+      PollLidars();
+      AdjustSetpoint();
+      AdjustInput();  
+      Compute();
+      Move();
+      // Serial Monitor
+      Print();
+    }
+  }
+  // manual driving
+  else // driveMode == 1
+  {
 
-  // Serial Monitor
-  Print();
+
+
+    
+  }
+
 }
 

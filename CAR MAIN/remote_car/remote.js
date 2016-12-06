@@ -2,7 +2,7 @@ var SerialPort = require('serialport');
 var ON_DEATH = require('death');
 
 // serial setup
-var portName = '/dev/cu.usbserial-AD01SSII',
+var portName = '/dev/cu.usbserial-DA01LOA2',
 portConfig = {
 	baudRate: 9600,
 	parser: SerialPort.parsers.readline("\n")

@@ -7,12 +7,12 @@ Checks for object and sends digital high if distance is less than set threshold
 
 #define LEFT_INPUT 5
 #define RIGHT_INPUT 6
-#define LEFT_OUTPUT 8
-#define RIGHT_OUTPUT 9
+#define LEFT_OUTPUT 3 
+#define RIGHT_OUTPUT 2 
 
 
 // distance to stop
-int stopThreshold = 36;  // ~10cm
+int stopThreshold = 57; 
 
 // vars
 long ultraLeft, inchesLeft, cmLeft;
@@ -61,14 +61,14 @@ void loop()
   // set output pins high on detection, print detection messages
   if (objectDetectedLeft) {
     digitalWrite(LEFT_OUTPUT, HIGH); 
-    Serial.println("\n  LEFT object detected!\n");
+    Serial.println("LEFT object detected!");
   }    
   else
     digitalWrite(LEFT_OUTPUT, LOW);
 
   if (objectDetectedRight) {
     digitalWrite(RIGHT_OUTPUT, HIGH);
-    Serial.println("\n  RIGHT object detected!\n");
+    Serial.println("RIGHT object detected!");
   }
   else
     digitalWrite(RIGHT_OUTPUT, LOW);
@@ -79,6 +79,8 @@ void loop()
   Serial.println("cm");
   Serial.print("Right ultrasonic distance: ");
   Serial.print(cmRight);
-  Serial.println("cm");   
+  Serial.println("cm\n\n");   
+
+  delay(10);
 }
 
