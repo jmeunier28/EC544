@@ -20,7 +20,7 @@ sp.on("open", function (err) {
 	for (var i = 0; i < 100; i++)
 		sp.write(on_signal);
 	
-	console.log("\n\n      Controls")
+	console.log("      Controls")
 	console.log("---------------------")
 	console.log("q: send off signal to car and quit")
 	console.log("t: toggle auto/manual")
@@ -43,7 +43,7 @@ sp.on("open", function (err) {
 			for (var i = 0; i < 100; i++)
 				sp.write(send_msg);
 			sp.close();   
-			console.log("\n\nSending OFF signal to car.\n\n")
+			console.log("\nSending OFF signal to car.\n\n")
 			process.exit();
 		} 
 		
@@ -51,56 +51,45 @@ sp.on("open", function (err) {
 		
 		else if (key.name == 't') {
 			send_msg = 'T';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Toggling auto/manual controls.")
 		}
 		else if (key.name == 'up') {
 			send_msg = 'U';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			
+			sp.write(send_msg);
 			console.log("Increasing speed.")
 		}
 		else if (key.name == 'down') {
 			send_msg = 'D';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Decreasing speed.")
 		}
 		else if (key.name == 'c') {
 			send_msg = 'C';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Centering wheels.")
 		}
 		else if (key.name == 'space') {
 			send_msg = 'S';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Toggle stopping/starting car.")
-		}		
-		else if (key.name == 's') {
-			send_msg = 'S';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
-			console.log("Stopping car.")
-		}			
+		}				
 		else if (key.name == 'left') {
 			send_msg = '<';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Turning left.")
 		}		
 		else if (key.name == 'right') {
 			send_msg = '>';
-			for (var i = 0; i < 100; i++)
-				sp.write(send_msg);
+			sp.write(send_msg);
 			console.log("Turning right.")
 		}		
 		
 		else {
+			console.log()
 			console.log(`You pressed the "${str}" key`);
-			console.log("Not a valid selection.\n\n")
+			console.log("Not a valid selection.\n")
 			//console.log();
 			//console.log(key);
 			//console.log();

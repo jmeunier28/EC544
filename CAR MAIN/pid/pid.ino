@@ -66,6 +66,7 @@ int binNum = 0;
 
 // Manual controls
 int driveMode = 0; // 0 for autonomous, 1 for manual (toggled with manualToggle)
+int stopToggle = 0; // 0 for stopped, 1 for not stopped
 int manualSpeed = 90;
 int manualAngle = 90;
 const char manualToggle = 'T';
@@ -74,7 +75,7 @@ const char manualDecreaseSpeed = 'D'; // also works to reverse
 const char manualLeftTurn = '<';
 const char manualRightTurn = '>';
 const char manualCenter = 'C';
-const char manualStop = 'S';
+const char manualStopToggle = 'S';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -313,7 +314,7 @@ void Forward()
   // change this a bit later
 
    if ((Angle > 70) && (Angle < 110) && (leftDistance > 40) && (rightDistance > 40))
-    Speed = 42; // 35
+    Speed = 44; // 42
    else
     Speed = 58;    // 58
   esc.write(Speed);
@@ -446,18 +447,18 @@ void CheckOn()
   }
 }
 
-void CheckOffOrToggle() 
+void CheckSignals() 
 {
   char r;
   String incomingData;
-  if (XBee.available()) {
+
   do {
     r = XBee.read();
     incomingData += r;   
   } 
   while (r != -1);
   incomingData = incomingData.substring(0,incomingData.length() - 1);
-  }
+  
   
   // Check data for server shutdown signal while awaiting handshake
   for (int i=0;i<incomingData.length();i++) {
@@ -473,10 +474,52 @@ void CheckOffOrToggle()
     }
     else if (incomingData[i] == manualToggle) {
       driveMode = !driveMode;
+      manualSpeed = 90;
+      manualAngle = 90;
+      Serial.print("\nToggling auto/manual modes. Current mode: ");
+      Serial.println(driveMode);
+      Serial.println();
     }
-    
+    else if (incomingData[i] == manualStopToggle) {
+        stopToggle = !stopToggle;
+        Serial.print("\nToggling start/stop. Current mode: ");
+        Serial.println(stopToggle);
+        Serial.println();
+    }
+    else if (incomingData[i] == manualIncreaseSpeed) {
+        manualSpeed -= 5;
+        Serial.print("\nIncreasing speed. Current speed: ");
+        Serial.println(manualSpeed);
+        Serial.println();
+    }
+    else if (incomingData[i] == manualDecreaseSpeed) {
+        manualSpeed += 5;
+        Serial.print("\nDecreasing speed. Current speed: ");
+        Serial.println(manualSpeed);
+        Serial.println();
+    }  
+    else if (incomingData[i] == manualLeftTurn) {
+        manualAngle += 10;
+        Serial.print("\nIncreasing left turn. Current angle: ");
+        Serial.println(manualAngle);
+        Serial.println();
+    }    
+    else if (incomingData[i] == manualRightTurn) {
+        manualAngle -= 10;
+        Serial.print("\nIncreasing right turn. Current angle: ");
+        Serial.println(manualAngle);
+        Serial.println();
+    }
+    else if (incomingData[i] == manualCenter) {
+        manualAngle = 90;
+        Serial.print("\nCentering wheels. Current angle: ");
+        Serial.println(manualAngle);
+        Serial.println();
+    }          
+   
   }
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS    CORNERS  
@@ -620,35 +663,43 @@ void loop()
   // forward collision detection
   PollUltrasonic();
   // Stopping
-  checkOffOrToggle();
-  
-  // autonomous driving
-  if (driveMode == 0) {
-    if (CheckCorners()) { // going to drive counter-clockwise around loop
-       // do corner stuff
 
-       turnCorner();
-         
-    } 
-    else { // going straight down hallway
-      // Moving
-      PollLidars();
-      AdjustSetpoint();
-      AdjustInput();  
-      Compute();
-      Move();
-      // Serial Monitor
-      Print();
-    }
-  }
-  // manual driving
-  else // driveMode == 1
-  {
-
-
-
+  if (XBee.available()) // incoming data
+    CheckSignals();
+  else
+  {  
+      
+      // autonomous driving
+      if (driveMode == 0) {
+        if (CheckCorners()) { // going to drive counter-clockwise around loop
+           // do corner stuff
     
-  }
+           turnCorner();
+             
+        } 
+        else { // going straight down hallway
+          // Moving
+          PollLidars();
+          AdjustSetpoint();
+          AdjustInput();  
+          Compute();
+          Move();
+          // Serial Monitor
+          Print();
+        }
+      }
+      // manual driving
+      else // driveMode == 1
+      {
+        if (!stopToggle) {
+          esc.write(manualSpeed);
+          wheels.write(manualAngle);   
+        }
+        else 
+          esc.write(90);
+        
+      }
 
+  }
 }
 
