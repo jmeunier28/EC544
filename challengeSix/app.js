@@ -20,11 +20,7 @@ var PythonShell = require('python-shell');
 var xbee_api = require('xbee-api');
 
 app.get('/', function(req, res){
-<<<<<<< HEAD
   res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeSix/public/indoor.html');
-=======
-  res.sendFile('/Users/jmeunier28/Desktop/EC544/challenges/EC544/challengeFive/public/showdata.html');
->>>>>>> dami
 });
 
 app.use(express.static(__dirname + '/public'));
@@ -76,13 +72,8 @@ var XBeeAPI = new xbee_api.XBeeAPI({
   api_mode: 2
 });
 
-<<<<<<< HEAD
 var portName = '/dev/cu.usbserial-AD01SSII';
 var sampleDelay = 2000;
-=======
-var portName = '/dev/cu.usbserial-DA01LOA2';
-var sampleDelay = 3000;
->>>>>>> dami
 
 
 //Note that with the XBeeAPI parser, the serialport's "data" event will not fire when messages are received!
@@ -108,11 +99,9 @@ var requestRSSI = function(){
 
 /* -------- App Logic ----------*/
 
-<<<<<<< HEAD
+
 var numSamples = 2;
-=======
-var numSamples = 5;
->>>>>>> dami
+
 
 console.log(' Running till each beacon gets at least', numSamples ,'rssi values to average.')
 
