@@ -30,7 +30,9 @@ import os
 import sys
 import subprocess
 import csv
+import serial
 results = []
+
 
 # Below are functions to parse the properties of each AP (cell)
 # They take one argument, the bunch of text describing one cell in iwlist
@@ -131,34 +133,6 @@ def parse_cell(cell):
         parsed_cell.update({key:rule(cell)})
     return parsed_cell
 
-def print_table(table):
-    widths=map(max,map(lambda l:map(len,l),zip(*table))) #functional magic
-
-    justified_table = []
-    for line in table:
-        justified_line=[]
-        for i,el in enumerate(line):
-            justified_line.append(el.ljust(widths[i]+2))
-        justified_table.append(justified_line)
-    
-    for line in justified_table:
-        for el in line:
-            print el,
-        print
-
-def print_cells(cells):
-    table=[columns]
-    for cell in cells:
-        cell_properties=[]
-        for column in columns:
-            cell_properties.append(cell[column])
-        table.append(cell_properties)
-    print_table(table)
-
-def getAvg(cell):
-    #get average of five points
-    print "calcing avg"
-
 def writeCSV(info):
     file = "data.csv"
     field = ['C0:56:27:3A:34:29','48:F8:B3:24:A8:3F','F0:29:29:92:6B:50','B4:E9:B0:E5:0B:D0','Bin']
@@ -195,20 +169,22 @@ def main():
         if parsed_cells[i]['Address'] != None:
             print parsed_cells[i]['Address'][0], parsed_cells[i]['Address'][1]
             info[parsed_cells[i]['Address'][0]] = parsed_cells[i]['Address'][1]
-    info['Bin'] = '9'
+    info['Bin'] = '1'
     print info
-    if(len(info) == 5):
-        print info
-	print "writing to csv"
-        writeCSV(info)
-    else:
-        print "writing bs values to csv"
-        target = ['C0:56:27:3A:34:29','48:F8:B3:24:A8:3F','F0:29:29:92:6B:50','B4:E9:B0:E5:0B:D0']
-        for item in target:
-            if item not in info:
-                info[item] = 0
-        print info
-        writeCSV(info)
+    target = ['C0:56:27:3A:34:29','48:F8:B3:24:A8:3F','F0:29:29:92:6B:50','B4:E9:B0:E5:0B:D0']
+    for item in target:
+        if item not in info:
+            info[item] = 0
+    hey = subprocess.Popen(["python","newpredict.py",str(info[target[0]]), str(info[target[1]]),str(info[target[2]]),str(info[target[3]])], stdout=subprocess.PIPE,universal_newlines=True)
+    out,err = hey.communicate()
+    print str(out)
+    data = ' '.join(str(out))
+    ser= serial.Serial('/dev/ttyACM0', 9600)
+    byte = str.encode(data)
+    ser.write(byte) #write to the arduino
+    num = ser.read() #read it back
+    print num
+
 
 main()
 
