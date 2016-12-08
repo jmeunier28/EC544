@@ -32,7 +32,7 @@
                 <!-- <p id="mode"> - </p> -->
                 <h4> Speed: </h4>
                 <p id="speed" style="font-size: small;"> - </p>
-                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" />
+                <img id="video" src="http://192.168.1.117:4444/" width="300" height="220" />
 
                 <button id="forward">Forward</button> <br>
                 <button id="left">Left</button>
@@ -65,7 +65,7 @@
   <rect stroke="#000" id="3" height="60" width="62" y="197" x="493.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="4" height="57" width="63" y="140" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="5" height="57" width="63" y="83" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect id="6" height="51" width="62" y="33" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <rect stroke="#000" id="6" height="51" width="62" y="33" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="7" height="51" width="91" y="32" x="401.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="8" height="51" width="99.00001" y="33" x="303.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="9" height="51" width="109" y="32" x="193.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
@@ -73,13 +73,13 @@
   <rect stroke="#000" id="11" height="54" width="65" y="33" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="12" height="58" width="62" y="86" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="13" height="62" width="62" y="143" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="16" height="56" width="62" y="205" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="17" height="53" width="62" y="261" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="18" height="53" width="62" y="315" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="19" height="51" width="104.00001" y="317" x="88.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="20" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="21" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="22" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="14" height="56" width="62" y="205" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="15" height="53" width="62" y="261" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="16" height="53" width="62" y="315" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="17" height="51" width="104.00001" y="317" x="88.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="18" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="19" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="20" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
  <!--  <rect id="15" height="86" width="52" y="163" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
   <rect id="14" height="86" width="52" y="163" x="140.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/> -->
   <!-- <g id="svg_30">
@@ -336,10 +336,25 @@
                         $('#switch').click(callbackManual);
 
 
+                        socket.on('carMode', function(mode) {
+                          // $('#mode').append($('#mode').text(msg));
+                          console.log(mode);
+                          
+                        });
+                        // socket.on('wheelAngle', function(angle) {
+                        //   // $('#angle').append($('#angle').text(msg));
+                        //   console.log(angle);
+                        // });
+                        // socket.on('carSpeed', function(speed) {
+                        //   // $('#speed').append($('#speed').text(msg));
+                        //   console.log(speed);
+                        // });
+
+
 
 
                         socket.on('binNumber', function(binNum) {
-                            for (var i = 1; i <= 23; i++) {
+                            for (var i = 1; i <= 21; i++) {
 
                                 if (i == binNum) {
                                     console.log(binNum);
@@ -379,8 +394,28 @@
                                 }
                             }
 
+                          
+
                         })
+
+
+                //          <p id="mode" style="font-size: small;"> - </p>
+                // <h4> Wheel Angle: </h4>
+                // <p id="angle" style="font-size: small;"> - </p>
+                // <!-- <h3> Location: </h3> -->
+                // <!-- <h3> Direction: </h3> -->
+                // <!-- <p id="mode"> - </p> -->
+                // <h4> Speed: </h4>
+                // <p id="speed" style="font-size: small;"> - </p>
+
+
+
+
                     }
+
+                    
+
+                  
                 </script>
             </div>
 

@@ -3,6 +3,7 @@ app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var testing = 'HHHIIIIII';
 
 app.get('/', function(req, res) {
     res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeEight/Code/testing/Default.html');
@@ -18,10 +19,17 @@ http.listen(4000, function() {
 
 
 
+//io.emit('wheelAngle', '90');
+
+//io.emit('carSpeed', '70mps');
+
 io.on("connection", function(socket) {
     console.log("you whatup");
 
 
+
+    socket.emit('carMode',testing);
+// io.emit('chat message',tempAverage);
 
 socket.on('goLeft', function(string){
                 console.log("Moving wheels 10 degrees to the left...\n");
