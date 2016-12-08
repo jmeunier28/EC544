@@ -47,6 +47,9 @@
             <div id="Main">
 
                 <p></p>
+                <br>
+                <br>
+                <br>
                 <svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
  <g>
   <title>background</title>
@@ -73,13 +76,13 @@
   <rect stroke="#000" id="11" height="54" width="65" y="33" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="12" height="58" width="62" y="86" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="13" height="62" width="62" y="143" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="14" height="56" width="62" y="205" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="15" height="53" width="62" y="261" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="16" height="53" width="62" y="315" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="17" height="51" width="104.00001" y="317" x="88.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="18" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="19" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="20" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="13" height="56" width="62" y="205" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="14" height="53" width="62" y="261" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="15" height="53" width="62" y="315" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="16" height="51" width="104.00001" y="317" x="88.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="17" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="18" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="19" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
  <!--  <rect id="15" height="86" width="52" y="163" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
   <rect id="14" height="86" width="52" y="163" x="140.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/> -->
   <!-- <g id="svg_30">
@@ -337,18 +340,18 @@
 
 
                         socket.on('carMode', function(mode) {
-                          // $('#mode').append($('#mode').text(msg));
+                        $('#mode').append($('#mode').text(mode));
                           console.log(mode);
                           
                         });
-                        // socket.on('wheelAngle', function(angle) {
-                        //   // $('#angle').append($('#angle').text(msg));
-                        //   console.log(angle);
-                        // });
-                        // socket.on('carSpeed', function(speed) {
-                        //   // $('#speed').append($('#speed').text(msg));
-                        //   console.log(speed);
-                        // });
+                        socket.on('wheelAngle', function(angle) {
+                          $('#angle').append($('#angle').text(angle));
+                          console.log(angle);
+                        });
+                        socket.on('carSpeed', function(speed) {
+                          $('#speed').append($('#speed').text(speed));
+                          console.log(speed);
+                        });
 
 
 
@@ -387,7 +390,7 @@
                                 }
 
 
-                                if (binNum == 18) {
+                                if (binNum == 15) {
                                     document.getElementById('Bin18').style.display = 'block';
                                 } else {
                                     document.getElementById('Bin18').style.display = 'none';
