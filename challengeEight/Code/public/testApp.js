@@ -3,10 +3,10 @@ app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var testing = 'HHHIIIIII';
+var testing = 'M';
 
 app.get('/', function(req, res) {
-    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeEight/Code/testing/Default.html');
+    res.sendFile('/Users/damiOr/Documents/Grad_School/ec544/git/challengeEight/Code/public/resize.html');
 });
 
 app.use(express.static(__dirname));
@@ -29,7 +29,21 @@ io.on("connection", function(socket) {
 
 
     socket.emit('carMode',testing);
-// io.emit('chat message',tempAverage);
+
+    socket.emit('wheelAngle', '90');
+
+    socket.emit('carSpeed', '70');
+
+    for (var i = 0; i <= 10000; i++) {
+        if ((i%1000) === 0){
+            socket.emit('carMode',testing);
+        }
+        else{
+
+            socket.emit('carMode','A');
+        }
+
+    }
 
 socket.on('goLeft', function(string){
                 console.log("Moving wheels 10 degrees to the left...\n");

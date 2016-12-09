@@ -15,42 +15,45 @@
 <body>
     <div id="Container">
         <div id="header">
-            <h1> Challenge 8: Autonomous Driving </h1>
+            <img src="images/header.png" />
 
         </div>
 
         <div id="Content">
             <div id="Navigation">
 
-                <h4 style="font-size: smaller;"> Driving Mode: <button id="switch">Switch Mode</button> </h4>
-                <p  id="mode" style="font-size: smaller; line-height: 5px;"> - </p>
+                <!-- ****************************************************
+                   Info Labels
+        **************************************************** -->
+
+                <h4 style="font-size: smaller;"> Driving Mode: <button id="switch">Switch Mode</button></h4>
+                <p id="mode" style="font-size: smaller; line-height: 5px;"> Automatic </p>
                 <h4 style="font-size: smaller;"> Wheel Angle: </h4>
                 <p id="angle" style="font-size: smaller; line-height: 5px;"> - </p>
                 <h4 style="font-size: smaller;"> Speed: </h4>
                 <p id="speed" style="font-size: smaller; line-height: 5px;"> - </p>
-                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" />
 
-                <button id="forward">Forward</button> <br>
-                <button id="left">Left</button>
-                <button id="stop">Stop</button>
-                <button id="right">Right</button> <br>
-                <button id="reverse">Reverse</button>
+                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" /> <br>
 
-                <span style="display:inline-block;padding:5px;border:1px solid #fc0; font-size: 140%;font-weight: bold;">
+
+
+                <!-- ****************************************************
+               Arrow Button Controls
+     **************************************************** -->
+
+                <span style="display:inline-block;padding:5px;border:2px solid #d84359; font-weight: bold; margin: auto;">
+    <button id="forward"><img style="height: 25px"src="images/forward.png"></button>
     <br>
-    <button style="height: 40px; width: 40px" onclick="forward()"><img style="height: 65px"src="images/forward.png"></button>
-    <br><br><br><br>
-    <img hspace="10" style="padding-left: 5px">
-    <button style="height: 75px; width: 75px" onclick="left()"><img style="height: 65px"src="images/left.png"></button>
-    <img hspace="20" style="padding-left: 10px">
-    <button style="height: 75px; width: 75px" onclick="stop()"><img style="height: 63px"src="images/stop.png"></button>
-    <img hspace="20" style="padding-left: 10px">
-    <button style="height: 75px; width: 75px" onclick="right()"><img style="height: 65px"src="images/right.png"></button>
-    <img hspace="10" style="padding-left: 5px">
-    <br><br><br><br>
-    <button style="height: 75px; width: 75px" onclick="reverse()"><img style="height: 65px"src="images/reverse.png"></button>
-    <br><br><br>
-    </span>
+    <button type="button" id="left"><img style="height: 25px"src="images/left.png"></button>
+    <button type="button"id="stop"><img style="height: 25px"src="images/stop.png"></button>
+    <button type="button" id="right" ><img style="height: 25px"src="images/right.png"></button>
+    <br>
+    <button type="button" id="reverse"><img style="height: 25px"src="images/reverse.png"></button>
+    <br>
+    <!-- <button id="switch">Switch Mode</button> -->
+    </span> <br>
+    <button id="on"> ON </button> &nbsp;&nbsp;&nbsp;
+    <button id="off"> OFF </button>
 
             </div>
 
@@ -58,16 +61,12 @@
 
                 <br>
                 <svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
- <g>
-  <title>background</title>
-  <rect fill="#1F154A" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
-  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
-   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
-  </g>
- </g>
- <g>
+
+    <!-- ****************************************************
+                     SVG Floor Plan
+         **************************************************** -->
+
   <title>Layer 1</title>
-  <!-- <rect id="svg_1" height="337" width="531" y="31.5" x="24.5" stroke-width="1.5" stroke="#000" fill="#fff"/> -->
   <rect id="video" height="302.99998" width="435.00004" y="60.50002" x="72" stroke-width="1.5" />
   <rect stroke="#000" id="1" height="52" width="63" y="316" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="2" height="58" width="63" y="258" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
@@ -91,6 +90,10 @@
  </g>
 </svg>
 
+
+                <!-- ****************************************************
+            Nearby Tables for corners 
+     **************************************************** -->
                 <style type="text/css">
                     .tg {
                         border-collapse: collapse;
@@ -250,7 +253,6 @@
                     </tr>
                 </table>
 
-                
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
                 <script src="/socket.io/socket.io.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
@@ -261,36 +263,53 @@
 
                         var socket = io();
 
-                       
                         var callbackLeft = function() {
                             console.log("LEFT");
-                            socket.emit('goLeft','<');
+                            socket.emit('goLeft', '<');
                         };
 
                         var callbackRight = function() {
                             console.log("RIGHT");
-                            socket.emit('goRight','>');
+                            socket.emit('goRight', '>');
                         };
 
                         var callbackReverse = function() {
                             console.log("SLLLOOOOOWWWWWWWWWWWW");
-                            socket.emit('decreaseSpeed','D');
+                            socket.emit('decreaseSpeed', 'D');
                         };
 
                         var callbackForward = function() {
                             console.log("GOOOOOOOO");
-                            socket.emit('increaseSpeed','U');
+                            socket.emit('increaseSpeed', 'U');
                         };
                         var callbackStop = function() {
                             console.log("Starting or Stopping");
-                            socket.emit('stopCar','S');
+                            socket.emit('stopCar', 'S');
                         };
                         var callbackManual = function() {
                             console.log("Manual or AUTO");
-                            socket.emit('startMan','T');
+                            socket.emit('startMan', 'T');
                         };
 
-                       
+                        var callbackOn = function() {
+                            console.log("Turning On");
+                            socket.emit('carOn', '1');
+                        };
+
+                        var callbackOff = function() {
+                            console.log("Turning OFF");
+                            socket.emit('carOff', 'Q');
+                        };
+
+                        $('#left').click(callbackLeft);
+                        $('#right').click(callbackRight);
+                        $('#reverse').click(callbackReverse);
+                        $('#forward').click(callbackForward);
+                        $('#stop').click(callbackStop);
+                        $('#switch').click(callbackManual);
+                        $('#on').click(callbackOn);
+                        $('#off').click(callbackOff);
+
                         $(document).keydown(function(e) {
                             switch (e.which) {
                                 case 32: //space bar: Start/stop
@@ -314,31 +333,31 @@
                             }
                         });
 
-
-                        $('#left').click(callbackLeft);
-                        $('#right').click(callbackRight);
-                        $('#reverse').click(callbackReverse);
-                        $('#forward').click(callbackForward);
-                        $('#stop').click(callbackStop);
-                        $('#switch').click(callbackManual);
-
-
+                       
                         socket.on('carMode', function(mode) {
-                        $('#mode').append($('#mode').text(mode));
-                          console.log(mode);
-                          
+                            if(mode == 'M'){
+
+                                $('#mode').append($('#mode').text("Manual"));
+                            console.log(mode);
+                            }
+                            else if(mode == 'A'){
+                                $('#mode').append($('#mode').text("Automatic"));
+                            console.log(mode);
+                            }2
+
                         });
+
                         socket.on('wheelAngle', function(angle) {
-                          $('#angle').append($('#angle').text(angle));
-                          console.log(angle);
+                            $('#angle').append($('#angle').text(angle + '˚'));
+                            console.log(angle);
                         });
                         socket.on('carSpeed', function(speed) {
-                          $('#speed').append($('#speed').text(speed));
-                          console.log(speed);
+                            $('#speed').append($('#speed').text(speed));
+                            console.log(speed);
                         });
 
                         socket.on('binNumber', function(binNum) {
-                           // for (var i = 1; i <= 21; i++) {
+                            for (var i = 1; i <= 19; i++) {
 
                                 if (i == binNum) {
                                     console.log(binNum);
@@ -376,16 +395,14 @@
                                 } else {
                                     document.getElementById('Bin18').style.display = 'none';
                                 }
-                           // }
+                            }
 
-                          
+
 
                         })
 
 
                     }
-
-                                      
                 </script>
             </div>
 

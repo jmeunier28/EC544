@@ -5,9 +5,9 @@
 }
 
 #Container {
-    background-color: #1F154A;
+    background-image: url(images/background.jpg);
     width: 1000px;
-    height: 670px;
+    height: 680px;
     margin-left: auto;
     margin-right: auto;
     border-style: solid; 
@@ -16,13 +16,12 @@
 }
 
 #header {
-    background-color: #999;
+    background-color: #000;
     text-align: center;
-    color: white;
 }
 
 #Content {
-   padding: 25px;
+   padding: 20px;
 }
 
 #Navigation {
@@ -31,7 +30,7 @@
     color: #1F154A;
     width: 300px;
     float: left;
-    height: 540px;
+    height: 550px;
     text-align: center;
 }
 
@@ -41,17 +40,11 @@
     text-align: center;
 }
 
-h1 {
-     text-align: center;
-     margin: 0;
-     padding: 10px;
-}
-
 #Footer {
-    text-align: left;
-    padding: 10px;
+    text-align: right;
+    padding: 5px;
     color: white;
-    clear: both;
+    /*clear: both;*/
     bottom:0;
     position: relative;
 }
