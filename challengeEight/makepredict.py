@@ -73,7 +73,7 @@ def get_encryption(cell):
 def get_address(cell):
     address = ['C0:56:27:3A:34:29','48:F8:B3:24:A8:3F','F0:29:29:92:6B:50','B4:E9:B0:E5:0B:D0']
     if (matching_line(cell,"Address: ") in address):
-	return (matching_line(cell,"Address: "), get_quality(cell))
+        return (matching_line(cell,"Address: "), get_quality(cell))
     #print matching_line(cell,"Address: ")
     #return matching_line(cell,"Address: ")
 
@@ -178,12 +178,12 @@ def main():
     hey = subprocess.Popen(["python","newpredict.py",str(info[target[0]]), str(info[target[1]]),str(info[target[2]]),str(info[target[3]])], stdout=subprocess.PIPE,universal_newlines=True)
     out,err = hey.communicate()
     print str(out)
-    data = ' '.join(str(out))
-    ser= serial.Serial('/dev/ttyACM0', 9600)
-    byte = str.encode(data)
-    ser.write(byte) #write to the arduino
-    num = ser.read() #read it back
-    print num
+    #data = ' '.join(str(out))
+    #ser= serial.Serial('/dev/ttyACM0', 9600)
+    #byte = str.encode(data)
+    #ser.write(byte) #write to the arduino
+    #num = ser.read() #read it back
+    #print num
 
 
 main()

@@ -15,80 +15,85 @@
 <body>
     <div id="Container">
         <div id="header">
-            <h1> Challenge 8: Autonomous Driving </h1>
+            <img src="images/header.png" />
 
         </div>
 
         <div id="Content">
             <div id="Navigation">
 
-                <!-- <img src="http://192.168.1.112:4444/" width="320" height="240"/> -->
-                <h4> Driving Mode: <button id="switch">Switch Mode</button> </h4>
-                <p id="mode" style="font-size: small;"> - </p>
-                <h4> Wheel Angle: </h4>
-                <p id="angle" style="font-size: small;"> - </p>
-                <!-- <h3> Location: </h3> -->
-                <!-- <h3> Direction: </h3> -->
-                <!-- <p id="mode"> - </p> -->
-                <h4> Speed: </h4>
-                <p id="speed" style="font-size: small;"> - </p>
-                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" />
+                <!-- ****************************************************
+                   Info Labels
+        **************************************************** -->
 
-                <button id="forward">Forward</button> <br>
-                <button id="left">Left</button>
-                <button id="stop">Stop</button>
-                <button id="right">Right</button> <br>
-                <button id="reverse">Reverse</button>
+                <h4 style="font-size: smaller;"> Driving Mode: <button id="switch">Switch Mode</button></h4>
+                <p id="mode" style="font-size: smaller; line-height: 5px;"> Automatic </p>
+                <h4 style="font-size: smaller;"> Wheel Angle: </h4>
+                <p id="angle" style="font-size: smaller; line-height: 5px;"> - </p>
+                <h4 style="font-size: smaller;"> Speed: </h4>
+                <p id="speed" style="font-size: smaller; line-height: 5px;"> - </p>
+
+                <img id="video" src="http://192.168.1.112:4444/" width="300" height="220" /> <br>
 
 
+
+                <!-- ****************************************************
+               Arrow Button Controls
+     **************************************************** -->
+
+                <span style="display:inline-block;padding:5px;border:2px solid #d84359; font-weight: bold; margin: auto;">
+    <button id="forward"><img style="height: 25px"src="images/forward.png"></button>
+    <br>
+    <button type="button" id="left"><img style="height: 25px"src="images/left.png"></button>
+    <button type="button"id="stop"><img style="height: 25px"src="images/stop.png"></button>
+    <button type="button" id="right" ><img style="height: 25px"src="images/right.png"></button>
+    <br>
+    <button type="button" id="reverse"><img style="height: 25px"src="images/reverse.png"></button>
+    <br>
+    <!-- <button id="switch">Switch Mode</button> -->
+    </span> <br>
+    <button id="on"> ON </button> &nbsp;&nbsp;&nbsp;
+    <button id="off"> OFF </button>
 
             </div>
 
             <div id="Main">
 
-                <p></p>
+                <br>
                 <svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
- <g>
-  <title>background</title>
-  <rect fill="#fff" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
-  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
-   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
-  </g>
- </g>
- <g>
+
+    <!-- ****************************************************
+                     SVG Floor Plan
+         **************************************************** -->
+
   <title>Layer 1</title>
-  <rect id="svg_1" height="337" width="531" y="31.5" x="24.5" stroke-width="1.5" stroke="#000" fill="#fff"/>
-  <rect id="video" height="302.99998" width="435.00004" y="60.50002" x="72" stroke-width="1.5"         />
-    <!-- <img src="http://192.168.1.112:4444/" width="320" height="240"/> -->
-  <rect stroke="#000" id="1" height="52" width="65" y="316" x="490.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="2" height="58" width="62" y="258" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="3" height="60" width="62" y="197" x="493.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect id="video" height="302.99998" width="435.00004" y="60.50002" x="72" stroke-width="1.5" />
+  <rect stroke="#000" id="1" height="52" width="63" y="316" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="2" height="58" width="63" y="258" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="3" height="61" width="63" y="197" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="4" height="57" width="63" y="140" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="5" height="57" width="63" y="83" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect id="6" height="51" width="62" y="33" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <rect stroke="#000" id="6" height="51" width="63" y="32" x="492.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
   <rect stroke="#000" id="7" height="51" width="91" y="32" x="401.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="8" height="51" width="99.00001" y="33" x="303.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="9" height="51" width="109" y="32" x="193.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="10" height="51" width="104.00001" y="33" x="89.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="11" height="54" width="65" y="33" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="12" height="58" width="62" y="86" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="13" height="62" width="62" y="143" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="16" height="56" width="62" y="205" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="17" height="53" width="62" y="261" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="18" height="53" width="62" y="315" x="25.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="19" height="51" width="104.00001" y="317" x="88.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="20" height="51" width="104.00001" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="21" height="51" width="104.00001" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
-  <rect stroke="#000" id="22" height="51" width="92.00001" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
- <!--  <rect id="15" height="86" width="52" y="163" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/>
-  <rect id="14" height="86" width="52" y="163" x="140.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="#fff"/> -->
-  <!-- <g id="svg_30">
-   <text xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_28" y="177" x="297.5" stroke-opacity="null" stroke-width="0" stroke="#fff" fill="#aad4ff">Group 4</text>
-   <text stroke="#fff" transform="matrix(1.4059 0 0 2.12663 -165 10.1221)" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_29" y="108.45607" x="296.96187" stroke-opacity="null" stroke-width="0" fill="#aad4ff">Challenge 6</text>
-  </g> -->
+  <rect stroke="#000" id="8" height="51" width="98" y="32" x="303.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="9" height="51" width="110" y="32" x="193.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="10" height="51" width="106" y="32" x="87.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="11" height="51" width="63" y="32" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="12" height="59" width="63" y="83" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="13" height="118" width="63" y="142" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="14" height="59" width="63" y="260" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="15" height="51" width="63" y="317" x="24.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="16" height="51" width="104.5" y="317" x="87.75" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="17" height="51" width="104" y="317" x="192.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="18" height="51" width="104" y="317" x="295.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
+  <rect stroke="#000" id="19" height="51" width="93" y="317" x="399.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" fill="#fff"/>
  </g>
 </svg>
 
+
+                <!-- ****************************************************
+            Nearby Tables for corners 
+     **************************************************** -->
                 <style type="text/css">
                     .tg {
                         border-collapse: collapse;
@@ -248,8 +253,6 @@
                     </tr>
                 </table>
 
-                <!-- <div id="textbox" style="position:absolute;padding:10px;background:#FFFFCC;width:300px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas nec tincidunt purus. Donec eleifend libero in orci mattis pulvinar. Ut et felis eu leo malesuada eleifend. Ut sit amet odio eu ipsum rutrum consequat. Aliquam congue ultricies sagittis.</div>
- -->
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
                 <script src="/socket.io/socket.io.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
@@ -257,53 +260,47 @@
                 <script type="text/javascript">
                     var color = '#FE957E';
                     window.onload = function() {
-
                         var socket = io();
-
-                        // <button id="forward">Forward</button>  <br>
-                        //     <button id="left">Left</button>
-                        //     <button id="stop">Stop</button>
-                        //     <button id="right">Right</button> <br>
-                        //     <button id="reverse">Reverse</button>
-
-                        // $(document).ready(function() {
-
-
                         var callbackLeft = function() {
                             console.log("LEFT");
-                            socket.emit('goLeft','<');
+                            socket.emit('goLeft', '<');
                         };
-
                         var callbackRight = function() {
                             console.log("RIGHT");
-                            socket.emit('goRight','>');
+                            socket.emit('goRight', '>');
                         };
-
                         var callbackReverse = function() {
                             console.log("SLLLOOOOOWWWWWWWWWWWW");
-                            socket.emit('decreaseSpeed','D');
+                            socket.emit('decreaseSpeed', 'D');
                         };
-
                         var callbackForward = function() {
                             console.log("GOOOOOOOO");
-                            socket.emit('increaseSpeed','U');
+                            socket.emit('increaseSpeed', 'U');
                         };
                         var callbackStop = function() {
                             console.log("Starting or Stopping");
-                            socket.emit('stopCar','S');
+                            socket.emit('stopCar', 'S');
                         };
                         var callbackManual = function() {
                             console.log("Manual or AUTO");
-                            socket.emit('startMan','T');
+                            socket.emit('startMan', 'T');
                         };
-
-                        // $("input").keypress(function() {
-                        //     if (event.which == 13) callback();
-                        // });
-
-                        // $('#login_submit').click(callback);
-
-
+                        var callbackOn = function() {
+                            console.log("Turning On");
+                            socket.emit('carOn', '1');
+                        };
+                        var callbackOff = function() {
+                            console.log("Turning OFF");
+                            socket.emit('carOff', 'Q');
+                        };
+                        $('#left').click(callbackLeft);
+                        $('#right').click(callbackRight);
+                        $('#reverse').click(callbackReverse);
+                        $('#forward').click(callbackForward);
+                        $('#stop').click(callbackStop);
+                        $('#switch').click(callbackManual);
+                        $('#on').click(callbackOn);
+                        $('#off').click(callbackOff);
                         $(document).keydown(function(e) {
                             switch (e.which) {
                                 case 32: //space bar: Start/stop
@@ -326,28 +323,32 @@
                                     break;
                             }
                         });
-
-
-                        $('#left').click(callbackLeft);
-                        $('#right').click(callbackRight);
-                        $('#reverse').click(callbackReverse);
-                        $('#forward').click(callbackForward);
-                        $('#stop').click(callbackStop);
-                        $('#switch').click(callbackManual);
-
-
-
-
+                       
+                        socket.on('carMode', function(mode) {
+                            if(mode == 'M'){
+                                $('#mode').append($('#mode').text("Manual"));
+                            console.log(mode);
+                            }
+                            else if(mode == 'A'){
+                                $('#mode').append($('#mode').text("Automatic"));
+                            console.log(mode);
+                            }2
+                        });
+                        socket.on('wheelAngle', function(angle) {
+                            $('#angle').append($('#angle').text(angle + '˚'));
+                            console.log(angle);
+                        });
+                        socket.on('carSpeed', function(speed) {
+                            $('#speed').append($('#speed').text(speed));
+                            console.log(speed);
+                        });
                         socket.on('binNumber', function(binNum) {
-                            for (var i = 1; i <= 23; i++) {
-
+                            for (var i = 1; i <= 19; i++) {
                                 if (i == binNum) {
                                     console.log(binNum);
                                     var svgElement = document.getElementById(binNum);
                                     //console.log('Bin Number', binNum);
                                     svgElement.style.fill = color;
-
-
                                 } else {
                                     document.getElementById(i).style.fill = '#fff';
                                 }
@@ -356,29 +357,22 @@
                                 } else {
                                     document.getElementById('Bin1').style.display = 'none';
                                 }
-
-
                                 if (binNum == 6) {
                                     document.getElementById('Bin6').style.display = 'block';
                                 } else {
                                     document.getElementById('Bin6').style.display = 'none';
                                 }
-
-
                                 if (binNum == 11) {
                                     document.getElementById('Bin11').style.display = 'block';
                                 } else {
                                     document.getElementById('Bin11').style.display = 'none';
                                 }
-
-
-                                if (binNum == 18) {
+                                if (binNum == 15) {
                                     document.getElementById('Bin18').style.display = 'block';
                                 } else {
                                     document.getElementById('Bin18').style.display = 'none';
                                 }
                             }
-
                         })
                     }
                 </script>

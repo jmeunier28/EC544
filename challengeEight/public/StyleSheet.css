@@ -5,9 +5,9 @@ body {
 }
 
 #Container {
-    background-color: #1F154A;
+    background-image: url(images/background.jpg);
     width: 1000px;
-    height: 650px;
+    height: 680px;
     margin-left: auto;
     margin-right: auto;
     border-style: solid; 
@@ -16,22 +16,21 @@ body {
 }
 
 #header {
-    background-color: #999;
+    background-color: #000;
     text-align: center;
-    color: white;
 }
 
 #Content {
    padding: 20px;
 }
+
 #Navigation {
-    padding: 10px;
+    padding: 5px;
     background-color: #EEE;
     color: #1F154A;
     width: 300px;
     float: left;
-    clear: CopyW;
-    height: 580px;
+    height: 550px;
     text-align: center;
 }
 
@@ -41,22 +40,11 @@ body {
     text-align: center;
 }
 
-#Navigation .selected{
-    font-weight: bold;
-    color: black;
-}
-
-#Navigation ul {
-    list-style-type: none;
-    padding: 0;
-} 
-
-h1, h2, h3 {
-     text-align: center;
-     margin: 0;
-     padding: 10px;
-}
-a {
-    text-decoration: none;
-    text-align: center;
+#Footer {
+    text-align: right;
+    padding: 5px;
+    color: white;
+    /*clear: both;*/
+    bottom:0;
+    position: relative;
 }
