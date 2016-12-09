@@ -73,6 +73,9 @@ const char manualCenter = 'C';
 const char manualStopToggle = 'S';
 
 
+int turnCount = 0;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT    PRINT  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +222,13 @@ void AdjustSetpoint()
 
 void AdjustInput()
 {
-   if (leftDistance <= 1)
+   if ((rightDistance > 100) || (rightDistance <= 1)) {
+    input = leftDistance;
+    Serial.println("\n\nSWITCHING FROM RIGHT WALL!\n\n");
+   }
+   else if (turnCount == 1)
+    input = rightDistance;
+   else if (leftDistance <= 1)
     input = 1000;
    else 
     input = leftDistance;
@@ -316,13 +325,31 @@ void Move() {
     limitedOutput = 85 * ((output > 0) - (output < 0));
   else limitedOutput = output;     
 
-  // Angle = 90 + sign*limitedOutput;
-  Angle = 90 - limitedOutput;
+  //Angle = 90 + sign*limitedOutput;
+
+    if (input == leftDistance)
+      Angle = 90 - limitedOutput;
+    else
+      Angle = 90 + limitedOutput;
+
+
 
   if (elevator)
     wheels.write(90);
-  else if ((leftDistance > 400) || (leftDistance <= 1)) {
-    wheels.write(180);
+  else if (((leftDistance > 150) || (leftDistance <= 1)) && (input == leftDistance)) {
+    turnCount++;
+    Serial.println("\nFIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!");
+    Serial.println("FIRST TURN!!!!!!!!!\n");
+    TurnCorner();
+      
+    
+    //wheels.write(180);
     }
   else
     wheels.write(Angle);
@@ -520,46 +547,14 @@ int CheckCorners()
     inCorner = 1;
   return inCorner; 
 }
+*/
+void TurnCorner() {
 
-// going to always turn left
-void turnCorner() {
-  Serial.println("turnCorner() function");
-  
-  // check front collision
-  if (objectDetected) {
-    Serial.println("ultraPast[0] == B  in turnCorner()");
-    wheels.write(150);
-    esc.write(110);
-    delay(3000);
-    wheels.write(90);
-    esc.write(90);    
-  } 
-  // navigate turn
-  else {
-    Serial.println("Navigating turn!");
-    esc.write(90);
-    PollLidars();
-    
-    // if very close to the wall move away from it
-    if (leftDistance < 30) {
-      wheels.write(50);
-      esc.write(65);
-      delay(1000);
-    }
-    // if near the wall but not very close continue to go straight
-    else if (leftDistance < 60) {
-        wheels.write(90);
-        esc.write(65);
-    }
-    // if enough distance between wall make the turn
-    else {     
-      wheels.write(170); // try this (left turn)
-      esc.write(65);
-    }
-  }
+  wheels.write(175);
+  esc.write(70);
+  delay(2800);
   
 }
-*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP    SETUP  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -631,8 +626,6 @@ void setup()
 
 void loop() 
 {
-  // test vars
-  binNum = 0;
   
   // incoming data
   if (XBee.available()) 
@@ -642,18 +635,7 @@ void loop()
       // autonomous driving
       if (driveMode == 0) {
         // forward collision detection
-        PollUltrasonic();
-
-
-
-        /*
-        if (CheckCorners()) { // going to drive counter-clockwise around loop
-           // do corner stuff
-           turnCorner();
-             
-        } 
-        else { // going straight down hallway
-         */
+         PollUltrasonic();
           // Moving
           PollLidars();
           AdjustSetpoint(); 
@@ -662,7 +644,7 @@ void loop()
           Move();
           // Serial Monitor
           Print();
-        //}
+        
       }
       // manual driving
       else // driveMode == 1
