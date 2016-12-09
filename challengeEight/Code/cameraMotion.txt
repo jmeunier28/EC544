@@ -1,0 +1,84 @@
+https://pimylifeup.com/raspberry-pi-webcam-server/
+http://www.techradar.com/how-to/computing/how-to-build-a-raspberry-pi-security-camera-1321441/2
+
+
+Webcam Configuration on Pi: Motion
+
+sudo apt-get update && apt-get upgrade -y
+
+sudo apt-get install motion -y
+
+****** Make sure USB cam is connected to Pi *******
+
+lsusb
+
+*********** Change config settings of Motion **********
+
+sudo nano /etc/motion/motion.conf 
+
+ ----  Changes to make ----
+
+daemon on
+
+width 640
+height 480
+
+framerate 300
+
+auto_brightness on
+
+stream_port 3000 ** can be any number
+
+stream_localhost off
+
+webcontrol_localhost off
+
+quality 100
+
+post_capture 5
+
+
+
+sudo nano /etc/default/motion
+
+ ----  Changes to make ----
+
+start_motion_daemon=yes
+
+
+
+*********** To start and stop webcam **********
+
+Webcam Site:http://192.168.1.112:4444
+
+
+sudo service motion restart
+
+sudo motion 
+
+
+
+*********** Wifi Access Points **********
+
+    ººººº setting up wifi credentials on Pi ººººº
+
+     sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+
+        ~~~ Example Entry ~~~
+	network={
+        ssid="xfinitywifi"
+        key_mgmt=NONE
+	}
+	
+	--- run after changing file --- 
+	sudo ifdown wlan0
+	sudo ifup wlan0
+     
+
+ΩΩΩΩΩΩΩΩ Run on Rasp Pi and outputs Names and connection strength of networks it detects ΩΩΩΩΩΩΩΩ
+
+sudo iwlist wlan0 scanning | egrep 'Cell |Quality|ESSID'
+
+        ------ only prints names ------ 
+
+        sudo iwlist wlan0 scan | perl -nle '(/ESSID:(.*)$/ && print $1) && (/Quality=(.*)$/ && print $1)'
